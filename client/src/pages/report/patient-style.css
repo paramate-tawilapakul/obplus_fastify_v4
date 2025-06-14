@@ -1,0 +1,14 @@
+.patient-form-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -10px;
+}
+
+.patient-form-row {
+  display: flex;
+  flex-direction: flex-start;
+  align-items: center;
+  min-width: 1130px;
+  margin-top: 20px;
+}

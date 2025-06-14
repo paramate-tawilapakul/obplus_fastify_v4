@@ -1,0 +1,142 @@
+.form-mr-7 {
+  margin-right: 5px;
+  margin-top: 5px;
+  height: 33px;
+  width: 167px;
+}
+
+.btn-form-adv {
+  margin-right: 5px;
+  margin-top: 5px;
+  padding: 0 18px 0 18px;
+  height: 33px;
+}
+
+.column-padding {
+  padding: 7px 0 9px 10px !important;
+}
+
+.make-pointer {
+  cursor: pointer;
+}
+
+.padding-head-button {
+  padding: 7px 0 7px 7px;
+}
+
+.padding-form-tool {
+  padding: 1px 0 7px 7px;
+}
+
+.data-table-margin {
+  margin-top: -12px;
+}
+
+.checkbox-padding {
+  width: 5px !important;
+  padding: 0px 0px 0px 3px !important;
+}
+
+.checkbox-padding input {
+  margin-top: 13px;
+}
+
+.preview-report {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* z-index: 1500; */
+  z-index: 1100;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  overflow: auto;
+}
+
+.iframe-view {
+  display: flex;
+  align-items: flex-start;
+}
+
+.iframe-bt-close {
+  width: 50px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: none;
+  font-weight: bold;
+  padding: 7px 7px 0px 7px;
+  font-size: 32px;
+  color: white;
+  cursor: pointer;
+}
+
+.iframe-bt-print {
+  width: 50px;
+  background-color: transparent;
+  border: none;
+  font-weight: bold;
+  padding: 0px 7px;
+  font-size: 35px;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.patient-info-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 3px 0 0 5px;
+}
+
+.patient-info-box {
+  display: flex;
+  flex-direction: column;
+  margin-right: 15px;
+}
+
+.form-control.input-info {
+  border-radius: 3px;
+  border: 0;
+  border: 1px solid #ccc;
+  padding: 0 0 0 5px;
+  pointer-events: none;
+  background-color: white;
+  margin-top: 0px;
+  height: 23px;
+  width: 126px;
+  color: blueviolet;
+}
+
+.d-none {
+  display: none;
+}
+
+.btn-pdf-container {
+  color: white;
+  position: sticky;
+  bottom: 130px;
+  margin-left: 650px;
+}
+
+.btn-pdf {
+  height: 38px;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.generating-pdf {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+}
+
+.sticky-bottom {
+  position: -webkit-sticky;
+  position: sticky;
+  bottom: 0;
+}

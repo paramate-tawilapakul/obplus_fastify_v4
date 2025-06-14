@@ -1,0 +1,7 @@
+fieldset.abnormal {
+  color: red;
+  border: 1px solid red;
+  min-width: 673px;
+  border-radius: 4px;
+  padding-left: 8px;
+}

@@ -1,0 +1,359 @@
+const fs = require('graceful-fs')
+const sharp = require('sharp')
+const dayjs = require('dayjs')
+const { promisify } = require('node:util')
+const { pipeline } = require('node:stream/promises')
+
+const { Logger, logFormat } = require('../../logger')
+const { responseData, mkEFWPath } = require('../../utils/utils')
+const { mkImagePath, genImageArr } = require('../../utils/utils')
+const db = require('../../db/config')
+const {
+  getImages,
+  deleteImage,
+} = require('../dicom-images/dicom.image.services')
+
+const exists = promisify(fs.exists)
+const readFile = fs.promises.readFile
+const unlink = fs.promises.unlink
+const copyFile = fs.promises.copyFile
+
+exports.updateColumn = async (req, res) => {
+  try {
+    const { accession, cols } = req.body
+
+    await db('RIS_IMAGE_REPORT').where({ IM_ACC: accession }).update({
+      NO_OF_COLUMN: cols,
+    })
+
+    // /api/files/view?name=&accession
+
+    responseData(res, {
+      result: 'success',
+    })
+  } catch (error) {
+    console.error(error)
+    Logger('error').error(logFormat(null, error))
+  }
+}
+
+exports.getImages = async (req, res) => {
+  const response = await getImages(req.query.accession)
+
+  // /api/files/view?name=&accession
+
+  responseData(res, {
+    imgs: genImageArr(
+      response.map(r => ({ name: r.name, cols: r.cols })),
+      req.query.accession
+    ),
+  })
+}
+
+exports.deleteImage = async (req, res) => {
+  try {
+    await deleteImage(req)
+    const { accession, name } = req.query
+    let path = `${process.env.IMAGES_PATH}/${accession}/${name}`
+    let isExist = await exists(path)
+    if (isExist) {
+      await unlink(path)
+    }
+
+    const response = await getImages(accession)
+    responseData(res, {
+      imgs: genImageArr(
+        response.map(r => ({ name: r.name, cols: r.cols })),
+        req.query.accession
+      ),
+    })
+  } catch (error) {
+    console.error(error)
+    Logger('error').error(logFormat(null, error))
+    res.status(500).send(error.message)
+  }
+}
+
+exports.view = async (req, res) => {
+  try {
+    const { name, accession } = req.query
+
+    let dir = `${process.env.IMAGES_PATH}/${accession}`
+    const oldOBdir = process.env.OLD_VERSION_IMAGES_PATH
+
+    let isExist = await exists(oldOBdir + '/' + name)
+    if (isExist) {
+      dir = oldOBdir
+    }
+
+    // isExist = await exists(dir)
+    // if (!isExist) {
+    //   res
+    //     .status(404)
+    //     .end(`Directory: '${dir.replace(/\\\\/g, '/')}' not found!`)
+    //   return
+    // }
+
+    const fullpath = `${dir}/${name}`
+    // isExist = await exists(fullpath)
+    // if (!isExist) {
+    //   res
+    //     .status(404)
+    //     .end(`File: '${fullpath.replace(/\\\\/g, '/')}' not found!`)
+    //   return
+    // }
+
+    const map = {
+      '.png': 'image/png',
+      '.PNG': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.JPG': 'image/jpeg',
+      '.JPEG': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.GIF': 'image/gif',
+      '.pdf': 'application/pdf',
+      '.PDF': 'application/pdf',
+      '.svg': 'image/svg+xml',
+    }
+
+    const ext = '.' + fullpath.split('.').pop()
+
+    if (!map[ext]) return res.send(ext + ', file type not support')
+
+    // read file from file system
+    const data = await readFile(fullpath)
+
+    res.header(
+      'Content-type',
+      ext === '.txt' || ext === '.json'
+        ? map[ext] + '; charset=utf-8'
+        : map[ext]
+    )
+    res.send(data)
+  } catch (error) {
+    console.error(error)
+    Logger('error').error(logFormat(null, error))
+    res.status(500).send(error.message)
+  }
+}
+
+exports.uploadDicom = async (req, res) => {
+  try {
+    const { accession, hn, files, cols } = req.body
+    const date = dayjs().format('YYYYMMDDHHmmss')
+
+    let imgsReturn = []
+    let previousImages = await getImages(accession)
+    previousImages.forEach(image => imgsReturn.push({ name: image.name, cols }))
+    await mkImagePath(accession)
+    const uploadPath = `${process.env.IMAGES_PATH}/${accession}/`
+    const dicomPath = `${process.env.IMAGES_PATH}/${accession}/dicom/`
+
+    let name
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      // console.log(file.name)
+      name = `${date}_${file}`
+
+      await copyFile(`${dicomPath}${file}`, `${uploadPath}${name}`)
+
+      await db('RIS_IMAGE_REPORT').insert({
+        IM_ACC: accession,
+        IM_HN: hn,
+        IM_URL_PATH: name,
+        NO_OF_COLUMN: cols || '2',
+      })
+
+      imgsReturn.push({ name, cols })
+    }
+
+    responseData(res, { imgs: genImageArr(imgsReturn, accession) })
+  } catch (error) {
+    console.error(error)
+    Logger('error').error(logFormat(null, error))
+  }
+}
+
+exports.upload = async (req, res) => {
+  try {
+    const { accession, hn, cols } = req.query
+
+    // return responseData(res, { imgs: [] })
+
+    const date = dayjs().format('YYYYMMDDHHmmss')
+    // console.log(date)
+    // const year = date.substring(0, 4)
+    // const month = date.substring(4, 6)
+    // const day = date.substring(6, 8)
+
+    let imgsReturn = []
+    let previousImages = await getImages(accession)
+    previousImages.forEach(image => imgsReturn.push({ name: image.name, cols }))
+
+    await mkImagePath(accession)
+    // const uploadPath = `${process.env.IMAGES_PATH}/${year}/${month}/${day}/`
+
+    const data = await req.file()
+    let name = `${date}_0_${data.filename}`
+    await pipeline(
+      data.file,
+      fs.createWriteStream(`${process.env.IMAGES_PATH}/${accession}/${name}`)
+    )
+
+    await db('RIS_IMAGE_REPORT').insert({
+      IM_ACC: accession,
+      IM_HN: hn,
+      IM_URL_PATH: name,
+      NO_OF_COLUMN: cols || '2',
+    })
+    imgsReturn.push({ name, cols })
+
+    responseData(res, { imgs: genImageArr(imgsReturn, accession) })
+  } catch (error) {
+    console.error(error)
+    Logger('error').error(logFormat(null, error))
+  }
+}
+
+exports.uploadEFW = async (req, res) => {
+  try {
+    const { accession, fetusNo, dataUrl } = req.body
+    // const { file } = req.files
+
+    await mkEFWPath(accession, fetusNo)
+    const uploadPath = `${process.env.IMAGES_PATH}/efw/${accession}/${fetusNo}/`
+
+    let name = `efw.jpg`
+    const regex = /^data:.+\/(.+);base64,(.*)$/
+    let matches = dataUrl.match(regex)
+    // let ext = matches[1]
+    let data = matches[2]
+
+    sharp(Buffer.from(data, 'base64'))
+      .resize(750)
+      .toFile(uploadPath + name, async err => {
+        if (err) return console.log(err)
+      })
+
+    responseData(res, {
+      src: `/api/v1/files/efw?accession=${accession}&fetusNo=${fetusNo}&r=${Math.random()}`,
+    })
+  } catch (error) {
+    console.error(error)
+    Logger('error').error(logFormat(null, error))
+  }
+}
+
+exports.deleteEFW = async (req, res) => {
+  try {
+    const { accession, fetusNo } = req.query
+
+    const removePath = `${process.env.IMAGES_PATH}/efw/${accession}/${fetusNo}/efw.jpg`
+
+    // ERROR: EBUSY: resource busy or locked,unlink
+    let isExist = await exists(removePath)
+    if (isExist) {
+      await unlink(removePath)
+    }
+
+    responseData(res, { success: true })
+  } catch (error) {
+    console.error(error)
+    Logger('error').error(logFormat(null, error))
+    responseData(res, { success: false, msg: error.message })
+  }
+}
+
+exports.viewEfw = async (req, res) => {
+  try {
+    const { accession, fetusNo } = req.query
+
+    let dir = `${process.env.IMAGES_PATH}/efw/${accession}/${fetusNo}`
+
+    const fullpath = `${dir}/efw.jpg`
+
+    const map = {
+      '.png': 'image/png',
+      '.PNG': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.JPG': 'image/jpeg',
+      '.JPEG': 'image/jpeg',
+    }
+
+    const ext = '.' + fullpath.split('.').pop()
+
+    if (!map[ext]) return res.send(ext + ', file type not support')
+
+    // read file from file system
+    const data = await readFile(fullpath)
+
+    res.header(
+      'Content-type',
+      ext === '.txt' || ext === '.json'
+        ? map[ext] + '; charset=utf-8'
+        : map[ext]
+    )
+    res.send(data)
+  } catch (error) {
+    console.error(error)
+    Logger('error').error(logFormat(null, error))
+    res.status(500).send(error.message)
+  }
+}
+
+exports.viewBackupPdf = async (req, res) => {
+  // console.log('view from backup')
+  try {
+    const { accession } = req.query
+
+    const data = await db('OB_REPORT')
+      .column({
+        reportUpdateDate: 'REPORT_UPDATE_DATE',
+      })
+      .where('ACCESSION', accession)
+      .limit(1)
+      .orderBy('REPORT_ID')
+
+    // console.log(data)
+
+    if (data.length === 0) {
+      return res.send({ hasBackup: false })
+    }
+
+    let reportUpdateDate = data[0].reportUpdateDate
+
+    const year = reportUpdateDate.substring(0, 4)
+    const month = reportUpdateDate.substring(4, 6)
+    const day = reportUpdateDate.substring(6, 8)
+
+    const filename = `${accession}.pdf`
+    const fullpath = `${process.env.PDF_BACKUP_PATH}/${year}/${month}/${day}/${filename}`
+
+    let isExist = await exists(fullpath)
+    if (!isExist) {
+      return res.send({ hasBackup: false })
+    }
+
+    res.send({
+      url: `/api/v1/report/view?accession=${accession}&reportUpdateDate=${reportUpdateDate}`,
+      hasBackup: true,
+    })
+
+    // fs.readFile(fullpath, (err, data) => {
+    //   if (err) {
+    //     res.status(500).send(`${err}`)
+    //   } else {
+    //     res.send({
+    //       base64: Buffer.from(data).toString('base64'),
+    //       url: `/api/v1/report/view?accession=${accession}&reportUpdateDate=${reportUpdateDate}`,
+    //       hasBackup: true,
+    //     })
+    //   }
+    // })
+  } catch (error) {
+    console.error(error)
+    Logger('error').error(logFormat(null, error))
+  }
+}
