@@ -218,7 +218,6 @@ async function getPatientRegistrationByHN(hn) {
 exports.getPatientRegistrationByHN = getPatientRegistrationByHN
 
 async function getTemplateData(accession, fetus = '1') {
-  console.log('getTemplateData')
   try {
     const [data1, data2, data3] = await Promise.all([
       await db.raw(`

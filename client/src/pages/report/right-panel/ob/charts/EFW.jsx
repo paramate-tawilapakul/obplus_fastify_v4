@@ -265,7 +265,7 @@ const EFW = ({ patient }) => {
     return () => {}
 
     // eslint-disable-next-line
-  }, [isFwhlChanged])
+  }, [patient, isFwhlChanged])
 
   //   useEffect(() => {
   //     getEfw()
