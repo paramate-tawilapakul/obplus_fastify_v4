@@ -61,21 +61,25 @@ fastify.register(require('@fastify/formbody'))
 
 fastify.register(require('@fastify/jwt'), {
   secret: process.env.JWT_SECRET,
-  cookie: {
-    cookieName: 'token',
-  },
+  // cookie: {
+  //   cookieName: 'token',
+  // },
   sign: {
     expiresIn: process.env.JWT_EXPIRES_IN || '16h',
   },
 })
 
-fastify.register(require('@fastify/cookie'))
+// fastify.register(require('@fastify/cookie'))
 
-// fastify.addHook('onRequest', request => request.jwtVerify())
+// fastify.addHook('onRequest', req => req.jwtVerify())
+// fastify.addHook('onRequest', async req => {
+//   req.db = db
+// })
+
 fastify.decorate('authenticate', async function (req, res) {
   try {
-    await req.jwtVerify({ onlyCookie: true })
-    // await request.jwtVerify() header and cookie
+    // await req.jwtVerify({ onlyCookie: true })
+    await req.jwtVerify() //header and cookie
   } catch (err) {
     res.send(err)
   }

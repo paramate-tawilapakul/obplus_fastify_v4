@@ -96,18 +96,17 @@ exports.login = async (req, res) => {
 
     const token = await res.jwtSign(data[0])
 
-    res
-      .setCookie('token', token, {
-        path: '/',
-        secure: false, // send cookie over HTTPS only
-        httpOnly: true,
-        sameSite: true, // alternative CSRF protection
-      })
-      .code(200)
-      .send({
-        status: 'success',
-        user: { ...data[0], token },
-      })
+    // res
+    //   .setCookie('token', token, {
+    //     path: '/',
+    //     secure: false, // send cookie over HTTPS only
+    //     httpOnly: true,
+    //     sameSite: true, // alternative CSRF protection
+    //   })
+    res.code(200).send({
+      status: 'success',
+      user: { ...data[0], token },
+    })
   } catch (error) {
     console.error(error)
     Logger('error').error(logFormat(null, error))

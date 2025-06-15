@@ -1,4 +1,6 @@
+const { addLogs, MODULE } = require('../logs/logs.services')
 const userController = require('./user.controllers')
+const { flagOnOff } = require('../user/user.services')
 
 // const schema = {
 //   querystring: {
@@ -33,8 +35,17 @@ module.exports = function (fastify, opts, done) {
     //     ? `http://${request.headers.host}/${process.env.APP_NAME}/signin`
     //     : `http://localhost:3001/${process.env.APP_NAME}/signin`
     // console.log('url', url)
-    res.clearCookie('token').send({ message: 'Signed out' })
+    // res.clearCookie('token').send({ message: 'Signed out' })
     // .send({ message: 'Signed out' })
+
+    await flagOnOff(req.user.id, '0')
+
+    addLogs(req, {
+      module: MODULE.USER,
+      activity: 'Sign out',
+    })
+
+    res.send({ status: 'sign out success' })
   })
 
   fastify.get(
