@@ -25,7 +25,7 @@ exports.getImageBase64 = async (req, res) => {
   } catch (error) {
     console.error(error)
     Logger('error').error(logFormat(null, error))
-    res.status(500).send(error.message)
+    res.code(500).send(error.message)
   }
 }
 
@@ -111,7 +111,7 @@ exports.viewReport = async (req, res) => {
   } catch (error) {
     console.error(error)
     Logger('error').error(logFormat(null, error))
-    res.status(500).send(error.message)
+    res.code(500).send(error.message)
   }
 }
 

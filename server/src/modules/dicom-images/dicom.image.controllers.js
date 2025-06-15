@@ -49,7 +49,7 @@ exports.getAttachFile = async (req, res) => {
     const data = await readFile(fullpath)
 
     if (!data) {
-      return res.status(500).send(`Error`)
+      return res.code(500).send(`Error`)
     }
 
     res.header(
@@ -62,6 +62,6 @@ exports.getAttachFile = async (req, res) => {
   } catch (error) {
     console.error(error)
     Logger('error').error(logFormat(null, error))
-    res.status(500).send(error.message)
+    res.code(500).send(error.message)
   }
 }

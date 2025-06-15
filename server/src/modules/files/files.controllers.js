@@ -70,7 +70,7 @@ exports.deleteImage = async (req, res) => {
   } catch (error) {
     console.error(error)
     Logger('error').error(logFormat(null, error))
-    res.status(500).send(error.message)
+    res.code(500).send(error.message)
   }
 }
 
@@ -89,8 +89,8 @@ exports.view = async (req, res) => {
     // isExist = await exists(dir)
     // if (!isExist) {
     //   res
-    //     .status(404)
-    //     .end(`Directory: '${dir.replace(/\\\\/g, '/')}' not found!`)
+    //     .code(404)
+    //     .send(`Directory: '${dir.replace(/\\\\/g, '/')}' not found!`)
     //   return
     // }
 
@@ -98,8 +98,8 @@ exports.view = async (req, res) => {
     // isExist = await exists(fullpath)
     // if (!isExist) {
     //   res
-    //     .status(404)
-    //     .end(`File: '${fullpath.replace(/\\\\/g, '/')}' not found!`)
+    //     .code(404)
+    //     .send(`File: '${fullpath.replace(/\\\\/g, '/')}' not found!`)
     //   return
     // }
 
@@ -134,7 +134,7 @@ exports.view = async (req, res) => {
   } catch (error) {
     console.error(error)
     Logger('error').error(logFormat(null, error))
-    res.status(500).send(error.message)
+    res.code(500).send(error.message)
   }
 }
 
@@ -299,7 +299,7 @@ exports.viewEfw = async (req, res) => {
   } catch (error) {
     console.error(error)
     Logger('error').error(logFormat(null, error))
-    res.status(500).send(error.message)
+    res.code(500).send(error.message)
   }
 }
 
@@ -343,7 +343,7 @@ exports.viewBackupPdf = async (req, res) => {
 
     // fs.readFile(fullpath, (err, data) => {
     //   if (err) {
-    //     res.status(500).send(`${err}`)
+    //     res.code(500).send(`${err}`)
     //   } else {
     //     res.send({
     //       base64: Buffer.from(data).toString('base64'),

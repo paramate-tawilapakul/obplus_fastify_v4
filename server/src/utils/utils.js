@@ -21,8 +21,8 @@ exports.getServerTime = getServerTime
 
 exports.isEmptyObject = obj => Object.keys(obj).length === 0
 
-exports.responseError = (reply, status, message) =>
-  reply.status(status).send({ message })
+exports.responseError = (res, status, message) =>
+  res.code(status).send({ message })
 
 exports.responseWorklistResult = (res, total, data) => {
   res.send({

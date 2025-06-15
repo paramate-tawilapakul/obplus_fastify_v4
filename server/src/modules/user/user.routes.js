@@ -27,13 +27,13 @@ const userController = require('./user.controllers')
 module.exports = function (fastify, opts, done) {
   fastify.get('/license', userController.license)
   fastify.post('/signin', userController.login)
-  fastify.get('/signout', async function (req, reply) {
+  fastify.get('/signout', async function (req, res) {
     // const url =
     //   process.env.NODE_ENV === 'production'
     //     ? `http://${request.headers.host}/${process.env.APP_NAME}/signin`
     //     : `http://localhost:3001/${process.env.APP_NAME}/signin`
     // console.log('url', url)
-    reply.clearCookie('token').send({ message: 'Signed out' })
+    res.clearCookie('token').send({ message: 'Signed out' })
     // .send({ message: 'Signed out' })
   })
 
