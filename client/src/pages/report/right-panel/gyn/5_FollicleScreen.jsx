@@ -134,11 +134,6 @@ const FollicleScreen = ({ patient }) => {
         params: {
           reportId: getRiD(TEMPLATES.follicleScreen.name, patient.currentFetus),
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
 
       setData(res.data.data)

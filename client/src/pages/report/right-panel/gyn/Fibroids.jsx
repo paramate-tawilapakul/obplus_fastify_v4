@@ -98,11 +98,6 @@ const Fibroids = ({ patient, open, setOpen, callback }) => {
         params: {
           reportId: getRiD(TEMPLATES.fibroids.name, patient.currentFetus),
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
       //   console.log(res.data.data)
       setData(res.data.data)
@@ -117,11 +112,6 @@ const Fibroids = ({ patient, open, setOpen, callback }) => {
       const res = await axios.get(API.REPORT_FORM, {
         params: {
           templateId,
-        },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
         },
       })
       const form = res.data.data

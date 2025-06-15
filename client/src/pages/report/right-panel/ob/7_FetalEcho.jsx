@@ -558,11 +558,6 @@ const FetalEcho = ({ patient }) => {
             patient.currentFetus
           ),
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
 
       // setDataCardiac(res.data.data)
@@ -571,11 +566,6 @@ const FetalEcho = ({ patient }) => {
       res = await axios.get(API.REPORT_CONTENT, {
         params: {
           reportId: getRiD(TEMPLATES.fetalEcho.name, patient.currentFetus),
-        },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
         },
       })
 

@@ -14,7 +14,7 @@ import DataContext from '../../context/data/dataContext'
 import './style.css'
 import logoImg from '../../assets/img/logo.png'
 import { qs, qsa } from '../../utils/domUtils'
-import { formDataToObject } from '../../utils'
+import { formDataToObject, setUpAxios } from '../../utils'
 
 const globalWidth = 300
 
@@ -118,6 +118,7 @@ export default function Signin() {
       )
 
       // alert(response.data.user.token)
+      setUpAxios(axios, response.data.user.token)
       window.localStorage.setItem(STORAGE_NAME.token, response.data.user.token)
 
       await setUpData(response.data.user)
@@ -138,7 +139,6 @@ export default function Signin() {
   }
 
   async function setUpData(user) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${user.token}`
     window.localStorage.setItem(STORAGE_NAME.currentPageNum, 1)
 
     if (

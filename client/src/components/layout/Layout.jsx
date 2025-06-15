@@ -52,11 +52,7 @@ import {
   reportBgColor,
   reportFontColor,
 } from '../../config'
-import {
-  handleErrorResponse,
-  clearLocalStorage,
-  blockClickBack,
-} from '../../utils'
+import { clearLocalStorage, blockClickBack, setUpAxios } from '../../utils'
 
 import Sidebar from './Sidebar'
 import Footer from './Footer'
@@ -167,6 +163,7 @@ export default function Layout({ children }) {
     }
 
     if (!user) {
+      setUpAxios(axios)
       // window.localStorage.setItem(STORAGE_NAME.historySearchStorage, '')
       window.localStorage.setItem(STORAGE_NAME.imageHeaderStorage, '')
       window.localStorage.setItem(STORAGE_NAME.imageBase64List, '[]')
@@ -174,13 +171,7 @@ export default function Layout({ children }) {
       if (!systemPropertiesStorage)
         return (window.location.href = `/${APP_CONFIG.APP_NAME}/${APP_ROUTES.signIn}`)
       try {
-        const response = await axios.get(API.USER_DATA, {
-          headers: {
-            Authorization: `Bearer ${window.localStorage.getItem(
-              STORAGE_NAME.token
-            )}`,
-          },
-        })
+        const response = await axios.get(API.USER_DATA)
 
         setUser(response.data)
       } catch (error) {
@@ -190,8 +181,6 @@ export default function Layout({ children }) {
           console.log(error.response)
         }
       }
-
-      setUpAxios()
     }
 
     if (!systemProperties)
@@ -199,26 +188,6 @@ export default function Layout({ children }) {
     if (!doctor) setDoctor(JSON.parse(doctorStorage))
     // if (!masterTags) setMasterTags(JSON.parse(masterTagsStorage))
     // if (!timeGuarantee) setTimeGuarantee(JSON.parse(timeGuaranteeStorage))
-  }
-
-  function setUpAxios() {
-    axios.interceptors.response.use(
-      response => {
-        return response
-      },
-      error => {
-        handleErrorResponse(error.response)
-        return error
-      }
-    )
-
-    axios.defaults.headers.common = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
-      Authorization: `Bearer ${window.localStorage.getItem(
-        STORAGE_NAME.token
-      )}`,
-    }
   }
 
   async function signOut() {

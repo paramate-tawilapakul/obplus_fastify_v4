@@ -85,11 +85,6 @@ const Kidneys = ({ patient }) => {
         params: {
           reportId: getRiD(TEMPLATES.kidneys.name, patient.currentFetus),
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
 
       setData(res.data.data)

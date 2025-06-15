@@ -93,11 +93,6 @@ const Anc = ({ patient }) => {
         params: {
           reportId: getRiD(TEMPLATES.anc.name, patient.currentFetus),
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
 
       setData(res.data.data)

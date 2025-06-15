@@ -25,11 +25,6 @@ export async function getReportId(accession, currentFetus, templateId) {
         currentFetus,
         templateId,
       },
-      headers: {
-        Authorization: `Bearer ${window.localStorage.getItem(
-          STORAGE_NAME.token
-        )}`,
-      },
     })
 
     return res.data.data.reportId

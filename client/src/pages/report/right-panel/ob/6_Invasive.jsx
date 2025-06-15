@@ -295,11 +295,6 @@ const Invasive = ({ patient }) => {
             patient.currentFetus
           ),
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
 
       // setData(res.data.data)
@@ -431,11 +426,6 @@ const Invasive = ({ patient }) => {
     const res = await axios.get(API.REPORT_CONTENT, {
       params: {
         reportId: REPORT_ID[procedureMap[procedure].name][patient.currentFetus],
-      },
-      headers: {
-        Authorization: `Bearer ${window.localStorage.getItem(
-          STORAGE_NAME.token
-        )}`,
       },
     })
 

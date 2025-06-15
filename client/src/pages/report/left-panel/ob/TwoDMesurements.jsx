@@ -144,11 +144,6 @@ const TwoDMesurements = ({ patient }) => {
         params: {
           reportId: getRiD(TEMPLATES.obMeasurement.name, patient.currentFetus),
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
 
       await updateShortestCvl(res.data.data)

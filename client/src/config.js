@@ -1,6 +1,6 @@
 export const APP_CONFIG = {
   APP_NAME: 'OBPLUS',
-  VERSION: 'v3.1.2',
+  VERSION: 'v3.2.0-fastify-v4',
 }
 
 export const APP_ROUTES = {

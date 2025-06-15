@@ -124,11 +124,6 @@ const BPP = ({ patient }) => {
         params: {
           reportId: getRiD(TEMPLATES.bpp.name, patient.currentFetus),
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
 
       handleSetScore(res.data.data)

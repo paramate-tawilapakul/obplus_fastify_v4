@@ -99,10 +99,6 @@ const PatientInfo = () => {
     severity: null,
   })
 
-  const headers = {
-    Authorization: `Bearer ${window.localStorage.getItem(STORAGE_NAME.token)}`,
-  }
-
   const params = new Proxy(new URLSearchParams(history.location.search), {
     get: (searchParams, prop) => searchParams.get(prop),
   })
@@ -124,19 +120,15 @@ const PatientInfo = () => {
         params: {
           accession,
         },
-        headers,
       })
 
       const resConsult = await axios.get(API.CONSULTANT, {
         params: {
           accession,
         },
-        headers,
       })
 
-      // const resIndications = await axios.get(API.INDICATIONS, {
-      //   headers,
-      // })
+      // const resIndications = await axios.get(API.INDICATIONS)
 
       // console.log(resIndications.data.data)
 

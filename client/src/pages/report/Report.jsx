@@ -85,11 +85,6 @@ const Report = () => {
           accession,
           reportPage: '1',
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
 
       if (!resPatient.data.data?.obAccession)

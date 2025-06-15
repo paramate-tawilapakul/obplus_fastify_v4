@@ -119,11 +119,6 @@ const Uterus = ({ patient }) => {
         params: {
           reportId: getRiD(TEMPLATES.uterus.name, patient.currentFetus),
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
       // console.log(res.data.data)
       setData(res.data.data)

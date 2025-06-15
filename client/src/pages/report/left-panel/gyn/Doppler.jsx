@@ -105,11 +105,6 @@ const Doppler = ({ patient }) => {
         params: {
           reportId: getRiD(TEMPLATES.gynDoppler.name, patient.currentFetus),
         },
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem(
-            STORAGE_NAME.token
-          )}`,
-        },
       })
 
       // console.log('DATA:', res.data.data)

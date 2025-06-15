@@ -3481,11 +3481,6 @@ export async function initFormSend(
     params: {
       templateId,
     },
-    headers: {
-      Authorization: `Bearer ${window.localStorage.getItem(
-        STORAGE_NAME.token
-      )}`,
-    },
   })
   const form = res.data.data
 

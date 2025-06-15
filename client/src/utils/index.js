@@ -347,6 +347,26 @@ export function handleErrorResponse(response) {
   // }
 }
 
+export function setUpAxios(axios, token = null) {
+  axios.interceptors.response.use(
+    response => {
+      return response
+    },
+    error => {
+      handleErrorResponse(error.response)
+      return error
+    }
+  )
+
+  axios.defaults.headers.common = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS',
+    Authorization: `Bearer ${
+      token || window.localStorage.getItem(STORAGE_NAME.token)
+    }`,
+  }
+}
+
 export function objectArrayToCamel(originalObjectArray, options = undefined) {
   if (!Array.isArray(originalObjectArray)) return []
 
