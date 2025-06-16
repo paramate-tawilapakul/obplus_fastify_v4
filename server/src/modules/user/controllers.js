@@ -2,14 +2,14 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
 const userService = require('./services')
-const systemDataService = require('../system-data/services')
 const { Logger, logFormat } = require('../../logger')
 const { addLogs, MODULE } = require('../logs/services')
 const { responseError, responseData } = require('../../utils/utils')
+const { getSystemPropertiesFromCache } = require('../../cache/cache')
 
 exports.license = async (req, res) => {
   try {
-    const data = await systemDataService.getSystemProperties()
+    const data = await getSystemPropertiesFromCache()
 
     let hspName = data[0].hspName
     let appName = process.env.APP_NAME
