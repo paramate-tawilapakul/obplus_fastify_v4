@@ -1,5 +1,5 @@
 const { Cacheable } = require('cacheable')
-const db = require('../db/config')
+const db = require('../db/setup')
 const { objectArrayToCamel } = require('../utils/utils')
 
 /*

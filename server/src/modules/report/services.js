@@ -2,7 +2,7 @@ const fs = require('graceful-fs')
 const { promisify } = require('node:util')
 const dayjs = require('dayjs')
 
-const db = require('../../db/config')
+const db = require('../../db/setup')
 const { getConsultant, getPatientOb } = require('../worklist/services')
 const { getImages } = require('../dicom-images/services')
 const { createPdf } = require('../pdf/services')

@@ -1,14 +1,14 @@
 const initEnv = require('../dotenv').default
 initEnv()
 
-const knex = require('knex')({
+const db = require('knex')({
   client: 'mssql',
   connection: {
     server: process.env.DB_SERVER,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     port: parseInt(process.env.DB_PORT),
-    database: process.env.DB_NAME,
+    database: 'DICOMDB',
     options: {
       encrypt: false,
       enableArithAbort: true,
@@ -22,4 +22,4 @@ const knex = require('knex')({
   },
 })
 
-module.exports = knex
+module.exports = db

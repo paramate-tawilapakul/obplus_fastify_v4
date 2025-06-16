@@ -1,7 +1,7 @@
 const uap = require('ua-parser-js')
 const dayjs = require('dayjs')
 
-const db = require('../../db/config')
+const db = require('../../db/setup')
 const { Logger, logFormat } = require('../../logger')
 
 exports.MODULE = {

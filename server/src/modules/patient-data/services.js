@@ -1,6 +1,6 @@
 const dayjs = require('dayjs')
 
-const db = require('../../db/config')
+const db = require('../../db/setup')
 const { Logger, logFormat } = require('../../logger')
 const { dateToDBformat } = require('../../utils/utils')
 const { addLogs, MODULE } = require('../logs/services')

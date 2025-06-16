@@ -1,9 +1,9 @@
 const dayjs = require('dayjs')
 
 const { updateSystemPropertiesCache } = require('../../cache/cache')
-const db = require('../../db/config')
+const db = require('../../db/setup')
 const { Logger, logFormat } = require('../../logger')
-const { paginationQueryBuilder, updateDB } = require('../../utils/db_utils')
+const { paginationQueryBuilder, updateDB } = require('../../utils/db-utils')
 const { objectArrayToCamel } = require('../../utils/utils')
 
 function getPageNumForPagination(pageNum, rowsPerPage) {

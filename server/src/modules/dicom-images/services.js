@@ -1,8 +1,8 @@
 const fs = require('graceful-fs')
 const axios = require('axios')
 
-const db = require('../../db/config-dicom')
-const dbRis = require('../../db/config')
+const dbDicom = require('../../db/setup-dicom')
+const dbRis = require('../../db/setup')
 const { Logger, logFormat } = require('../../logger')
 const { mkImageDicomPath, removeDir } = require('../../utils/utils')
 const { getSyspropsValue } = require('../../cache/cache')
@@ -109,7 +109,7 @@ exports.getDicomImage = async req => {
       WHERE n_rows <> '' AND accession_number = '${accession}'  
       ORDER BY image1.pr_time asc
       `
-      const data = await db.raw(sql)
+      const data = await dbDicom.raw(sql)
       const imgSize = process.env.IMAGE_SIZE?.split('x') || [400, 300]
 
       isExist = await exists(dicomPath)

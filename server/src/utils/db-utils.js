@@ -1,4 +1,4 @@
-const db = require('../db/config')
+const db = require('../db/setup')
 const { isObject, isEmpty } = require('lodash')
 const { dateToDBformat } = require('./utils')
 const { Logger, logFormat } = require('../logger')

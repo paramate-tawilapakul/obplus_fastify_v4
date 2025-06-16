@@ -7,7 +7,7 @@ const { pipeline } = require('node:stream/promises')
 const { Logger, logFormat } = require('../../logger')
 const { responseData, mkEFWPath } = require('../../utils/utils')
 const { mkImagePath, genImageArr } = require('../../utils/utils')
-const db = require('../../db/config')
+const db = require('../../db/setup')
 const { getImages, deleteImage } = require('../dicom-images/services')
 
 const exists = promisify(fs.exists)

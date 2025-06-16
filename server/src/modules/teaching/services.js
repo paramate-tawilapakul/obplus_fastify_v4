@@ -1,4 +1,4 @@
-const db = require('../../db/config')
+const db = require('../../db/setup')
 const { Logger, logFormat } = require('../../logger')
 
 exports.getTeachingFolder = async req => {

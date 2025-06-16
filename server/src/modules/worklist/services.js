@@ -1,9 +1,9 @@
 const sample = require('lodash').sample
 
-const db = require('../../db/config')
-const db_dicom = require('../../db/config-dicom')
+const db = require('../../db/setup')
+const db_dicom = require('../../db/setup-dicom')
 const { Logger, logFormat } = require('../../logger')
-const { whereFilters, paginationQueryBuilder } = require('../../utils/db_utils')
+const { whereFilters, paginationQueryBuilder } = require('../../utils/db-utils')
 const dayjs = require('dayjs')
 const { getSyspropsValue } = require('../../cache/cache')
 const {

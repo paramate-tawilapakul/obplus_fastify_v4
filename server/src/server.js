@@ -4,7 +4,7 @@ initEnv()
 const schedule = require('node-schedule')
 const { removeDir, removeEmptyDir } = require('./utils/utils')
 const dayjs = require('dayjs')
-const db = require('./db/config')
+const db = require('./db/setup')
 
 const envToLogger = {
   development: {
