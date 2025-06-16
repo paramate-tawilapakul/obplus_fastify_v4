@@ -8,10 +8,7 @@ const { Logger, logFormat } = require('../../logger')
 const { responseData, mkEFWPath } = require('../../utils/utils')
 const { mkImagePath, genImageArr } = require('../../utils/utils')
 const db = require('../../db/config')
-const {
-  getImages,
-  deleteImage,
-} = require('../dicom-images/dicom.image.services')
+const { getImages, deleteImage } = require('../dicom-images/services')
 
 const exists = promisify(fs.exists)
 const readFile = fs.promises.readFile

@@ -1,4 +1,4 @@
-const teachingController = require('./teaching.controllers')
+const teachingController = require('./controllers')
 
 module.exports = function (fastify, opts, done) {
   fastify.get(

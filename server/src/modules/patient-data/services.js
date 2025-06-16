@@ -3,7 +3,7 @@ const dayjs = require('dayjs')
 const db = require('../../db/config')
 const { Logger, logFormat } = require('../../logger')
 const { dateToDBformat } = require('../../utils/utils')
-const { addLogs, MODULE } = require('../logs/logs.services')
+const { addLogs, MODULE } = require('../logs/services')
 const { getSyspropsValue } = require('../../cache/cache')
 
 async function createOrder(req) {

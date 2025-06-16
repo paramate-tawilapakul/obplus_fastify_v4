@@ -1,4 +1,4 @@
-const filesUploadController = require('./files.controllers')
+const filesUploadController = require('./controllers')
 
 module.exports = function (fastify, opts, done) {
   fastify.get('/view', filesUploadController.view)

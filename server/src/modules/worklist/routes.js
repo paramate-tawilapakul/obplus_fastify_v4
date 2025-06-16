@@ -1,4 +1,4 @@
-const worklistController = require('./worklist.controllers')
+const worklistController = require('./controllers')
 
 module.exports = function (fastify, opts, done) {
   fastify.get(

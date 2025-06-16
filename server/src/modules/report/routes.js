@@ -1,4 +1,4 @@
-const reportController = require('./report.controllers')
+const reportController = require('./controllers')
 
 module.exports = function (fastify, opts, done) {
   fastify.get('/view', reportController.viewReport)

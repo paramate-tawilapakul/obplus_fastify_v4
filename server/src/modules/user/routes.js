@@ -1,6 +1,6 @@
-const { addLogs, MODULE } = require('../logs/logs.services')
-const userController = require('./user.controllers')
-const { flagOnOff } = require('../user/user.services')
+const { addLogs, MODULE } = require('../logs/services')
+const userController = require('./controllers')
+const { flagOnOff } = require('./services')
 
 // const schema = {
 //   querystring: {
@@ -29,24 +29,31 @@ const { flagOnOff } = require('../user/user.services')
 module.exports = function (fastify, opts, done) {
   fastify.get('/license', userController.license)
   fastify.post('/signin', userController.login)
-  fastify.get('/signout', async function (req, res) {
-    // const url =
-    //   process.env.NODE_ENV === 'production'
-    //     ? `http://${request.headers.host}/${process.env.APP_NAME}/signin`
-    //     : `http://localhost:3001/${process.env.APP_NAME}/signin`
-    // console.log('url', url)
-    // res.clearCookie('token').send({ message: 'Signed out' })
-    // .send({ message: 'Signed out' })
 
-    await flagOnOff(req.user.id, '0')
+  fastify.get(
+    '/signout',
+    // { onRequest: [fastify.authenticate] },
+    async function (req, res) {
+      // const url =
+      //   process.env.NODE_ENV === 'production'
+      //     ? `http://${request.headers.host}/${process.env.APP_NAME}/signin`
+      //     : `http://localhost:3001/${process.env.APP_NAME}/signin`
+      // console.log('url', url)
+      // res.clearCookie('token').send({ message: 'Signed out' })
+      // .send({ message: 'Signed out' })
 
-    addLogs(req, {
-      module: MODULE.USER,
-      activity: 'Sign out',
-    })
+      if (req.user) {
+        await flagOnOff(req.user.id, '0')
 
-    res.send({ status: 'sign out success' })
-  })
+        addLogs(req, {
+          module: MODULE.USER,
+          activity: 'Sign out',
+        })
+      }
+
+      res.send({ status: 'sign out success' })
+    }
+  )
 
   fastify.get(
     '/',

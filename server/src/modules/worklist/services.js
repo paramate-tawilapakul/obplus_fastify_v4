@@ -10,7 +10,7 @@ const {
   getTags,
   createOrder,
   getTemplateData,
-} = require('../patient-data/patient.data.services')
+} = require('../patient-data/services')
 
 const columns = [
   'PACS_STUDY.ACCESSION_NUMBER as id',

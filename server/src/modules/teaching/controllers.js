@@ -1,4 +1,4 @@
-const teachingService = require('./teaching.services')
+const teachingService = require('./services')
 const { responseDataWithTotal, responseData } = require('../../utils/utils')
 
 exports.getTeachingFolder = async (req, res) => {

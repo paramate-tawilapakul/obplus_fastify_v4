@@ -1,7 +1,7 @@
 const fs = require('graceful-fs')
 // const base64Img = require('base64-img')
 
-const imageService = require('./dicom.image.services')
+const imageService = require('./services')
 const { Logger, logFormat } = require('../../logger')
 const { responseData } = require('../../utils/utils')
 

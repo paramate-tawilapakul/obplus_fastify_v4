@@ -1,4 +1,4 @@
-const systemDataService = require('./system.data.services')
+const systemDataService = require('./services')
 const { responseDataWithTotal, responseData } = require('../../utils/utils')
 
 exports.getPatientRegisData = async (req, res) => {

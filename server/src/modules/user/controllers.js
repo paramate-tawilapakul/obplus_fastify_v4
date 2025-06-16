@@ -1,10 +1,10 @@
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
-const userService = require('./user.services')
-const systemDataService = require('../system-data/system.data.services')
+const userService = require('./services')
+const systemDataService = require('../system-data/services')
 const { Logger, logFormat } = require('../../logger')
-const { addLogs, MODULE } = require('../logs/logs.services')
+const { addLogs, MODULE } = require('../logs/services')
 const { responseError, responseData } = require('../../utils/utils')
 
 exports.license = async (req, res) => {

@@ -1,4 +1,4 @@
-const systemDataController = require('./system.data.controllers')
+const systemDataController = require('./controllers')
 
 module.exports = function (fastify, opts, done) {
   // fastify.addHook('onRequest', request => request.jwtVerify())

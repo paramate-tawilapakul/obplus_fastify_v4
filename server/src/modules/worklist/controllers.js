@@ -1,4 +1,4 @@
-const worklistService = require('./worklist.services')
+const worklistService = require('./services')
 const { responseDataWithTotal, responseData } = require('../../utils/utils')
 
 exports.getWorklist = async (req, reply) => {

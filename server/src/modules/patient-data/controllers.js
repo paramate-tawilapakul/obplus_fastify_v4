@@ -1,4 +1,4 @@
-const patientDataService = require('./patient.data.services')
+const patientDataService = require('./services')
 const { responseData } = require('../../utils/utils')
 
 exports.createOrder = async (req, res) => {

@@ -1,4 +1,4 @@
-const patientDataController = require('./patient.data.controllers')
+const patientDataController = require('./controllers')
 
 module.exports = function (fastify, opts, done) {
   fastify.post(

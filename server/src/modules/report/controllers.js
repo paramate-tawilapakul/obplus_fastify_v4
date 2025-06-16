@@ -1,7 +1,7 @@
 const fs = require('graceful-fs')
 const base64Img = require('base64-img')
 
-const reportService = require('./report.services')
+const reportService = require('./services')
 const { Logger, logFormat } = require('../../logger')
 const { responseData, getServerTime } = require('../../utils/utils')
 

@@ -79,7 +79,7 @@ fastify.register(require('@fastify/jwt'), {
 fastify.decorate('authenticate', async function (req, res) {
   try {
     // await req.jwtVerify({ onlyCookie: true })
-    await req.jwtVerify() //header and cookie
+    await req.jwtVerify() //header and cookie if cookie plugin is active
   } catch (err) {
     res.send(err)
   }
@@ -101,28 +101,28 @@ fastify.addContentTypeParser(
 
 const prefixV1 = '/api/v1'
 
-fastify.register(require('./modules/user/user.routes'), {
+fastify.register(require('./modules/user/routes'), {
   prefix: `${prefixV1}/user`,
 })
-fastify.register(require('./modules/worklist/worklist.routes'), {
+fastify.register(require('./modules/worklist/routes'), {
   prefix: `${prefixV1}/worklist`,
 })
-fastify.register(require('./modules/system-data/system.data.routes'), {
+fastify.register(require('./modules/system-data/routes'), {
   prefix: `${prefixV1}/system-data`,
 })
-fastify.register(require('./modules/report/report.routes'), {
+fastify.register(require('./modules/report/routes'), {
   prefix: `${prefixV1}/report`,
 })
-fastify.register(require('./modules/patient-data/patient.data.routes'), {
+fastify.register(require('./modules/patient-data/routes'), {
   prefix: `${prefixV1}/patient-data`,
 })
-fastify.register(require('./modules/files/files.routes'), {
+fastify.register(require('./modules/files/routes'), {
   prefix: `${prefixV1}/files`,
 })
-fastify.register(require('./modules/dicom-images/dicom.image.routes'), {
+fastify.register(require('./modules/dicom-images/routes'), {
   prefix: `${prefixV1}/dicom-image`,
 })
-fastify.register(require('./modules/teaching/teaching.routes'), {
+fastify.register(require('./modules/teaching/routes'), {
   prefix: `${prefixV1}/teaching`,
 })
 
