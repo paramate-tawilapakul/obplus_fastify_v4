@@ -14,7 +14,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     // outDir: '../build/dist/client',
-    outDir: 'C:/codespace/obplus/build/1.obplus_fastify/dist/client',
+    outDir: 'C:/codespace/obplus/build/1.obplus/dist/client',
     emptyOutDir: true,
     minify: true,
     sourcemap: true,

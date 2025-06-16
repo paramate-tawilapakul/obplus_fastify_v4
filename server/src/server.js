@@ -21,7 +21,22 @@ const envToLogger = {
       },
     },
   },
-  production: true,
+  production: {
+    timestamp: () => `,"timestamp":"${dayjs().format('D/M/YYYY HH:mm:ss')}"`,
+    formatters: {
+      level: label => {
+        return { severity: label.toUpperCase() }
+      },
+      // bindings: bindings => {
+      //   console.log('bindings', bindings)
+      //   return {
+      //     pid: bindings.pid,
+      //     host: bindings.hostname,
+      //     node_version: process.version,
+      //   }
+      // },
+    },
+  },
   test: false,
 }
 

@@ -12,7 +12,7 @@
     "clientbuild": "npm run build --prefix ../client",
     "build2": "ncc build ./src/server.js -m -o ../build/dist && npm run clientbuild",
     "build": "ncc build ./src/server.js -m -o ../build/dist ",
-    "build_prod": "ncc build ./src/server.js -m -o C:/codespace/obplus/build/1.obplus_fastify/dist && npm run clientbuild"
+    "build_prod": "ncc build ./src/server.js -m -o C:/codespace/obplus/build/1.obplus/dist && npm run clientbuild"
   },
   "dependencies": {
     "@fastify/compress": "^8.0.3",
