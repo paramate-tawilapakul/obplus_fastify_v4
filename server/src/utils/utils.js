@@ -1,5 +1,3 @@
-const initEnv = require('../dotenv').default
-initEnv()
 const fs = require('graceful-fs')
 const dayjs = require('dayjs')
 const camelCase = require('lodash').camelCase

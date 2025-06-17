@@ -10,12 +10,12 @@
     "lint": "eslint .",
     "client": "npm run dev --prefix ../client",
     "clientbuild": "npm run build --prefix ../client",
-    "build2": "ncc build ./src/server.js -m -o ../build/dist && npm run clientbuild",
-    "build": "ncc build ./src/server.js -m -o ../build/dist ",
-    "build_prod": "ncc build ./src/server.js -m -o C:/codespace/obplus/build/1.obplus/dist && npm run clientbuild && del C:\\codespace\\obplus\\build\\1.obplus\\dist\\.env"
+    "build_client": "npm run build --prefix ../client",
+    "build_server": "ncc build ./src/server.js -m -o C:/codespace/obplus/build/1.obplus/dist",
+    "build": "npm run build_server && npm run build_client && del C:\\codespace\\obplus\\build\\1.obplus\\dist\\.env"
   },
   "dependencies": {
-    "@fastify/compress": "^8.0.3",
+    "@fastify/compress": "^7.0.3",
     "@fastify/cookie": "^7.4.0",
     "@fastify/cors": "^8.5.0",
     "@fastify/formbody": "^7.4.0",

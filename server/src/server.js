@@ -9,16 +9,16 @@ const db = require('./db/setup')
 const envToLogger = {
   development: {
     transport: {
-      // target: '@fastify/one-line-logger',
-      target: 'pino-pretty',
-      options: {
-        translateTime: 'd/m/yyyy HH:MM:ss',
-        ignore: 'hostname,reqId,req.remotePort,req.host',
-        // colorize: true,
-        // levelFirst: true,
-        // messageFormat:
-        //   '{req.method} {req.url} {req.headers.host} {res.statusCode} {responseTime}ms',
-      },
+      target: '@fastify/one-line-logger',
+      // target: 'pino-pretty',
+      // options: {
+      //   translateTime: 'd/m/yyyy HH:MM:ss',
+      //   ignore: 'hostname,reqId,req.remotePort,req.host',
+      //   // colorize: true,
+      //   // levelFirst: true,
+      //   // messageFormat:
+      //   //   '{req.method} {req.url} {req.headers.host} {res.statusCode} {responseTime}ms',
+      // },
     },
   },
   production: {
