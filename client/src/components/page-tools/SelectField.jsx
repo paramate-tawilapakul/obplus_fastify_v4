@@ -44,7 +44,22 @@ const SelectField = ({
         value={controlled ? value : undefined}
         onChange={handleChange}
       >
-        {firstOptionBlank && <MenuItem value=''></MenuItem>}
+        {/* {firstOptionBlank && <MenuItem value=''></MenuItem>} */}
+        {firstOptionBlank && (
+          <MenuItem value='' sx={{ p: 0, m: 0 }}>
+            <div
+              style={{
+                width: '100%',
+                backgroundColor: '#d1d1d1',
+                color: '#222',
+                padding: '5px 0 5px 15px',
+                fontSize: 14,
+              }}
+            >
+              None
+            </div>
+          </MenuItem>
+        )}
         {form.options.map(o => (
           <MenuItem key={o.opId} value={o.opId}>
             <Typography
