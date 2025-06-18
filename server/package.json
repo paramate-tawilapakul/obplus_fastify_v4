@@ -2,19 +2,21 @@
   "name": "obplus-server",
   "version": "3.2.0-fastify-v4",
   "author": "Paramate Tawilapakul",
-  "main": "./src/server.js",
+  "main": "./src/index.js",
   "scripts": {
     "start": "set NODE_ENV=production&& node ../build/dist/index.js",
-    "start_dev": "set NODE_ENV=development&& nodemon ./src/server.js",
+    "start_dev": "set NODE_ENV=development&& nodemon ./src/index.js",
     "dev": "concurrently \"npm run start_dev\" \"npm run client\"",
     "lint": "eslint .",
     "client": "npm run dev --prefix ../client",
     "clientbuild": "npm run build --prefix ../client",
     "build_client": "npm run build --prefix ../client",
-    "build_server": "ncc build ./src/server.js -m -o C:/codespace/obplus/build/1.obplus/dist",
-    "build": "npm run build_server && npm run build_client && del C:\\codespace\\obplus\\build\\1.obplus\\dist\\.env"
+    "build_server": "ncc build ./src/index.js -m -o C:/codespace/obplus/build/1.obplus/dist",
+    "buildd": "npm run build_server && npm run build_client && del C:\\codespace\\obplus\\build\\1.obplus\\dist\\.env",
+    "build": "rollup -c rollup.config.js "
   },
   "dependencies": {
+    "-": "^0.0.1",
     "@fastify/autoload": "^6.3.1",
     "@fastify/compress": "^7.0.3",
     "@fastify/cookie": "^7.4.0",
@@ -46,9 +48,16 @@
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@fastify/one-line-logger": "^2.0.2",
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "builtin-modules": "^5.0.0",
     "concurrently": "^9.1.2",
     "eslint": "^9.27.0",
     "globals": "^16.2.0",
-    "pino-pretty": "^13.0.0"
+    "pino-pretty": "^13.0.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-polyfill-node": "^0.13.0"
   }
 }
