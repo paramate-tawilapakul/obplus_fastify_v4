@@ -1,19 +1,13 @@
 const { addLogs, MODULE } = require('../logs/services')
 const userController = require('./controllers')
-const schema = require('./schema')
+// const schema = require('./schema')
 const { flagOnOff } = require('./services')
 
 module.exports = function (fastify, opts, done) {
-  fastify.get(
-    '/',
-    { schema: schema.userData, onRequest: [fastify.authenticate] },
-    userController.getUserData
-  )
-  fastify.get('/license', { schema: schema.license }, userController.license)
-  fastify.post('/signin', { schema: schema.userSignIn }, userController.login)
+  fastify.get('/license', userController.license)
+  fastify.post('/signin', userController.login)
   fastify.get(
     '/signout',
-    { schema: schema.userSignOut },
     // { onRequest: [fastify.authenticate] },
     async function (req, res) {
       // const url =
@@ -38,11 +32,14 @@ module.exports = function (fastify, opts, done) {
   )
 
   fastify.get(
+    '/',
+    { onRequest: [fastify.authenticate] },
+    userController.getUserData
+  )
+
+  fastify.get(
     '/report-template',
-    {
-      schema: schema.reportTemplate,
-      onRequest: [fastify.authenticate],
-    },
+    { onRequest: [fastify.authenticate] },
     userController.getReportTemplate
   )
   fastify.post(
