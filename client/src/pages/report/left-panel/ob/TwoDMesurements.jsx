@@ -86,7 +86,7 @@ const TwoDMesurements = ({ patient }) => {
 
     return () => {}
     // eslint-disable-next-line
-  }, [])
+  }, [patient])
 
   function resetData() {
     setShowEditForm(false)

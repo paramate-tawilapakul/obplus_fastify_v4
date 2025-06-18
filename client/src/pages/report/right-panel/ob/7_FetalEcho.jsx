@@ -458,7 +458,7 @@ const FetalEcho = ({ patient }) => {
     }
 
     // eslint-disable-next-line
-  }, [])
+  }, [patient])
 
   useEffect(() => {
     if (dataForm.length > 0) {
