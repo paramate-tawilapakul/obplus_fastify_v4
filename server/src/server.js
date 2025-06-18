@@ -10,7 +10,7 @@ const envToLogger = {
   development: {
     transport: {
       target: '@fastify/one-line-logger',
-      // target: 'pino-pretty',
+      // target: 'pino-prettys',
       // options: {
       //   translateTime: 'd/m/yyyy HH:MM:ss',
       //   ignore: 'hostname,reqId,req.remotePort,req.host',
