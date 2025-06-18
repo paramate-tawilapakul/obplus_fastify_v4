@@ -11,7 +11,7 @@ exports.license = async (req, res) => {
   try {
     const data = await getSystemPropertiesFromCache()
 
-    let hspName = data[0].hspName
+    let hspName = data.hspName
     let appName = process.env.APP_NAME
 
     // console.log('hspName', hspName)
@@ -104,7 +104,6 @@ exports.login = async (req, res) => {
     //     sameSite: true, // alternative CSRF protection
     //   })
     res.code(200).send({
-      status: 'success',
       user: { ...data[0], token },
     })
   } catch (error) {

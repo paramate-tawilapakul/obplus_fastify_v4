@@ -15,6 +15,7 @@
     "build": "npm run build_server && npm run build_client && del C:\\codespace\\obplus\\build\\1.obplus\\dist\\.env"
   },
   "dependencies": {
+    "@fastify/autoload": "^6.3.1",
     "@fastify/compress": "^7.0.3",
     "@fastify/cookie": "^7.4.0",
     "@fastify/cors": "^8.5.0",
@@ -23,6 +24,8 @@
     "@fastify/multipart": "^8.3.0",
     "@fastify/rate-limit": "^9.1.0",
     "@fastify/static": "^7.0.4",
+    "@fastify/swagger": "^8.15.0",
+    "@fastify/swagger-ui": "^4.2.0",
     "axios": "^1.9.0",
     "base64-img": "^1.0.4",
     "bcrypt": "^5.1.1",

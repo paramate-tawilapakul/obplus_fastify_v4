@@ -1,4 +1,4 @@
-const initEnv = require('./dotenv.js').default
+const initEnv = require('./dotenv').default
 initEnv()
 
 const schedule = require('node-schedule')
@@ -48,6 +48,69 @@ const fastify = require('fastify')({
 
 process.env.JWT_SECRET = 'be^9a@26e3e57c$478f&*88a4be7556ae#@!+^86e8'
 process.env.ltk = 'T1fG$^7[esX@94T&YO0lvaC1SOBbqzC{E'
+
+// fastify.register(require('@fastify/swagger'), {
+//   openapi: {
+//     openapi: '3.0.0',
+//     info: {
+//       title: 'Swagger',
+//       description: 'Fastify swagger API',
+//       version: '0.1.0',
+//     },
+//     servers: [
+//       {
+//         url: 'http://localhost:6500',
+//         description: 'Development server',
+//       },
+//     ],
+//     tags: [{ name: 'user', description: 'User related end-points' }],
+//     components: {
+//       securitySchemes: {
+//         bearer: {
+//           scheme: 'bearer',
+//           bearerFormat: 'JWT',
+//           type: 'http',
+//         },
+//         // apiKey: {
+//         //   type: 'apiKey',
+//         //   name: 'apiKey',
+//         //   in: 'header',
+//         // },
+//       },
+//     },
+//     security: [
+//       {
+//         // bearer: [],
+//       },
+//     ],
+//     externalDocs: {
+//       url: 'https://swagger.io',
+//       description: 'Find more info here',
+//     },
+//   },
+// })
+
+// fastify.register(require('@fastify/swagger-ui'), {
+//   routePrefix: '/documentation',
+//   uiConfig: {
+//     docExpansion: 'list',
+//     deepLinking: false,
+//   },
+//   uiHooks: {
+//     onRequest: function (req, res, next) {
+//       next()
+//     },
+//     preHandler: function (req, res, next) {
+//       next()
+//     },
+//   },
+//   staticCSP: true,
+//   transformStaticCSP: header => header,
+//   transformSpecification: (swaggerObject, request, reply) => {
+//     return swaggerObject
+//   },
+//   transformSpecificationClone: true,
+// })
 
 fastify.register(require('@fastify/cors'), {
   // put your options here
