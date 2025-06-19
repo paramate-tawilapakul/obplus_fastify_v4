@@ -149,6 +149,13 @@ fastify.register(require('@fastify/jwt'), {
 
 // fastify.register(require('@fastify/cookie'))
 
+// fastify.addHook('preHandler', async (req, res) => {
+//   try {
+//     await req.jwtVerify()
+//   } catch (err) {
+//     res.send(err)
+//   }
+// })
 // fastify.addHook('onRequest', req => req.jwtVerify())
 // fastify.addHook('onRequest', async req => {
 //   req.db = db
