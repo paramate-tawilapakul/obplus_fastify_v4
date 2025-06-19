@@ -219,14 +219,18 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const port = process.env.SERVER_PORT || 3000
+let serverIp = 'localhost'
+if (
+  process.env.SERVER_MODE === 'pm2' ||
+  process.env.NODE_ENV === 'production'
+) {
+  serverIp = process.env.SERVER_IP.split('//')[1]
+}
 
 fastify.listen(
   {
     port,
-    host:
-      process.env.SERVER_MODE === 'pm2' || process.env.NODE_ENV === 'production'
-        ? process.env.SERVER_IP.split('//')[1] || 'localhost'
-        : 'localhost',
+    host: serverIp,
   },
   err => {
     console.log(
