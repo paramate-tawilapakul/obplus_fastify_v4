@@ -127,28 +127,29 @@ exports.getWorklist = async req => {
 
     let [rows, total] = await Promise.all([db.raw(sql), db.raw(sqlCount)])
 
-    if (rows.find(row => row.description.indexOf('???') > -1)) {
-      // console.log('found ???')
-      rows = rows.map(async row => {
-        if (row.description.indexOf('???') > -1) {
-          let newDesc = await db_dicom.raw(
-            `SELECT study_desc as SCHEDULED_PROC_DESC FROM study1 WHERE accession_number ='${row.accession}' `
-          )
+    if (status === 'N') {
+      if (rows.find(row => row.description.indexOf('???') > -1)) {
+        // console.log('found ???')
+        rows = rows.map(async row => {
+          if (row.description.indexOf('???') > -1) {
+            let newDesc = await db_dicom.raw(
+              `SELECT study_desc as SCHEDULED_PROC_DESC FROM study1 WHERE accession_number ='${row.accession}' `
+            )
 
-          let newWord = newDesc[0].SCHEDULED_PROC_DESC
+            let newWord = newDesc[0].SCHEDULED_PROC_DESC
 
-          await Promise.all([
-            db.raw(
-              `UPDATE PACS_STUDY SET STUDY_DESCRIPTION = '${newWord}' WHERE ACCESSION_NUMBER = '${row.accession}'`
-            ),
-            db.raw(
-              `UPDATE RIS_DATA SET SCHEDULED_PROC_DESC = '${newWord}' WHERE ACCESSION_NO = '${row.accession}'`
-            ),
-          ])
+            await Promise.all([
+              db.raw(
+                `UPDATE PACS_STUDY SET STUDY_DESCRIPTION = '${newWord}' WHERE ACCESSION_NUMBER = '${row.accession}'`
+              ),
+              db.raw(
+                `UPDATE RIS_DATA SET SCHEDULED_PROC_DESC = '${newWord}' WHERE ACCESSION_NO = '${row.accession}'`
+              ),
+            ])
 
-          return { ...row, description: newWord }
+            return { ...row, description: newWord }
 
-          /*
+            /*
              let newDesc = await db.raw(
                `SELECT SCHEDULED_PROC_DESC FROM RIS_DATA WHERE ACCESSION_NO ='${row.accession}' `
              )
@@ -174,10 +175,11 @@ exports.getWorklist = async req => {
               return { ...row, description: newDesc[0].SCHEDULED_PROC_DESC }
             }
               */
-        }
+          }
 
-        return row
-      })
+          return row
+        })
+      }
     }
 
     return [rows, total[0]['total']]
