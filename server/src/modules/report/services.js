@@ -579,53 +579,101 @@ async function prelimReport(req) {
     const code = req.user.radName
     const timestamp = dayjs().format('YYYYMMDDHHmmss')
     console.log('prelimReport', accession, hn, code)
+
+    const sql = `
+    BEGIN TRANSACTION [PrelimReportTransaction]
+
+    BEGIN TRY
+
+        UPDATE PACS_STUDY
+        SET STUDY_STATUS = 'D', 
+        REQUEST_DOCTOR = '${code}', 
+        OPERATORS_NAME = '${timestamp}'
+        WHERE ACCESSION_NUMBER = '${accession}'
+
+        UPDATE OB_REPORT
+        SET REPORT_UPDATE_DATE = '${timestamp}'
+        WHERE ACCESSION = '${accession}'
+
+        UPDATE RIS_DIAGNOSTIC_REPORT
+        SET REPORT_UPDATE_DATE = '${timestamp}'
+        WHERE REF_ITEM_ID = '${accession}'
+
+        UPDATE PACS_STUDY
+        SET NAME_OF_PHYSICS_READING_STUDY = '${code}'
+        WHERE ACCESSION_NUMBER = '${accession}'
+
+        COMMIT TRANSACTION [PrelimReportTransaction]
+
+    END TRY
+
+    BEGIN CATCH
+
+        ROLLBACK TRANSACTION [PrelimReportTransaction]
+
+    END CATCH 
+    `
+
+    const result = await db.raw(sql)
+
+    if (!result) return false
+
     req.body.bodyData['timestamp'] = timestamp
     req.body.bodyData['unofficial'] = 'yes'
+    createPdf(req)
+
+    addLogs(req, {
+      module: MODULE.REPORT,
+      activity: 'Prelim',
+      accession,
+    })
+
+    return timestamp
 
     // use transaction to avoid deadlock
-    return await db.transaction(async trx => {
-      await updateReportStatus(trx, accession, code, 'D', timestamp)
+    // return await db.transaction(async trx => {
+    //   await updateReportStatus(trx, accession, code, 'D', timestamp)
 
-      await trx('OB_REPORT')
-        .update({
-          REPORT_UPDATE_DATE: timestamp,
-        })
-        .where('ACCESSION', '=', accession)
+    //   await trx('OB_REPORT')
+    //     .update({
+    //       REPORT_UPDATE_DATE: timestamp,
+    //     })
+    //     .where('ACCESSION', '=', accession)
 
-      await trx('RIS_DIAGNOSTIC_REPORT')
-        .update({
-          REPORT_UPDATE_DATE: timestamp,
-        })
-        .where('REF_ITEM_ID', '=', accession)
+    //   await trx('RIS_DIAGNOSTIC_REPORT')
+    //     .update({
+    //       REPORT_UPDATE_DATE: timestamp,
+    //     })
+    //     .where('REF_ITEM_ID', '=', accession)
 
-      await trx('PACS_STUDY')
-        .update({
-          NAME_OF_PHYSICS_READING_STUDY: code,
-        })
-        .where('ACCESSION_NUMBER', '=', accession)
+    //   await trx('PACS_STUDY')
+    //     .update({
+    //       NAME_OF_PHYSICS_READING_STUDY: code,
+    //     })
+    //     .where('ACCESSION_NUMBER', '=', accession)
 
-      /*
-      let pacsData = await getPacsDataByAcc(accession)
-      pacsData = pacsData[0]
-      console.log('pacsData', pacsData)
+    //   /*
+    //   let pacsData = await getPacsDataByAcc(accession)
+    //   pacsData = pacsData[0]
+    //   console.log('pacsData', pacsData)
 
-      const requestDoctor = pacsData.REQUEST_DOCTOR // getByRadName
-      const reportedDoctor = pacsData.REPORTED_DOCTOR
-      const prelimDoctor = pacsData.NAME_OF_PHYSICS_READING_STUDY // if has value [Reported By] getByRadName
-      const status = pacsData.STUDY_STATUS // if R and reportedDoctor has value [Verified By]
-      */
+    //   const requestDoctor = pacsData.REQUEST_DOCTOR // getByRadName
+    //   const reportedDoctor = pacsData.REPORTED_DOCTOR
+    //   const prelimDoctor = pacsData.NAME_OF_PHYSICS_READING_STUDY // if has value [Reported By] getByRadName
+    //   const status = pacsData.STUDY_STATUS // if R and reportedDoctor has value [Verified By]
+    //   */
 
-      // create pdf and send to path unofficialResultPath  YYYYMMDDHHmmss$hn$accession.pdf
-      createPdf(req)
+    //   // create pdf and send to path unofficialResultPath  YYYYMMDDHHmmss$hn$accession.pdf
+    //   createPdf(req)
 
-      addLogs(req, {
-        module: MODULE.REPORT,
-        activity: 'Prelim',
-        accession,
-      })
+    //   addLogs(req, {
+    //     module: MODULE.REPORT,
+    //     activity: 'Prelim',
+    //     accession,
+    //   })
 
-      return timestamp
-    })
+    //   return timestamp
+    // })
   } catch (error) {
     console.error(error)
     Logger('error').error(logFormat(null, error))
@@ -641,56 +689,105 @@ async function verifyReport(req) {
 
     const code = req.user.radName
     const timestamp = dayjs().format('YYYYMMDDHHmmss')
-    req.body.bodyData['timestamp'] = timestamp
-    req.body.bodyData['unofficial'] = 'no'
 
     console.log('verifyReport', accession, hn, code, timestamp)
 
-    // use transaction to avoid deadlock
-    return await db.transaction(async trx => {
-      await updateReportStatus(trx, accession, code, 'R', timestamp)
+    const sql = `
+    BEGIN TRANSACTION [VerfifyReportTransaction]
 
-      await trx('OB_REPORT')
-        .update({
-          REPORT_UPDATE_DATE: timestamp,
-        })
-        .where('ACCESSION', '=', accession)
+    BEGIN TRY
 
-      await trx('RIS_DIAGNOSTIC_REPORT')
-        .update({
-          REPORT_UPDATE_DATE: timestamp,
-        })
-        .where('REF_ITEM_ID', '=', accession)
+        UPDATE PACS_STUDY
+        SET STUDY_STATUS = 'R', 
+        REQUEST_DOCTOR = '${code}', 
+        OPERATORS_NAME = '${timestamp}'
+        WHERE ACCESSION_NUMBER = '${accession}'
 
-      // ERROR: deadlock occurred
-      await trx('PACS_STUDY')
-        .update({
-          REPORTED_DOCTOR: code,
-        })
-        .where('ACCESSION_NUMBER', '=', accession)
+        UPDATE OB_REPORT
+        SET REPORT_UPDATE_DATE = '${timestamp}'
+        WHERE ACCESSION = '${accession}'
 
-      /*
-      let pacsData = await getPacsDataByAcc(accession)
-      pacsData = pacsData[0]
-      console.log('pacsData', pacsData)
+        UPDATE RIS_DIAGNOSTIC_REPORT
+        SET REPORT_UPDATE_DATE = '${timestamp}'
+        WHERE REF_ITEM_ID = '${accession}'
 
-      const requestDoctor = pacsData.REQUEST_DOCTOR // getByRadName
-      const reportedDoctor = pacsData.REPORTED_DOCTOR
-      const prelimDoctor = pacsData.NAME_OF_PHYSICS_READING_STUDY // if has value [Reported By] getByRadName
-      const status = pacsData.STUDY_STATUS // if R and reportedDoctor has value [Verified By]
-      */
+        UPDATE PACS_STUDY
+        SET REPORTED_DOCTOR = '${code}'
+        WHERE ACCESSION_NUMBER = '${accession}'
 
-      // create pdf and send to path uniwebResultPath YYYYMMDDHHmmss$hn$accession.pdf
-      createPdf(req)
+        COMMIT TRANSACTION [VerfifyReportTransaction]
 
-      addLogs(req, {
-        module: MODULE.REPORT,
-        activity: 'Verify',
-        accession,
-      })
+    END TRY
 
-      return timestamp
+    BEGIN CATCH
+
+        ROLLBACK TRANSACTION [VerfifyReportTransaction]
+
+    END CATCH 
+    `
+
+    const result = await db.raw(sql)
+
+    if (!result) return false
+
+    req.body.bodyData['timestamp'] = timestamp
+    req.body.bodyData['unofficial'] = 'no'
+
+    createPdf(req)
+
+    addLogs(req, {
+      module: MODULE.REPORT,
+      activity: 'Verify',
+      accession,
     })
+
+    return timestamp
+
+    // use transaction to avoid deadlock
+    // return await db.transaction(async trx => {
+    //   await updateReportStatus(trx, accession, code, 'R', timestamp)
+
+    //   await trx('OB_REPORT')
+    //     .update({
+    //       REPORT_UPDATE_DATE: timestamp,
+    //     })
+    //     .where('ACCESSION', '=', accession)
+
+    //   await trx('RIS_DIAGNOSTIC_REPORT')
+    //     .update({
+    //       REPORT_UPDATE_DATE: timestamp,
+    //     })
+    //     .where('REF_ITEM_ID', '=', accession)
+
+    //   // ERROR: deadlock occurred
+    //   await trx('PACS_STUDY')
+    //     .update({
+    //       REPORTED_DOCTOR: code,
+    //     })
+    //     .where('ACCESSION_NUMBER', '=', accession)
+
+    //   /*
+    //   let pacsData = await getPacsDataByAcc(accession)
+    //   pacsData = pacsData[0]
+    //   console.log('pacsData', pacsData)
+
+    //   const requestDoctor = pacsData.REQUEST_DOCTOR // getByRadName
+    //   const reportedDoctor = pacsData.REPORTED_DOCTOR
+    //   const prelimDoctor = pacsData.NAME_OF_PHYSICS_READING_STUDY // if has value [Reported By] getByRadName
+    //   const status = pacsData.STUDY_STATUS // if R and reportedDoctor has value [Verified By]
+    //   */
+
+    //   // create pdf and send to path uniwebResultPath YYYYMMDDHHmmss$hn$accession.pdf
+    //   createPdf(req)
+
+    //   addLogs(req, {
+    //     module: MODULE.REPORT,
+    //     activity: 'Verify',
+    //     accession,
+    //   })
+
+    //   return timestamp
+    // })
   } catch (error) {
     console.error(error)
     Logger('error').error(logFormat(null, error))
