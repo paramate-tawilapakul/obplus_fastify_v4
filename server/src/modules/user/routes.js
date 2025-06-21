@@ -8,7 +8,7 @@ module.exports = function (fastify, opts, done) {
   fastify.post('/signin', userController.login)
   fastify.get(
     '/signout',
-    // { onRequest: [fastify.authenticate] },
+    { onRequest: [fastify.authenticate] },
     async function (req, res) {
       // const url =
       //   process.env.NODE_ENV === 'production'
