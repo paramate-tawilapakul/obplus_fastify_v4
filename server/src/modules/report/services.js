@@ -581,7 +581,7 @@ async function prelimReport(req) {
     console.log('prelimReport', accession, hn, code)
 
     const sql = `
-    BEGIN TRANSACTION [PrelimReportTransaction]
+    BEGIN TRANSACTION [tsc${accession}]
 
     BEGIN TRY
 
@@ -603,13 +603,13 @@ async function prelimReport(req) {
         SET NAME_OF_PHYSICS_READING_STUDY = '${code}'
         WHERE ACCESSION_NUMBER = '${accession}'
 
-        COMMIT TRANSACTION [PrelimReportTransaction]
+        COMMIT TRANSACTION [tsc${accession}]
 
     END TRY
 
     BEGIN CATCH
 
-        ROLLBACK TRANSACTION [PrelimReportTransaction]
+        ROLLBACK TRANSACTION [tsc${accession}]
 
     END CATCH 
     `
@@ -693,7 +693,7 @@ async function verifyReport(req) {
     console.log('verifyReport', accession, hn, code, timestamp)
 
     const sql = `
-    BEGIN TRANSACTION [VerfifyReportTransaction]
+    BEGIN TRANSACTION [tsc${accession}]
 
     BEGIN TRY
 
@@ -715,13 +715,13 @@ async function verifyReport(req) {
         SET REPORTED_DOCTOR = '${code}'
         WHERE ACCESSION_NUMBER = '${accession}'
 
-        COMMIT TRANSACTION [VerfifyReportTransaction]
+        COMMIT TRANSACTION [tsc${accession}]
 
     END TRY
 
     BEGIN CATCH
 
-        ROLLBACK TRANSACTION [VerfifyReportTransaction]
+        ROLLBACK TRANSACTION [tsc${accession}]
 
     END CATCH 
     `
