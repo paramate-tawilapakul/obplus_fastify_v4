@@ -113,7 +113,7 @@ async function createOrder(req) {
         IMAGE_STATUS: '',
       })
 
-      await addLogs(req, {
+      addLogs(req, {
         module: MODULE.REGISTRATION,
         activity: `Create order: ${name}, ${
           protocol[i].desc || protocol[i].name

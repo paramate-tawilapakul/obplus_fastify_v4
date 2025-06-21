@@ -128,8 +128,9 @@ exports.getWorklist = async req => {
     let [rows, total] = await Promise.all([db.raw(sql), db.raw(sqlCount)])
 
     if (status === 'N') {
+      // console.log('find ???')
       if (rows.find(row => row.description.indexOf('???') > -1)) {
-        // console.log('found ???')
+        // console.log('2 found ???')
         rows = rows.map(async row => {
           if (row.description.indexOf('???') > -1) {
             let newDesc = await db_dicom.raw(
@@ -148,33 +149,6 @@ exports.getWorklist = async req => {
             ])
 
             return { ...row, description: newWord }
-
-            /*
-             let newDesc = await db.raw(
-               `SELECT SCHEDULED_PROC_DESC FROM RIS_DATA WHERE ACCESSION_NO ='${row.accession}' `
-             )
-            if (
-              newDesc[0]?.SCHEDULED_PROC_DESC ===
-              '??????????????? Ultrasound_OB'
-            ) {
-              let newWord = 'การตรวจติดตามผล Ultrasound_OB'
-              await db.raw(
-                `UPDATE PACS_STUDY SET STUDY_DESCRIPTION = '${newWord}' WHERE ACCESSION_NUMBER = '${row.accession}'`
-              )
-              await db.raw(
-                `UPDATE RIS_DATA SET SCHEDULED_PROC_DESC = '${newWord}' WHERE ACCESSION_NO = '${row.accession}'`
-              )
-
-              return { ...row, description: newWord }
-            } else if (newDesc[0]?.SCHEDULED_PROC_DESC.indexOf('???') === -1) {
-
-              await db.raw(
-                `UPDATE PACS_STUDY SET STUDY_DESCRIPTION = '${newDesc[0].SCHEDULED_PROC_DESC}' WHERE ACCESSION_NUMBER = '${row.accession}'`
-              )
-
-              return { ...row, description: newDesc[0].SCHEDULED_PROC_DESC }
-            }
-              */
           }
 
           return row
