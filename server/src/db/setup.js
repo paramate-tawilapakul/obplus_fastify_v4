@@ -18,7 +18,7 @@ const db = require('knex')({
   },
   pool: {
     min: 5,
-    max: 30,
+    max: 50,
   },
 })
 
