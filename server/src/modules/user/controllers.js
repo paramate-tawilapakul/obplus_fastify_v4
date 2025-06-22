@@ -84,13 +84,13 @@ exports.login = async (req, res) => {
     // }
 
     req['user'] = { code: data[0].code }
-    console.log('before addLogs')
+    // console.log('before addLogs')
     addLogs(req, {
       module: MODULE.USER,
       activity: 'Sign in',
     })
 
-    console.log('after addLogs')
+    // console.log('after addLogs')
 
     // const token = jwt.sign(data[0], process.env.JWT_SECRET, {
     //   expiresIn: process.env.JWT_EXPIRES_IN,
