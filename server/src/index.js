@@ -231,7 +231,8 @@ if (
   process.env.SERVER_MODE === 'pm2' ||
   process.env.NODE_ENV === 'production'
 ) {
-  serverIp = process.env.SERVER_IP.split('//')[1]
+  // serverIp = process.env.SERVER_IP.split('//')[1]
+  serverIp = '0.0.0.0'
 }
 
 fastify.listen(
