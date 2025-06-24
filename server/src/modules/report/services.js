@@ -620,7 +620,7 @@ async function prelimReport(req) {
 
     req.body.bodyData['timestamp'] = timestamp
     req.body.bodyData['unofficial'] = 'yes'
-    createPdf(req)
+    await createPdf(req)
 
     addLogs(req, {
       module: MODULE.REPORT,
@@ -664,7 +664,7 @@ async function prelimReport(req) {
     //   */
 
     //   // create pdf and send to path unofficialResultPath  YYYYMMDDHHmmss$hn$accession.pdf
-    //   createPdf(req)
+    //   await createPdf(req)
 
     //   addLogs(req, {
     //     module: MODULE.REPORT,
@@ -733,7 +733,7 @@ async function verifyReport(req) {
     req.body.bodyData['timestamp'] = timestamp
     req.body.bodyData['unofficial'] = 'no'
 
-    createPdf(req)
+    await createPdf(req)
 
     addLogs(req, {
       module: MODULE.REPORT,
@@ -778,7 +778,7 @@ async function verifyReport(req) {
     //   */
 
     //   // create pdf and send to path uniwebResultPath YYYYMMDDHHmmss$hn$accession.pdf
-    //   createPdf(req)
+    //   await createPdf(req)
 
     //   addLogs(req, {
     //     module: MODULE.REPORT,
