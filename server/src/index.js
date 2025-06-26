@@ -22,19 +22,11 @@ const envToLogger = {
     },
   },
   production: {
-    timestamp: () => `,"timestamp":"${dayjs().format('D/M/YYYY HH:mm:ss')}"`,
+    timestamp: () => `,"timestamp":"${new Date().toLocaleString('th-TH')}"`,
     formatters: {
       level: label => {
-        return { severity: label.toUpperCase() }
+        return { level: label }
       },
-      // bindings: bindings => {
-      //   console.log('bindings', bindings)
-      //   return {
-      //     pid: bindings.pid,
-      //     host: bindings.hostname,
-      //     node_version: process.version,
-      //   }
-      // },
     },
   },
   test: false,
