@@ -3013,7 +3013,7 @@ export function replacePwithBR(content) {
 
 export function removeId(content) {
   // console.log(content)
-  const regex = /id="[a-zA-Z0-9:;.\s()\-,]*"/gm
+  const regex = /id="[a-zA-Z0-9:;.\s()\-_,]*"/gm
   let m
   let newContent = content
   while ((m = regex.exec(content)) != null) {
@@ -3068,7 +3068,7 @@ export function removeDataAtr(content) {
 
 export function removeClass(content) {
   // console.log(content)
-  const regex = /class="[a-zA-Z0-9:;.\s()\-,]*"/gm
+  const regex = /class="[a-zA-Z0-9:;.\s()\-_,]*"/gm
   let m
   let newContent = content
   while ((m = regex.exec(content)) != null) {
