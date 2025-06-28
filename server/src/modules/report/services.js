@@ -214,6 +214,10 @@ exports.getReportHistory = async req => {
       .whereIn('STUDY_STATUS', ['D', 'R'])
       .andWhere('PACS_STUDY.PATIENT_ID', hn)
       .andWhere('PACS_STUDY.ACCESSION_NUMBER', '<>', exceptAccession)
+      .andWhere(builder => {
+        if (process.env.SAMPLE_IMAGE === 'YES')
+          builder.whereIn('INSTITUTION_NAME', ['OB-GYN', 'OB', 'GYN'])
+      })
       .orderBy('OPERATORS_NAME', 'desc')
 
     return data
