@@ -10,6 +10,7 @@ const db = require('knex')({
     port: parseInt(process.env.DB_PORT),
     database: 'DICOMDB',
     options: {
+      instanceName: process.env.DB_INSTANCE || '',
       encrypt: false,
       enableArithAbort: true,
       trustedConnection: false,
