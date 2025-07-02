@@ -4,7 +4,7 @@ initEnv()
 const db = require('knex')({
   client: 'mssql',
   connection: {
-    server: process.env.DB_SERVER,
+    host: process.env.DB_SERVER,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
     port: parseInt(process.env.DB_PORT),

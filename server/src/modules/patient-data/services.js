@@ -1,10 +1,11 @@
 const dayjs = require('dayjs')
 
 const db = require('../../db/setup')
-const { Logger, logFormat } = require('../../logger')
-const { dateToDBformat } = require('../../utils/utils')
+const { dateToDBformat, handleErrorLog } = require('../../utils/utils')
 const { addLogs, MODULE } = require('../logs/services')
 const { getSyspropsValue } = require('../../cache/cache')
+
+const fileModule = 'patient-data > services >'
 
 async function createOrder(req) {
   // console.log('createOrder', req.body)
@@ -124,8 +125,7 @@ async function createOrder(req) {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} createOrder(): ${error}`)
     return false
   }
 }
@@ -149,8 +149,7 @@ exports.getTags = async accession => {
 
     return data.map(d => d.name)
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getTags(): ${error}`)
   }
 }
 
@@ -179,8 +178,7 @@ exports.createPatient = async req => {
 
     return true
   } catch (error) {
-    console.log(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} createPatient(): ${error}`)
 
     return false
   }
@@ -210,8 +208,7 @@ async function getPatientRegistrationByHN(hn) {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getPatientRegistrationByHN(): ${error}`)
   }
 }
 
@@ -241,8 +238,7 @@ async function getTemplateData(accession, fetus = '1') {
 
     return returnData
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getTemplateData(): ${error}`)
   }
 }
 

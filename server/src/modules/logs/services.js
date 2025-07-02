@@ -2,7 +2,7 @@ const uap = require('ua-parser-js')
 const dayjs = require('dayjs')
 
 const db = require('../../db/setup')
-const { Logger, logFormat } = require('../../logger')
+const { handleErrorLog } = require('../../utils/utils')
 
 exports.MODULE = {
   REGISTRATION: 'REGISTRATION',
@@ -34,7 +34,6 @@ exports.addLogs = async (req, data) => {
       })
     }, 20)
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`logs > services > addLogs(): ${error}`)
   }
 }

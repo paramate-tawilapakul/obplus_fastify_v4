@@ -2,7 +2,7 @@ const initEnv = require('./dotenv').default
 initEnv()
 
 const schedule = require('node-schedule')
-const { removeDir, removeEmptyDir } = require('./utils/utils')
+const { removeDir, removeEmptyDir, handleErrorLog } = require('./utils/utils')
 const dayjs = require('dayjs')
 const db = require('./db/setup')
 
@@ -246,47 +246,40 @@ fastify.listen(
 )
 
 process.title = `${process.env.APP_NAME}`
+const fileModule = 'server > index.js >'
 
 const duration = parseInt(process.env?.DELETE_PDF_BACKUP || 365)
 const logsOlderThan = parseInt(process.env?.DELETE_LOGS || 365)
 
 // schedule.scheduleJob('*/5 * * * * *', async () => {
-schedule.scheduleJob('0 0 * * *', async () => {
+schedule.scheduleJob('0 0 * * *', () => {
   // run everyday at midnight
-  try {
-    if (process.env.SERVER_MODE === 'PM2') {
-      const pm2 = require('pm2')
-      // let index = 0
-      pm2.connect(function () {
-        pm2.list(async (err, data) => {
-          for (let i = 0; i < data.length; i++) {
-            if (
-              data[i].name === process.env.APP_NAME &&
-              data[i].pm2_env.pm_id === 0 &&
-              process.env.NODE_APP_INSTANCE === '0'
-            ) {
-              await deleteTempDicomImage()
-              await deleteLogs()
-              await deletePdfBackup()
-            }
-          }
-          pm2.disconnect(function () {})
-        })
-      })
-    } else {
-      await deleteTempDicomImage()
-      await deleteLogs()
-      await deletePdfBackup()
-    }
-  } catch (error) {
-    console.log(error)
-  }
+
+  // if (process.env.SERVER_MODE === 'PM2') {
+  //   const pm2 = require('pm2')
+  //   // let index = 0
+  //   pm2.connect(function () {
+  //     pm2.list(async (err, data) => {
+  //       for (let i = 0; i < data.length; i++) {
+  //         if (
+  //           data[i].name === process.env.APP_NAME &&
+  //           data[i].pm2_env.pm_id === 0 &&
+  //           process.env.NODE_APP_INSTANCE === '0'
+  //         ) {
+  //           await deleteTempDicomImage()
+  //           await deleteLogs()
+  //           await deletePdfBackup()
+  //         }
+  //       }
+  //       pm2.disconnect(function () {})
+  //     })
+  //   })
+  // }
+  Promise.all([deleteTempDicomImage(), deleteLogs(), deletePdfBackup()])
 })
 
 async function deleteTempDicomImage() {
   try {
-    console.log(`schedule job every midnight > delete temporary dicom images `)
-
     let tempAcc = await db.raw(`SELECT accession FROM OB_TEMPORARY_ACCESSION`)
 
     tempAcc = tempAcc.map(d => d.accession)
@@ -300,16 +293,15 @@ async function deleteTempDicomImage() {
     }
 
     await db.raw(`TRUNCATE TABLE OB_TEMPORARY_ACCESSION`)
+
+    console.log(`schedule job every midnight > delete temporary dicom images `)
   } catch (error) {
-    console.log(error)
+    handleErrorLog(`${fileModule} deleteTempDicomImage(): ${error}`)
   }
 }
 
 async function deletePdfBackup() {
   try {
-    console.log(
-      `schedule job every midnight > delete pdf backup older than ${duration} days`
-    )
     const deleteDate = dayjs()
       .subtract(duration + 1, 'day')
       .format('YYYY-MM-DD')
@@ -340,21 +332,26 @@ async function deletePdfBackup() {
       await removeDir(path)
       // console.log(`delete year ${path}`)
     }
+
+    console.log(
+      `schedule job every midnight > delete pdf backup older than ${duration} days`
+    )
   } catch (error) {
-    console.log(error)
+    handleErrorLog(`${fileModule} deletePdfBackup(): ${error}`)
   }
 }
 
 async function deleteLogs() {
   try {
-    console.log(
-      `schedule job every midnight > delete logs older than ${logsOlderThan} days `
-    )
     const deleteDate =
       dayjs().subtract(logsOlderThan, 'day').format('YYYYMMDD') + '235959'
 
     await db('OB_LOGGER').del().where('timestamp', '<', deleteDate)
+
+    console.log(
+      `schedule job every midnight > delete logs older than ${logsOlderThan} days `
+    )
   } catch (error) {
-    console.log(error)
+    handleErrorLog(`${fileModule} deleteLogs(): ${error}`)
   }
 }

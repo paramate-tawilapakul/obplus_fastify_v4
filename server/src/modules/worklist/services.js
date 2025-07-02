@@ -2,7 +2,6 @@ const sample = require('lodash').sample
 
 const db = require('../../db/setup')
 const db_dicom = require('../../db/setup-dicom')
-const { Logger, logFormat } = require('../../logger')
 const { whereFilters, paginationQueryBuilder } = require('../../utils/db-utils')
 const dayjs = require('dayjs')
 const { getSyspropsValue } = require('../../cache/cache')
@@ -11,6 +10,9 @@ const {
   createOrder,
   getTemplateData,
 } = require('../patient-data/services')
+const { handleErrorLog } = require('../../utils/utils')
+
+const fileModule = 'worklist > services >'
 
 const columns = [
   'PACS_STUDY.ACCESSION_NUMBER as id',
@@ -158,8 +160,7 @@ exports.getWorklist = async req => {
 
     return [rows, total[0]['total']]
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getWorklist(): ${error}`)
   }
 }
 
@@ -190,8 +191,7 @@ exports.getPatientOb = async req => {
 
     return { ...data[0], ...reportTemplateId }
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getPatientOb(): ${error}`)
   }
 }
 
@@ -203,8 +203,7 @@ exports.getConsultant = async req => {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getConsultant(): ${error}`)
   }
 }
 
@@ -242,8 +241,7 @@ async function createObStudy(req) {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} createObStudy(): ${error}`)
   }
 }
 
@@ -288,8 +286,7 @@ exports.updateObStudy = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateObStudy(): ${error}`)
   }
 }
 
@@ -328,8 +325,7 @@ exports.updateObStudy = async req => {
 
 //     return true
 //   } catch (error) {
-//     console.error(error)
-//     Logger('error').error(logFormat(null, error))
+//     handleErrorLog(`${fileModule} updateIndictions(): ${error}`)
 //   }
 // }
 
@@ -355,8 +351,7 @@ async function updateConsultant(req) {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateConsultant(): ${error}`)
   }
 }
 
@@ -387,8 +382,7 @@ async function updatePatientName(req) {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updatePatientName(): ${error}`)
   }
 }
 
@@ -437,8 +431,7 @@ exports.getTeachingWorklist = async req => {
 
     return [combinedWithTags, total[0]['total']]
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getTeachingWorklist(): ${error}`)
   }
 }
 
@@ -583,8 +576,7 @@ exports.autoGenerateOrder = async (userCode, t) => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} autoGenerateOrder(): ${error}`)
     return false
   }
 }

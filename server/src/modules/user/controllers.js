@@ -2,10 +2,15 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 
 const userService = require('./services')
-const { Logger, logFormat } = require('../../logger')
 const { addLogs, MODULE } = require('../logs/services')
-const { responseError, responseData } = require('../../utils/utils')
+const {
+  responseError,
+  responseData,
+  handleErrorLog,
+} = require('../../utils/utils')
 const { getSystemPropertiesFromCache } = require('../../cache/cache')
+
+const fileModule = 'user > controllers >'
 
 exports.license = async (req, res) => {
   try {
@@ -109,8 +114,7 @@ exports.login = async (req, res) => {
       user: { ...data[0], token },
     })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} login(): ${error}`)
   }
 }
 
@@ -172,8 +176,7 @@ exports.changePassword = async (req, res) => {
       msg: result ? 'Change password completed!' : 'Change password fail!',
     })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} changePassword(): ${error}`)
   }
 }
 

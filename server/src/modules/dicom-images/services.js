@@ -3,13 +3,18 @@ const axios = require('axios')
 
 const dbDicom = require('../../db/setup-dicom')
 const dbRis = require('../../db/setup')
-const { Logger, logFormat } = require('../../logger')
-const { mkImageDicomPath, removeDir } = require('../../utils/utils')
+const {
+  mkImageDicomPath,
+  removeDir,
+  handleErrorLog,
+} = require('../../utils/utils')
 const { getSyspropsValue } = require('../../cache/cache')
 
 const { promisify } = require('node:util')
 const exists = promisify(fs.exists)
 const readdir = fs.promises.readdir
+
+const fileModule = 'dicom-images > services >'
 
 exports.getImages = async accession => {
   try {
@@ -18,8 +23,7 @@ exports.getImages = async accession => {
       .where('IM_ACC', accession)
       .orderBy('IMG_SYS_ID')
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getImages(): ${error}`)
     return false
   }
 }
@@ -35,8 +39,7 @@ exports.deleteImage = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} deleteImage(): ${error}`)
     return false
   }
 }
@@ -170,8 +173,7 @@ exports.getDicomImage = async req => {
     // console.log('Images:', newData)
     return newData
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getDicomImage(): ${error}`)
   }
 }
 
@@ -186,11 +188,10 @@ async function downloadFiles(url, path) {
     response.data.pipe(fs.createWriteStream(path))
     // response.data.on('error', err => {
     //   console.error(err)
-    //   Logger('error').error(logFormat(null, err))
+    //   handleErrorLog(`${fileModule} downloadFiles(): ${error}`)
     // })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} downloadFiles(): ${error}`)
   }
 }
 
@@ -207,7 +208,6 @@ async function addTempAccession(accession) {
     END
     `)
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} addTempAccession(): ${error}`)
   }
 }

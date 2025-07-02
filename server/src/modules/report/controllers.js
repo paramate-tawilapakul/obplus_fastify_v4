@@ -2,10 +2,15 @@ const fs = require('graceful-fs')
 const base64Img = require('base64-img')
 
 const reportService = require('./services')
-const { Logger, logFormat } = require('../../logger')
-const { responseData, getServerTime } = require('../../utils/utils')
+const {
+  responseData,
+  getServerTime,
+  handleErrorLog,
+} = require('../../utils/utils')
 
 const readFile = fs.promises.readFile
+
+const fileModule = 'report > controllers >'
 
 exports.getServerTime = (req, res) => {
   responseData(res, { serverTime: getServerTime() })
@@ -23,8 +28,7 @@ exports.getImageBase64 = async (req, res) => {
     const imageData = base64Img.base64Sync(fullpath)
     res.send(imageData)
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getImageBase64(): ${error}`)
     res.code(500).send(error.message)
   }
 }
@@ -109,8 +113,7 @@ exports.viewReport = async (req, res) => {
     res.header('Content-type', 'application/pdf')
     res.send(data)
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} viewReport(): ${error}`)
     res.code(500).send(error.message)
   }
 }

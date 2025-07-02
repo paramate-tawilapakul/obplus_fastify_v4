@@ -7,14 +7,15 @@ const { getConsultant, getPatientOb } = require('../worklist/services')
 const { getImages } = require('../dicom-images/services')
 const { createPdf } = require('../pdf/services')
 const { addLogs, MODULE } = require('../logs/services')
-const { Logger, logFormat } = require('../../logger')
-const { genImageArr } = require('../../utils/utils')
+const { genImageArr, handleErrorLog } = require('../../utils/utils')
 const {
   getMasterValueFromCache,
   getMasterOptionFromCache,
 } = require('../../cache/cache')
 
 const exists = promisify(fs.exists)
+
+const fileModule = 'report > services >'
 
 const gynTemplateId = [31, 32, 33, 40, 34, 35, 36, 37, 38]
 const obTemplateId = [
@@ -183,8 +184,7 @@ async function getReportData(req) {
 
     return newData
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getReportData(): ${error}`)
   }
 }
 
@@ -222,8 +222,7 @@ exports.getReportHistory = async req => {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getReportHistory(): ${error}`)
   }
 }
 
@@ -235,8 +234,7 @@ exports.getAutoGaData = async req => {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getAutoGaData(): ${error}`)
   }
 }
 
@@ -259,8 +257,7 @@ async function getReportId(req) {
 
     return { reportId }
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getReportId(): ${error}`)
   }
 }
 
@@ -277,8 +274,7 @@ async function getDiagReport(req) {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getDiagReport(): ${error}`)
   }
 }
 
@@ -315,8 +311,7 @@ exports.updateDiagReport = async req => {
     }
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateDiagReport(): ${error}`)
     return false
   }
 }
@@ -340,8 +335,7 @@ async function createReportId(req) {
 
     return data[0].REPORT_ID
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} createReportId(): ${error}`)
   }
 }
 
@@ -363,8 +357,7 @@ async function getAbnormalContent(req) {
 
     return [data, reportId]
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getAbnormalContent(): ${error}`)
   }
 }
 
@@ -407,8 +400,7 @@ async function getReportContent(req) {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getReportContent(): ${error}`)
   }
 }
 
@@ -500,8 +492,7 @@ exports.createReportContent = async req => {
     // })
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} createReportContent(): ${error}`)
     return false
   }
 }
@@ -510,8 +501,7 @@ async function deleteReportContent(reportId) {
   try {
     await db('OB_REPORT_CONTENT').del().where('REF_REPORT_ID', '=', reportId)
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} deleteReportContent(): ${error}`)
   }
 }
 
@@ -537,8 +527,7 @@ exports.getReportForm = async req => {
 
     return newData
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getReportForm(): ${error}`)
   }
 }
 
@@ -570,8 +559,7 @@ async function getReportOptions(valueId) {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getReportOptions(): ${error}`)
   }
 }
 
@@ -679,8 +667,7 @@ async function prelimReport(req) {
     //   return timestamp
     // })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} prelimReport(): ${error}`)
     return false
   }
 }
@@ -793,8 +780,7 @@ async function verifyReport(req) {
     //   return timestamp
     // })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} verifyReport(): ${error}`)
     return false
   }
 }
@@ -811,8 +797,7 @@ async function getPacsDataByAcc(accession) {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getPacsDataByAcc(): ${error}`)
   }
 }
 
@@ -831,15 +816,14 @@ async function updateReportStatus(db, accession, code, status, timestamp) {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateReportStatus(): ${error}`)
   }
 }
 
 exports.updateReportStatus = updateReportStatus
 
 exports.updateReportContentValue = async req => {
-  console.log('updateReportContentValue')
+  // console.log('updateReportContentValue')
   const { reportId, value, name } = req.body
   try {
     let refValueId = await db('OB_MASTER_VALUE')
@@ -895,8 +879,7 @@ exports.updateReportContentValue = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateReportContentValue(): ${error}`)
   }
 }
 
@@ -990,7 +973,6 @@ exports.getEfwByHN = async req => {
       // : false,
     }
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getEfwByHN(): ${error}`)
   }
 }

@@ -3,6 +3,7 @@ const dayjs = require('dayjs')
 const camelCase = require('lodash').camelCase
 const { promisify } = require('node:util')
 const duration = require('dayjs/plugin/duration')
+const { Logger, logFormat } = require('../logger')
 
 dayjs.extend(duration)
 
@@ -44,6 +45,13 @@ exports.responseData = (res, data) => {
   })
 }
 
+function handleErrorLog(error) {
+  console.error(error)
+  Logger('error').error(logFormat(null, error))
+}
+
+exports.handleErrorLog = handleErrorLog
+
 function getYearMonthDay() {
   const timestamp = dayjs().format('YYYYMMDDHHmmss')
   const year = timestamp.substring(0, 4)
@@ -71,7 +79,7 @@ exports.mkPdfBackupPath = async (year, month, day) => {
       await mkdir(dir, { recursive: true })
     }
   } catch (error) {
-    console.log(error)
+    handleErrorLog(`utils.js > mkPdfBackupPath(): ${error}`)
   }
 }
 
@@ -83,7 +91,7 @@ exports.mkImagePath = async accession => {
       await mkdir(dir, { recursive: true })
     }
   } catch (error) {
-    console.log(error)
+    handleErrorLog(`utils.js > mkImagePath(): ${error}`)
   }
 }
 
@@ -95,7 +103,7 @@ exports.mkEFWPath = async (accession, fetusNo) => {
       await mkdir(dir, { recursive: true })
     }
   } catch (error) {
-    console.log(error)
+    handleErrorLog(`utils.js > mkEFWPath(): ${error}`)
   }
 }
 
@@ -107,7 +115,7 @@ exports.mkImageDicomPath = async accession => {
       await mkdir(dir, { recursive: true })
     }
   } catch (error) {
-    console.log(error)
+    handleErrorLog(`utils.js > mkImageDicomPath(): ${error}`)
   }
 }
 
@@ -486,7 +494,7 @@ async function removeDir(path) {
       await rm(path, { recursive: true, force: true })
     }
   } catch (error) {
-    console.log(error)
+    handleErrorLog(`utils.js > removeDir(): ${error}`)
   }
 }
 
@@ -503,7 +511,7 @@ async function removeEmptyDir(path) {
       }
     }
   } catch (error) {
-    console.log(error)
+    handleErrorLog(`utils.js > removeEmptyDir(): ${error}`)
   }
 }
 

@@ -1,6 +1,8 @@
 const { Cacheable } = require('cacheable')
 const db = require('../db/setup')
-const { objectArrayToCamel } = require('../utils/utils')
+const { objectArrayToCamel, handleErrorLog } = require('../utils/utils')
+
+const fileModule = 'cache >'
 
 /*
 ms: Milliseconds such as (1ms = 1)
@@ -52,7 +54,7 @@ exports.getMasterValueFromCache = async () => {
 
     return masterValue
   } catch (error) {
-    console.error(error)
+    handleErrorLog(`${fileModule} getMasterValueFromCache(): ${error}`)
   }
 }
 
@@ -89,7 +91,7 @@ exports.getMasterOptionFromCache = async () => {
 
     return masterOption
   } catch (error) {
-    console.error(error)
+    handleErrorLog(`${fileModule} getMasterOptionFromCache(): ${error}`)
   }
 }
 
@@ -107,7 +109,7 @@ exports.getSystemPropertiesFromCache = async () => {
 
     return data
   } catch (error) {
-    console.error(error)
+    handleErrorLog(`${fileModule} getSystemPropertiesFromCache(): ${error}`)
   }
 }
 
@@ -116,7 +118,7 @@ exports.updateSystemPropertiesCache = async () => {
     const data = await getSystemProperties()
     await cacheable.set(CacheKey.SystemProperties, data, ttl)
   } catch (error) {
-    console.error(error)
+    handleErrorLog(`${fileModule} updateSystemPropertiesCache(): ${error}`)
   }
 }
 
@@ -183,6 +185,6 @@ async function getSystemProperties() {
 
     return arrToObj[0]
   } catch (error) {
-    console.error(error)
+    handleErrorLog(`${fileModule} getSystemProperties(): ${error}`)
   }
 }

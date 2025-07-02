@@ -1,5 +1,7 @@
 const db = require('../../db/setup')
-const { Logger, logFormat } = require('../../logger')
+const { handleErrorLog } = require('../../utils/utils')
+
+const fileModule = 'teaching > services >'
 
 exports.getTeachingFolder = async req => {
   try {
@@ -16,8 +18,7 @@ exports.getTeachingFolder = async req => {
 
     return [data, data.length]
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getTeachingFolder(): ${error}`)
   }
 }
 
@@ -39,8 +40,7 @@ exports.createTeachingFolder = async req => {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} createTeachingFolder(): ${error}`)
   }
 }
 
@@ -54,8 +54,7 @@ exports.updateTeachingFolder = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateTeachingFolder(): ${error}`)
   }
 }
 
@@ -74,8 +73,7 @@ exports.deleteTeachingFolder = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} deleteTeachingFolder(): ${error}`)
   }
 }
 
@@ -105,8 +103,7 @@ exports.createTeachingFiles = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} createTeachingFiles(): ${error}`)
   }
 }
 
@@ -128,8 +125,7 @@ exports.getTeachingFiles = async req => {
 
     return [data, data.length]
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getTeachingFiles(): ${error}`)
   }
 }
 
@@ -149,8 +145,7 @@ async function getTeachingFilesByAccession(folderId, accession) {
 
     return [data, data.length]
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getTeachingFilesByAccession(): ${error}`)
   }
 }
 
@@ -164,8 +159,7 @@ exports.updateTeachingNote = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateTeachingNote(): ${error}`)
   }
 }
 
@@ -179,8 +173,7 @@ exports.updateTeachingNoteById = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateTeachingNoteById(): ${error}`)
   }
 }
 
@@ -194,8 +187,7 @@ exports.moveTeachingfiles = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} moveTeachingfiles(): ${error}`)
   }
 }
 
@@ -207,7 +199,6 @@ exports.deleteTeachingFiles = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} deleteTeachingFiles(): ${error}`)
   }
 }

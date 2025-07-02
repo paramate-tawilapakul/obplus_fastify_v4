@@ -4,8 +4,7 @@ const dayjs = require('dayjs')
 const { promisify } = require('node:util')
 const { pipeline } = require('node:stream/promises')
 
-const { Logger, logFormat } = require('../../logger')
-const { responseData, mkEFWPath } = require('../../utils/utils')
+const { responseData, mkEFWPath, handleErrorLog } = require('../../utils/utils')
 const { mkImagePath, genImageArr } = require('../../utils/utils')
 const db = require('../../db/setup')
 const { getImages, deleteImage } = require('../dicom-images/services')
@@ -14,6 +13,8 @@ const exists = promisify(fs.exists)
 const readFile = fs.promises.readFile
 const unlink = fs.promises.unlink
 const copyFile = fs.promises.copyFile
+
+const fileModule = 'files > controllers >'
 
 exports.updateColumn = async (req, res) => {
   try {
@@ -29,8 +30,7 @@ exports.updateColumn = async (req, res) => {
       result: 'success',
     })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateColumn(): ${error}`)
   }
 }
 
@@ -65,8 +65,7 @@ exports.deleteImage = async (req, res) => {
       ),
     })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} deleteImage(): ${error}`)
     res.code(500).send(error.message)
   }
 }
@@ -129,8 +128,7 @@ exports.view = async (req, res) => {
     )
     res.send(data)
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} view(): ${error}`)
     res.code(500).send(error.message)
   }
 }
@@ -167,8 +165,7 @@ exports.uploadDicom = async (req, res) => {
 
     responseData(res, { imgs: genImageArr(imgsReturn, accession) })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} uploadDicom(): ${error}`)
   }
 }
 
@@ -208,8 +205,7 @@ exports.upload = async (req, res) => {
 
     responseData(res, { imgs: genImageArr(imgsReturn, accession) })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} upload(): ${error}`)
   }
 }
 
@@ -237,8 +233,7 @@ exports.uploadEFW = async (req, res) => {
       src: `/api/v1/files/efw?accession=${accession}&fetusNo=${fetusNo}&r=${Math.random()}`,
     })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} uploadEfw(): ${error}`)
   }
 }
 
@@ -256,8 +251,7 @@ exports.deleteEFW = async (req, res) => {
 
     responseData(res, { success: true })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} deleteEfw(): ${error}`)
     responseData(res, { success: false, msg: error.message })
   }
 }
@@ -294,8 +288,7 @@ exports.viewEfw = async (req, res) => {
     )
     res.send(data)
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} viewEfw(): ${error}`)
     res.code(500).send(error.message)
   }
 }
@@ -350,7 +343,6 @@ exports.viewBackupPdf = async (req, res) => {
     //   }
     // })
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} viewBackupPdf(): ${error}`)
   }
 }

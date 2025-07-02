@@ -2,20 +2,16 @@ const fs = require('graceful-fs')
 // const base64Img = require('base64-img')
 
 const imageService = require('./services')
-const { Logger, logFormat } = require('../../logger')
-const { responseData } = require('../../utils/utils')
+const { responseData, handleErrorLog } = require('../../utils/utils')
 
 const readFile = fs.promises.readFile
 
-exports.getDicomImage = async (req, res) => {
-  try {
-    const data = await imageService.getDicomImage(req)
+const fileModule = 'dicom-images > controllers >'
 
-    responseData(res, data)
-  } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
-  }
+exports.getDicomImage = async (req, res) => {
+  const data = await imageService.getDicomImage(req)
+
+  responseData(res, data)
 }
 
 exports.getAttachFile = async (req, res) => {
@@ -60,8 +56,7 @@ exports.getAttachFile = async (req, res) => {
     )
     res.send(data)
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getAttachFile(): ${error}`)
     res.code(500).send(error.message)
   }
 }

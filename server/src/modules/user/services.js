@@ -2,12 +2,14 @@ const fs = require('graceful-fs')
 const dayjs = require('dayjs')
 
 const db = require('../../db/setup')
-const { Logger, logFormat } = require('../../logger')
 const {
   reFormatSpace,
   cleanUpContent,
   replacePwithBR,
+  handleErrorLog,
 } = require('../../utils/utils')
+
+const fileModule = 'user > services >'
 
 const writeFile = fs.promises.writeFile
 
@@ -33,8 +35,7 @@ exports.resetPassword = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} resetPassword(): ${error}`)
     return false
   }
 }
@@ -61,8 +62,7 @@ exports.changePassword = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} changePassword(): ${error}`)
     return false
   }
 }
@@ -216,8 +216,7 @@ exports.getUser = async username => {
     }
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getUser(): ${error}`)
   }
 }
 
@@ -268,8 +267,7 @@ exports.getUserData = async code => {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getUserData(): ${error}`)
   }
 }
 
@@ -281,8 +279,7 @@ async function getUserPassword(code) {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getUserPassword(): ${error}`)
   }
 }
 
@@ -302,8 +299,7 @@ exports.flagOnOff = async (id, onlineStatus) => {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} flagOnOff(): ${error}`)
     return false
   }
 }
@@ -321,8 +317,7 @@ exports.getRadilogistSignerName = async radName => {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getRadilogistSignerName(): ${error}`)
     return false
   }
 }
@@ -429,8 +424,7 @@ exports.getReportTemplate = async req => {
     }
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} getReportTemplate(): ${error}`)
     return false
   }
 }
@@ -494,8 +488,7 @@ exports.updateReportTemplate = async req => {
 
     return result
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateReportTemplate(): ${error}`)
     return false
   }
 }
@@ -508,8 +501,7 @@ exports.deleteReportTemplate = async req => {
 
     return true
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} deleteReportTemplate(): ${error}`)
     return false
   }
 }
@@ -549,8 +541,7 @@ exports.cleanUpAllReportTemplate = async () => {
 
     return { success: true, total: count }
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} cleanUpAllReportTemplate(): ${error}`)
     return false
   }
 }

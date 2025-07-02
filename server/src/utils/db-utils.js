@@ -1,8 +1,9 @@
 const db = require('../db/setup')
 const { isObject, isEmpty } = require('lodash')
-const { dateToDBformat } = require('./utils')
-const { Logger, logFormat } = require('../logger')
+const { dateToDBformat, handleErrorLog } = require('./utils')
 const dayjs = require('dayjs')
+
+const fileModule = 'utils > db-utils >'
 
 exports.paginationQueryBuilder = options => {
   return `WITH SQLPaging AS (
@@ -148,8 +149,7 @@ exports.updateDB = async (table, updateColumns, where) => {
 
     return data
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`${fileModule} updateDB(): ${error}`)
     return false
   }
 }
@@ -158,21 +158,21 @@ function isValidParameter(table, updateColumns, where) {
   let message = ''
   if (!table) {
     message = 'Invalid Table :' + table
-    Logger('error').error(message)
+    handleErrorLog(`${fileModule} isValidParameter(): ${message}`)
     console.error(message)
     return false
   }
   if (!isObject(updateColumns) || isEmpty(updateColumns)) {
     message = 'Invalid Columns :' + updateColumns
     message += 'Must be : { column1:value1, column2:value2,... }'
-    Logger('error').error(message)
+    handleErrorLog(`${fileModule} isValidParameter(): ${message}`)
     console.error(message)
     return false
   }
   if (!isObject(where) || isEmpty(where)) {
     message = 'Invalid Where Clause :' + where
     message += 'Must be : { whereColumn:value }'
-    Logger('error').error(message)
+    handleErrorLog(`${fileModule} isValidParameter(): ${message}`)
     console.error(message)
     return false
   }

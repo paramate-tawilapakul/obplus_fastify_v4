@@ -3,8 +3,11 @@ const { Readable } = require('node:stream')
 const { pipeline } = require('node:stream/promises')
 const { promisify } = require('node:util')
 
-const { Logger, logFormat } = require('../../logger')
-const { reformatPath, mkPdfBackupPath } = require('../../utils/utils')
+const {
+  reformatPath,
+  mkPdfBackupPath,
+  handleErrorLog,
+} = require('../../utils/utils')
 const { getSyspropsValue } = require('../../cache/cache')
 
 const exists = promisify(fs.exists)
@@ -66,7 +69,6 @@ exports.createPdf = async req => {
 
     // Logger().info(logFormat(req, message))
   } catch (error) {
-    console.error(error)
-    Logger('error').error(logFormat(null, error))
+    handleErrorLog(`pdf > services > createPdf(): ${error}`)
   }
 }
