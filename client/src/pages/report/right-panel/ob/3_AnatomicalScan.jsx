@@ -593,7 +593,7 @@ const AnatomicalScan = ({ patient }) => {
                 size='medium'
                 variant='contained'
                 color='info'
-                onClick={() => handleAllNormal()}
+                onClick={handleAllNormal}
               >
                 ALL NORMAL
               </Button>
