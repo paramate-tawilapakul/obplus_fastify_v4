@@ -59,6 +59,7 @@ const AnatomicalScan = ({ patient }) => {
   const [loading, setLoading] = useState(false)
   const [dialog, setDialog] = useState({})
   const [showInfo, setShowInfo] = useState(defaultShowInfo)
+  const [flagReload, setFlagReload] = useState(false)
 
   const templateMap = {
     'Head Shape': {
@@ -221,7 +222,7 @@ const AnatomicalScan = ({ patient }) => {
     }
 
     // eslint-disable-next-line
-  }, [patient])
+  }, [patient, flagReload])
 
   function resetData() {
     setData(null)
@@ -514,6 +515,61 @@ const AnatomicalScan = ({ patient }) => {
     }
   }
 
+  function handleAllNormal() {
+    setDataFormSend(prev => {
+      let normalSet = dataForm
+        .map((d, index) => {
+          if (index <= 13 && d.display !== 'Cord') {
+            return {
+              valueId: d.valueId,
+              value: d.options.find(o => o.display === 'Normal')?.opId || 0,
+            }
+          }
+        })
+        .filter(d => d)
+
+      normalSet = normalSet.reduce((acc, cur) => {
+        acc[cur.valueId] = { ...prev[cur.valueId], value: cur.value }
+        return acc
+      }, {})
+
+      const temp = {
+        ...prev,
+        ...normalSet,
+      }
+      // console.log(temp)
+      backupData = temp
+      storeBackupData(temp)
+      saveAllNormalData(temp)
+      return temp
+    })
+  }
+
+  async function saveAllNormalData(data) {
+    try {
+      let newForm = cleanUpForm(data)
+      storeBackupData(data)
+
+      const res = await axios.post(API.REPORT_CONTENT, {
+        reportData: newForm,
+        isAllNormal: true,
+        accession: patient.accession,
+        currentFetus: patient.currentFetus,
+      })
+
+      if (res.data.data) {
+        updateDataChange('0')
+      } else {
+        // in case of error, auto save will execute
+        updateDataChange('1')
+      }
+
+      setFlagReload(true)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <>
       <div
@@ -532,6 +588,16 @@ const AnatomicalScan = ({ patient }) => {
               marginLeft: 10,
             }}
           >
+            <div style={{ width: 700, marginLeft: 7, marginBottom: 5 }}>
+              <Button
+                size='medium'
+                variant='contained'
+                color='info'
+                onClick={() => handleAllNormal()}
+              >
+                ALL NORMAL
+              </Button>
+            </div>
             {dataForm.length > 0 && (
               <>
                 {dataForm.map((form, i) => {

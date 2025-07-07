@@ -1,6 +1,6 @@
 export const APP_CONFIG = {
   APP_NAME: 'OBPLUS',
-  VERSION: 'v3.2.1',
+  VERSION: 'v3.2.2',
 }
 
 export const APP_ROUTES = {

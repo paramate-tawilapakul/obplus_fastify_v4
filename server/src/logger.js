@@ -3,7 +3,6 @@ initEnv()
 const { createLogger, format, transports } = require('winston')
 const { combine, timestamp, printf, json } = format
 const dayjs = require('dayjs')
-const { getClientIP } = require('./utils/utils')
 
 const myFormat = printf(({ message, timestamp }) => {
   return `${timestamp} ${message}`
@@ -51,7 +50,7 @@ exports.logFormat = function (req, action, username) {
   let userCode = ''
   if (req || username) {
     userCode = req.user?.code || username
-    let ip = getClientIP(req)
+    let ip = req?.ip || ''
 
     return `${ip}|${userCode}|${action}`
   }

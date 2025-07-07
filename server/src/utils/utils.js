@@ -269,10 +269,6 @@ exports.isEnglish = str => {
   return /^[A-Za-z0-9.!@#$%&*()-_ ,]*$/i.test(str)
 }
 
-exports.getClientIP = req => {
-  return req.ip
-}
-
 exports.reFormatFullPath = path => {
   if (!path) return ''
 
