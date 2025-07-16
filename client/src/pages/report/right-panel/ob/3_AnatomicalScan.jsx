@@ -60,7 +60,6 @@ const AnatomicalScan = ({ patient }) => {
   const [loading, setLoading] = useState(false)
   const [dialog, setDialog] = useState({})
   const [showInfo, setShowInfo] = useState(defaultShowInfo)
-  const [flagReload, setFlagReload] = useState(false)
 
   const templateMap = {
     'Head Shape': {
@@ -223,7 +222,7 @@ const AnatomicalScan = ({ patient }) => {
     }
 
     // eslint-disable-next-line
-  }, [patient, flagReload])
+  }, [patient])
 
   function resetData() {
     setData(null)
@@ -520,10 +519,13 @@ const AnatomicalScan = ({ patient }) => {
     setDataFormSend(prev => {
       let normalSet = dataForm
         .map((d, index) => {
-          if (index <= 13 && d.display !== 'Cord') {
+          if (index <= 13 && d.name !== 'Genitalia') {
             return {
               valueId: d.valueId,
-              value: d.options.find(o => o.display === 'Normal')?.opId || 0,
+              value:
+                d.options.find(
+                  o => o.display === 'Normal' || o.display === '3 vessels'
+                )?.opId || 0,
             }
           }
         })
@@ -560,12 +562,12 @@ const AnatomicalScan = ({ patient }) => {
 
       if (res.data.data) {
         updateDataChange('0')
+        resetData()
+        initData()
       } else {
         // in case of error, auto save will execute
         updateDataChange('1')
       }
-
-      setFlagReload(true)
     } catch (error) {
       console.log(error)
     }
@@ -592,6 +594,7 @@ const AnatomicalScan = ({ patient }) => {
               variant='contained'
               color='info'
               onClick={handleAllNormal}
+              sx={{ display: loading && 'none' }}
             >
               ALL NORMAL
             </Button>
