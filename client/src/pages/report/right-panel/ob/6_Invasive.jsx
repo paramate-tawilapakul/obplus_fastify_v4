@@ -43,6 +43,7 @@ import Amniocentesis from './invasive-procedure/1_Amniocentesis'
 import CVS from './invasive-procedure/2_CVS'
 import Cordocentesis from './invasive-procedure/3_Cordocentesis'
 import IntrauterineTransfusion from './invasive-procedure/4_IntrauterineTransfusion'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.invasivePrerequisite.id
 let backupData = null
@@ -1033,284 +1034,281 @@ const Invasive = ({ patient }) => {
   return (
     <>
       {/* {loading && <LinearProgress sx={{ mt: 0.5 }} />} */}
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-      <div
-        style={{
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div style={{ width: 750 }}>
-            {dataForm.length > 0 && (
-              <>
-                <Box sx={{ m: inputMargin, width: '100%' }}>
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div style={{ width: 750 }}>
+          {dataForm.length > 0 && (
+            <>
+              <Box sx={{ m: inputMargin, width: '100%' }}>
+                <Button
+                  variant={
+                    btnActive.prerequisite.active ? 'contained' : 'outlined'
+                  }
+                  size='large'
+                  color='info'
+                  onClick={() => {
+                    setBtnActive(prev => ({
+                      prerequisite: { ...prev.prerequisite, active: true },
+                      procedure: {
+                        ...prev.procedure,
+                        active: false,
+                      },
+                    }))
+
+                    prerequisiteRef.current.style.display = 'block'
+                    procedureRef.current.style.display = 'none'
+                    resetData()
+                    initData()
+                    // updateDataChange('0')
+                    // updateProcedureDataChange('0')
+                  }}
+                >
+                  Prerequisite Data
+                </Button>
+                {btnActive.procedure.show && (
                   <Button
+                    sx={{ ml: 1 }}
                     variant={
-                      btnActive.prerequisite.active ? 'contained' : 'outlined'
+                      btnActive.procedure.active ? 'contained' : 'outlined'
                     }
                     size='large'
                     color='info'
                     onClick={() => {
                       setBtnActive(prev => ({
-                        prerequisite: { ...prev.prerequisite, active: true },
+                        prerequisite: { ...prev.prerequisite, active: false },
                         procedure: {
                           ...prev.procedure,
-                          active: false,
+                          active: true,
                         },
                       }))
 
-                      prerequisiteRef.current.style.display = 'block'
-                      procedureRef.current.style.display = 'none'
-                      resetData()
-                      initData()
-                      // updateDataChange('0')
-                      // updateProcedureDataChange('0')
+                      procedureRef.current.style.display = 'block'
+                      prerequisiteRef.current.style.display = 'none'
+                      autoSave(backupData)
                     }}
                   >
-                    Prerequisite Data
+                    {btnActive.procedure.name}
                   </Button>
-                  {btnActive.procedure.show && (
-                    <Button
-                      sx={{ ml: 1 }}
-                      variant={
-                        btnActive.procedure.active ? 'contained' : 'outlined'
+                )}
+              </Box>
+
+              <div ref={prerequisiteRef}>
+                <div
+                  ref={prerequisiteRef}
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'flex-start',
+                    width: '100%',
+                    marginTop: 0,
+                    marginLeft: 10,
+                  }}
+                >
+                  <Box sx={{ m: inputMargin }}>
+                    <SelectField
+                      value={
+                        patient?.lmpGa === dataForm[0].content
+                          ? optionsGA[0].opId
+                          : patient?.edcGa === dataForm[0].content
+                          ? optionsGA[1].opId
+                          : patient?.usGa === dataForm[0].content
+                          ? optionsGA[2].opId
+                          : dataForm[0].content === ''
+                          ? ''
+                          : optionsGA[3].opId
                       }
-                      size='large'
-                      color='info'
-                      onClick={() => {
-                        setBtnActive(prev => ({
-                          prerequisite: { ...prev.prerequisite, active: false },
-                          procedure: {
-                            ...prev.procedure,
-                            active: true,
-                          },
-                        }))
-
-                        procedureRef.current.style.display = 'block'
-                        prerequisiteRef.current.style.display = 'none'
-                        autoSave(backupData)
-                      }}
-                    >
-                      {btnActive.procedure.name}
-                    </Button>
-                  )}
-                </Box>
-
-                <div ref={prerequisiteRef}>
-                  <div
-                    ref={prerequisiteRef}
-                    style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      justifyContent: 'flex-start',
-                      width: '100%',
-                      marginTop: 0,
-                      marginLeft: 10,
-                    }}
-                  >
-                    <Box sx={{ m: inputMargin }}>
-                      <SelectField
-                        value={
-                          patient?.lmpGa === dataForm[0].content
-                            ? optionsGA[0].opId
-                            : patient?.edcGa === dataForm[0].content
-                            ? optionsGA[1].opId
-                            : patient?.usGa === dataForm[0].content
-                            ? optionsGA[2].opId
-                            : dataForm[0].content === ''
-                            ? ''
-                            : optionsGA[3].opId
-                        }
-                        handleChange={e =>
-                          handleChange(e, {
-                            ...dataForm[0],
-                            selectOption: true,
-                          })
-                        }
-                        form={{
+                      handleChange={e =>
+                        handleChange(e, {
                           ...dataForm[0],
-                          options: optionsGA,
-                        }}
-                        minWidth={160}
-                      />
-                      <InputTextField
-                        inputRef={gaRef}
-                        value={dataForm[0].content}
-                        handleChange={e => handleChange(e, dataForm[0])}
-                        form={{ ...dataForm[0], name: '' }}
-                        width={162}
-                        sx={{ ml: 1 }}
-                      />
-                    </Box>
+                          selectOption: true,
+                        })
+                      }
+                      form={{
+                        ...dataForm[0],
+                        options: optionsGA,
+                      }}
+                      minWidth={160}
+                    />
+                    <InputTextField
+                      inputRef={gaRef}
+                      value={dataForm[0].content}
+                      handleChange={e => handleChange(e, dataForm[0])}
+                      form={{ ...dataForm[0], name: '' }}
+                      width={162}
+                      sx={{ ml: 1 }}
+                    />
+                  </Box>
 
+                  <Box sx={{ m: inputMargin }}>
+                    <SelectField
+                      value={dataForm[1].contentOption || ''}
+                      handleChange={e => handleChange(e, dataForm[1])}
+                      form={dataForm[1]}
+                    />
+                  </Box>
+
+                  <Box sx={{ m: inputMargin }}>
+                    <SelectField
+                      value={dataForm[2].contentOption || ''}
+                      handleChange={e => handleChange(e, dataForm[2])}
+                      form={dataForm[2]}
+                    />
+                  </Box>
+
+                  {showOptions.indirectCoombsTest && (
                     <Box sx={{ m: inputMargin }}>
                       <SelectField
-                        value={dataForm[1].contentOption || ''}
-                        handleChange={e => handleChange(e, dataForm[1])}
-                        form={dataForm[1]}
+                        value={dataForm[3].contentOption || ''}
+                        handleChange={e => handleChange(e, dataForm[3])}
+                        form={dataForm[3]}
                       />
                     </Box>
+                  )}
 
-                    <Box sx={{ m: inputMargin }}>
-                      <SelectField
-                        value={dataForm[2].contentOption || ''}
-                        handleChange={e => handleChange(e, dataForm[2])}
-                        form={dataForm[2]}
-                      />
-                    </Box>
-
-                    {showOptions.indirectCoombsTest && (
+                  {showOptions.antiDtiter && (
+                    <>
+                      <Box sx={{ m: inputMargin }}>
+                        <InputTextField
+                          value={dataForm[4].content}
+                          handleChange={e => handleChange(e, dataForm[4])}
+                          form={dataForm[4]}
+                        />
+                      </Box>
                       <Box sx={{ m: inputMargin }}>
                         <SelectField
-                          value={dataForm[3].contentOption || ''}
-                          handleChange={e => handleChange(e, dataForm[3])}
-                          form={dataForm[3]}
+                          value={dataForm[5].contentOption || ''}
+                          handleChange={e => handleChange(e, dataForm[5])}
+                          form={dataForm[5]}
+                          minWidth={180}
                         />
-                      </Box>
-                    )}
-
-                    {showOptions.antiDtiter && (
-                      <>
-                        <Box sx={{ m: inputMargin }}>
+                        {showOptions.antiDimmunUnit && (
                           <InputTextField
-                            value={dataForm[4].content}
-                            handleChange={e => handleChange(e, dataForm[4])}
-                            form={dataForm[4]}
+                            value={dataForm[6].content?.split(' ')[0] || ''}
+                            handleChange={e => handleChange(e, dataForm[6])}
+                            form={{ ...dataForm[6], name: '' }}
+                            width={142}
+                            sx={{ ml: 1 }}
+                            endAdornment={
+                              <InputAdornment position='end'>
+                                <div style={{ fontSize: 13, marginRight: -10 }}>
+                                  {dataForm[6].unit}
+                                </div>
+                              </InputAdornment>
+                            }
                           />
-                        </Box>
-                        <Box sx={{ m: inputMargin }}>
-                          <SelectField
-                            value={dataForm[5].contentOption || ''}
-                            handleChange={e => handleChange(e, dataForm[5])}
-                            form={dataForm[5]}
-                            minWidth={180}
-                          />
-                          {showOptions.antiDimmunUnit && (
-                            <InputTextField
-                              value={dataForm[6].content?.split(' ')[0] || ''}
-                              handleChange={e => handleChange(e, dataForm[6])}
-                              form={{ ...dataForm[6], name: '' }}
-                              width={142}
-                              sx={{ ml: 1 }}
-                              endAdornment={
-                                <InputAdornment position='end'>
-                                  <div
-                                    style={{ fontSize: 13, marginRight: -10 }}
-                                  >
-                                    {dataForm[6].unit}
-                                  </div>
-                                </InputAdornment>
-                              }
-                            />
-                          )}
-                        </Box>
-                      </>
-                    )}
-                    <Box sx={{ m: inputMargin, width: '91%' }}>
-                      <Divider textAlign='left'>
-                        <Typography variant='h5'>
-                          Indications for invasive procedure
-                        </Typography>
-                      </Divider>
-                    </Box>
-
-                    {indsForInvasive.map((cname, index) => {
-                      return CheckBox({
-                        ...dataForm[7],
-                        cname,
-                        index,
-                      })
-                    })}
-                    <Box sx={{ m: inputMargin, mb: 0, mt: 1.5, width: '91%' }}>
-                      <Divider />
-                    </Box>
-                    <Box sx={{ m: inputMargin, width: '100%', mt: 2 }}>
-                      <SelectField
-                        value={dataForm[8].contentOption || ''}
-                        handleChange={e => handleChange(e, dataForm[8])}
-                        form={dataForm[8]}
-                        minWidth={160}
-                      />
-                      {showContrainText && (
-                        <InputTextField
-                          value={dataForm[9].content}
-                          handleChange={e => handleChange(e, dataForm[9])}
-                          form={{ ...dataForm[9], name: '' }}
-                          width={250}
-                          sx={{ ml: 1 }}
-                        />
-                      )}
-                    </Box>
-                    <Box sx={{ m: inputMargin, width: '91%' }}>
-                      <Divider />
-                    </Box>
-                    <Box sx={{ m: inputMargin, width: '100%' }}>
-                      <SelectField
-                        value={dataForm[10].contentOption || ''}
-                        handleChange={async e => {
-                          handleChange(e, dataForm[10])
-
-                          let value = e.target.value
-
-                          let otherId = dataForm[10].options[4].id
-
-                          if (value && value !== otherId) {
-                            let pname = dataForm[10].options.find(
-                              o => o.opId === value
-                            ).name
-                            // console.log(pname)
-                            await getProcedureForm(pname)
-                            await autoSave(backupData)
-                            // updateDataChange('1')
-                          }
-                        }}
-                        form={dataForm[10]}
-                        minWidth={418}
-                      />
-                    </Box>
-                    {showOtherProcedure && (
-                      <Box sx={{ m: inputMargin, width: '100%' }}>
-                        <CommentField
-                          minWidth={418}
-                          value={dataForm[11].content}
-                          handleChange={e => handleChange(e, dataForm[11])}
-                          form={{ ...dataForm[11], name: '' }}
-                        />
+                        )}
                       </Box>
+                    </>
+                  )}
+                  <Box sx={{ m: inputMargin, width: '91%' }}>
+                    <Divider textAlign='left'>
+                      <Typography variant='h5'>
+                        Indications for invasive procedure
+                      </Typography>
+                    </Divider>
+                  </Box>
+
+                  {indsForInvasive.map((cname, index) => {
+                    return CheckBox({
+                      ...dataForm[7],
+                      cname,
+                      index,
+                    })
+                  })}
+                  <Box sx={{ m: inputMargin, mb: 0, mt: 1.5, width: '91%' }}>
+                    <Divider />
+                  </Box>
+                  <Box sx={{ m: inputMargin, width: '100%', mt: 2 }}>
+                    <SelectField
+                      value={dataForm[8].contentOption || ''}
+                      handleChange={e => handleChange(e, dataForm[8])}
+                      form={dataForm[8]}
+                      minWidth={160}
+                    />
+                    {showContrainText && (
+                      <InputTextField
+                        value={dataForm[9].content}
+                        handleChange={e => handleChange(e, dataForm[9])}
+                        form={{ ...dataForm[9], name: '' }}
+                        width={250}
+                        sx={{ ml: 1 }}
+                      />
                     )}
+                  </Box>
+                  <Box sx={{ m: inputMargin, width: '91%' }}>
+                    <Divider />
+                  </Box>
+                  <Box sx={{ m: inputMargin, width: '100%' }}>
+                    <SelectField
+                      value={dataForm[10].contentOption || ''}
+                      handleChange={async e => {
+                        handleChange(e, dataForm[10])
 
-                    <Button
-                      sx={{ ...btStyle, m: inputMargin }}
-                      variant='contained'
-                      startIcon={<CheckIcon />}
-                      onClick={() => saveData()}
-                    >
-                      Save
-                    </Button>
-                  </div>
-                </div>
+                        let value = e.target.value
 
-                <div ref={procedureRef} style={{ display: 'none' }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexWrap: 'wrap',
-                      justifyContent: 'flex-start',
-                      width: '100%',
-                      marginTop: 0,
-                      marginLeft: 10,
+                        let otherId = dataForm[10].options[4].id
+
+                        if (value && value !== otherId) {
+                          let pname = dataForm[10].options.find(
+                            o => o.opId === value
+                          ).name
+                          // console.log(pname)
+                          await getProcedureForm(pname)
+                          await autoSave(backupData)
+                          // updateDataChange('1')
+                        }
+                      }}
+                      form={dataForm[10]}
+                      minWidth={418}
+                    />
+                  </Box>
+                  {showOtherProcedure && (
+                    <Box sx={{ m: inputMargin, width: '100%' }}>
+                      <CommentField
+                        minWidth={418}
+                        value={dataForm[11].content}
+                        handleChange={e => handleChange(e, dataForm[11])}
+                        form={{ ...dataForm[11], name: '' }}
+                      />
+                    </Box>
+                  )}
+
+                  <Button
+                    sx={{
+                      ...btStyle,
+                      m: inputMargin,
+                      display: loading && 'none',
                     }}
+                    variant='contained'
+                    startIcon={<CheckIcon />}
+                    onClick={() => saveData()}
                   >
-                    {procedure[btnActive.procedure.name] &&
-                      btnActive.procedure.active &&
-                      renderProcedure(btnActive.procedure.name)}
-                  </div>
+                    Save
+                  </Button>
                 </div>
-              </>
-            )}
-          </div>
-        </Fade>
-      </div>
+              </div>
+
+              <div ref={procedureRef} style={{ display: 'none' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'flex-start',
+                    width: '100%',
+                    marginTop: 0,
+                    marginLeft: 10,
+                  }}
+                >
+                  {procedure[btnActive.procedure.name] &&
+                    btnActive.procedure.active &&
+                    renderProcedure(btnActive.procedure.name)}
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+      </Fade>
 
       <SnackBarWarning
         snackWarning={snackWarning}

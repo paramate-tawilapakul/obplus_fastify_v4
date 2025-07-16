@@ -25,6 +25,7 @@ import { sleep } from '../../../../utils'
 import CommentField from '../../../../components/page-tools/CommentField'
 import SelectField from '../../../../components/page-tools/SelectField'
 import { initFormSend, storeBackupData } from '../../report-utils'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.kidneys.id
 let backupData = null
@@ -159,75 +160,65 @@ const Kidneys = ({ patient }) => {
 
   return (
     <>
-      {/* {loading && <LinearProgress sx={{ mt: 0.5 }} />} */}
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-      <div
-        style={{
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'flex-start',
-              width: 700,
-              marginTop: 3,
-              marginLeft: 10,
-            }}
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+            width: 700,
+            marginTop: 3,
+            marginLeft: 10,
+          }}
+        >
+          {dataForm.length > 0 &&
+            dataForm.map((form, i) => {
+              if (form.type === 'S') {
+                let value = ''
+                form.options.forEach(op => {
+                  const test = data.find(data => data.contentOption === op.opId)
+                  if (test) value = test.contentOption
+                })
+
+                return (
+                  <Box key={i} sx={{ m: inputMargin }}>
+                    <SelectField
+                      value={value}
+                      handleChange={e => handleChange(e, form)}
+                      form={form}
+                    />
+                  </Box>
+                )
+              } else if (form.type === 'A') {
+                let value = ''
+
+                const test = data.find(data => data.refValueId === form.valueId)
+                if (test && test.content) value = test.content
+
+                return (
+                  <Box key={i} sx={{ m: inputMargin }}>
+                    <CommentField
+                      minWidth={673}
+                      form={form}
+                      value={value}
+                      handleChange={e => handleChange(e, form)}
+                    />
+                  </Box>
+                )
+              }
+            })}
+          <Button
+            sx={{ ...btStyle, m: inputMargin }}
+            variant='contained'
+            startIcon={<CheckIcon />}
+            onClick={() => saveData()}
           >
-            {dataForm.length > 0 &&
-              dataForm.map((form, i) => {
-                if (form.type === 'S') {
-                  let value = ''
-                  form.options.forEach(op => {
-                    const test = data.find(
-                      data => data.contentOption === op.opId
-                    )
-                    if (test) value = test.contentOption
-                  })
-
-                  return (
-                    <Box key={i} sx={{ m: inputMargin }}>
-                      <SelectField
-                        value={value}
-                        handleChange={e => handleChange(e, form)}
-                        form={form}
-                      />
-                    </Box>
-                  )
-                } else if (form.type === 'A') {
-                  let value = ''
-
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
-
-                  return (
-                    <Box key={i} sx={{ m: inputMargin }}>
-                      <CommentField
-                        minWidth={673}
-                        form={form}
-                        value={value}
-                        handleChange={e => handleChange(e, form)}
-                      />
-                    </Box>
-                  )
-                }
-              })}
-            <Button
-              sx={{ ...btStyle, m: inputMargin }}
-              variant='contained'
-              startIcon={<CheckIcon />}
-              onClick={() => saveData()}
-            >
-              Save
-            </Button>
-          </div>
-        </Fade>
-      </div>
+            Save
+          </Button>
+        </div>
+      </Fade>
 
       <SnackBarWarning
         snackWarning={snackWarning}

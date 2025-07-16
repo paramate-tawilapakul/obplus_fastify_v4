@@ -44,6 +44,7 @@ import Heart from './anatomical-abnormal/11_Heart'
 import Cord from './anatomical-abnormal/12_Cord'
 import Abdomen from './anatomical-abnormal/13_Abdomen'
 import Genitalia from './anatomical-abnormal/14_Genitalia'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.anatomicalScan.id
 let backupData = null
@@ -572,121 +573,117 @@ const AnatomicalScan = ({ patient }) => {
 
   return (
     <>
-      <div
-        style={{
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'flex-start',
-              width: 750,
-              marginTop: 3,
-              marginLeft: 10,
-            }}
-          >
-            <div style={{ width: 700, marginLeft: 7, marginBottom: 5 }}>
-              <Button
-                size='medium'
-                variant='contained'
-                color='info'
-                onClick={handleAllNormal}
-              >
-                ALL NORMAL
-              </Button>
-            </div>
-            {dataForm.length > 0 && (
-              <>
-                {dataForm.map((form, i) => {
-                  if (form.name === 'Structure') return
-                  let value = ''
-                  if (form.type === 'S') {
-                    form.options.forEach(op => {
-                      const test = data.find(
-                        data => data.contentOption === op.opId
-                      )
-                      if (test) value = test.contentOption
-                    })
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-                    return (
-                      <div key={i}>
-                        <Box sx={{ m: inputMargin }}>
-                          {showInfo[form.valueId]?.show &&
-                            showInfo[form.valueId]?.opId && (
-                              <>
-                                <InfoIcon
-                                  onClick={() =>
-                                    handleAbnormalDialog(
-                                      form,
-                                      showInfo[form.valueId].opId,
-                                      templateMap[form.name].id
-                                    )
-                                  }
-                                  sx={{
-                                    cursor: 'pointer',
-                                    mt: 1,
-                                    mr: 0.5,
-                                    color: showInfo[form.valueId].color,
-                                  }}
-                                />
-                                {templateMap[form.name].component(form.valueId)}
-                              </>
-                            )}
-                          <SelectField
-                            value={value}
-                            handleChange={e => handleChange(e, form)}
-                            form={form}
-                            minWidth={
-                              showInfo[form.valueId]?.show ? 302 : undefined
-                            }
-                          />
-                        </Box>
-                      </div>
-                    )
-                  } else {
-                    const test = data.find(
-                      data => data.refValueId === form.valueId
-                    )
-                    if (test && test.content) value = test.content
-
-                    return (
-                      <div key={i}>
-                        <Box sx={{ m: inputMargin }}>
-                          <CommentField
-                            minWidth={673}
-                            form={form}
-                            value={value}
-                            handleChange={e => handleChange(e, form)}
-                          />
-                        </Box>
-                      </div>
-                    )
-                  }
-                })}
-              </>
-            )}
-
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+            width: 750,
+            marginTop: 3,
+            marginLeft: 10,
+          }}
+        >
+          <div style={{ width: 700, marginLeft: 7, marginBottom: 5 }}>
             <Button
-              sx={{ ...btStyle, m: 1.3 }}
+              size='medium'
               variant='contained'
-              startIcon={<CheckIcon />}
-              onClick={() => saveData()}
+              color='info'
+              onClick={handleAllNormal}
             >
-              Save
+              ALL NORMAL
             </Button>
           </div>
-        </Fade>
+          {dataForm.length > 0 && (
+            <>
+              {dataForm.map((form, i) => {
+                if (form.name === 'Structure') return
+                let value = ''
+                if (form.type === 'S') {
+                  form.options.forEach(op => {
+                    const test = data.find(
+                      data => data.contentOption === op.opId
+                    )
+                    if (test) value = test.contentOption
+                  })
 
-        <SnackBarWarning
-          snackWarning={snackWarning}
-          setSnackWarning={setSnackWarning}
-          vertical='top'
-          horizontal='center'
-        />
-      </div>
+                  return (
+                    <div key={i}>
+                      <Box sx={{ m: inputMargin }}>
+                        {showInfo[form.valueId]?.show &&
+                          showInfo[form.valueId]?.opId && (
+                            <>
+                              <InfoIcon
+                                onClick={() =>
+                                  handleAbnormalDialog(
+                                    form,
+                                    showInfo[form.valueId].opId,
+                                    templateMap[form.name].id
+                                  )
+                                }
+                                sx={{
+                                  cursor: 'pointer',
+                                  mt: 1,
+                                  mr: 0.5,
+                                  color: showInfo[form.valueId].color,
+                                }}
+                              />
+                              {templateMap[form.name].component(form.valueId)}
+                            </>
+                          )}
+                        <SelectField
+                          value={value}
+                          handleChange={e => handleChange(e, form)}
+                          form={form}
+                          minWidth={
+                            showInfo[form.valueId]?.show ? 302 : undefined
+                          }
+                        />
+                      </Box>
+                    </div>
+                  )
+                } else {
+                  const test = data.find(
+                    data => data.refValueId === form.valueId
+                  )
+                  if (test && test.content) value = test.content
+
+                  return (
+                    <div key={i}>
+                      <Box sx={{ m: inputMargin }}>
+                        <CommentField
+                          minWidth={673}
+                          form={form}
+                          value={value}
+                          handleChange={e => handleChange(e, form)}
+                        />
+                      </Box>
+                    </div>
+                  )
+                }
+              })}
+            </>
+          )}
+
+          <Button
+            sx={{ ...btStyle, m: 1.3, display: loading && 'none' }}
+            variant='contained'
+            startIcon={<CheckIcon />}
+            onClick={() => saveData()}
+          >
+            Save
+          </Button>
+        </div>
+      </Fade>
+
+      <SnackBarWarning
+        snackWarning={snackWarning}
+        setSnackWarning={setSnackWarning}
+        vertical='top'
+        horizontal='center'
+      />
     </>
   )
 }

@@ -32,6 +32,7 @@ import AutoCompleteField from '../../../../components/page-tools/AutoCompleteFie
 import InputTextField from '../../../../components/page-tools/InputTextField'
 import { storeBackupData, initFormSend } from '../../report-utils'
 import Details from './early-abnormal/Details'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.earlyPregnancy.id
 let backupData = null
@@ -339,134 +340,130 @@ const EarlyPregnancy = ({ patient }) => {
 
   return (
     <>
-      <div
-        style={{
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'flex-start',
-              width: 750,
-              marginTop: 3,
-              marginLeft: 10,
-            }}
-          >
-            {data && dataForm?.length > 0 && (
-              <>
-                {dataForm?.map((form, i) => {
-                  if (form.name === 'Structure') return
-                  let value = ''
-                  if (form.type === 'S') {
-                    form.options.forEach(op => {
-                      const test = data.find(
-                        data => data.contentOption === op.opId
-                      )
-                      if (test) value = test.contentOption
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-                      if (form.valueId === 81) form.name = 'Heart Action'
-                    })
-
-                    return (
-                      <div key={i}>
-                        <Box sx={{ m: inputMargin }}>
-                          {form.name === 'Placenta Location' ? (
-                            <AutoCompleteField
-                              ctrlValue={placenta}
-                              handleChange={(e, newValue) =>
-                                handleChange(e, form, newValue, true)
-                              }
-                              form={form}
-                            />
-                          ) : (
-                            <>
-                              {form.name === 'Cord' && showInfo.show && (
-                                <InfoIcon
-                                  onClick={() =>
-                                    handleAbnormalDialog(form, showInfo.opId)
-                                  }
-                                  sx={{
-                                    cursor: 'pointer',
-                                    mt: 1,
-                                    mr: 0.5,
-                                    color: showInfo.color,
-                                  }}
-                                />
-                              )}
-                              <SelectField
-                                value={value}
-                                handleChange={e => handleChange(e, form)}
-                                form={form}
-                                minWidth={
-                                  form.name === 'Cord' && showInfo.show
-                                    ? 303
-                                    : undefined
-                                }
-                              />
-                            </>
-                          )}
-                        </Box>
-                      </div>
-                    )
-                  } else {
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+            width: 750,
+            marginTop: 3,
+            marginLeft: 10,
+          }}
+        >
+          {data && dataForm?.length > 0 && (
+            <>
+              {dataForm?.map((form, i) => {
+                if (form.name === 'Structure') return
+                let value = ''
+                if (form.type === 'S') {
+                  form.options.forEach(op => {
                     const test = data.find(
-                      data => data.refValueId === form.valueId
+                      data => data.contentOption === op.opId
                     )
-                    if (test && test.content) value = test.content
+                    if (test) value = test.contentOption
 
-                    return (
-                      <div key={i}>
-                        {form.type === 'A' ? (
-                          <Box sx={{ m: inputMargin }}>
-                            <CommentField
-                              minWidth={673}
-                              form={form}
-                              value={value}
-                              handleChange={e => handleChange(e, form)}
-                            />
-                          </Box>
+                    if (form.valueId === 81) form.name = 'Heart Action'
+                  })
+
+                  return (
+                    <div key={i}>
+                      <Box sx={{ m: inputMargin }}>
+                        {form.name === 'Placenta Location' ? (
+                          <AutoCompleteField
+                            ctrlValue={placenta}
+                            handleChange={(e, newValue) =>
+                              handleChange(e, form, newValue, true)
+                            }
+                            form={form}
+                          />
                         ) : (
-                          <Box sx={{ m: inputMargin }}>
-                            <InputTextField
-                              form={form}
+                          <>
+                            {form.name === 'Cord' && showInfo.show && (
+                              <InfoIcon
+                                onClick={() =>
+                                  handleAbnormalDialog(form, showInfo.opId)
+                                }
+                                sx={{
+                                  cursor: 'pointer',
+                                  mt: 1,
+                                  mr: 0.5,
+                                  color: showInfo.color,
+                                }}
+                              />
+                            )}
+                            <SelectField
                               value={value}
                               handleChange={e => handleChange(e, form)}
+                              form={form}
+                              minWidth={
+                                form.name === 'Cord' && showInfo.show
+                                  ? 303
+                                  : undefined
+                              }
                             />
-                          </Box>
+                          </>
                         )}
-                      </div>
-                    )
-                  }
-                })}
-              </>
-            )}
+                      </Box>
+                    </div>
+                  )
+                } else {
+                  const test = data.find(
+                    data => data.refValueId === form.valueId
+                  )
+                  if (test && test.content) value = test.content
 
-            <Button
-              sx={{ ...btStyle, m: 1.3 }}
-              variant='contained'
-              startIcon={<CheckIcon />}
-              onClick={() => saveData()}
-            >
-              Save
-            </Button>
-          </div>
-        </Fade>
+                  return (
+                    <div key={i}>
+                      {form.type === 'A' ? (
+                        <Box sx={{ m: inputMargin }}>
+                          <CommentField
+                            minWidth={673}
+                            form={form}
+                            value={value}
+                            handleChange={e => handleChange(e, form)}
+                          />
+                        </Box>
+                      ) : (
+                        <Box sx={{ m: inputMargin }}>
+                          <InputTextField
+                            form={form}
+                            value={value}
+                            handleChange={e => handleChange(e, form)}
+                          />
+                        </Box>
+                      )}
+                    </div>
+                  )
+                }
+              })}
+            </>
+          )}
 
-        <Details
-          dialog={dialog}
-          setOpen={setDialog}
-          setSnackWarning={setSnackWarning}
-        />
-        <SnackBarWarning
-          snackWarning={snackWarning}
-          setSnackWarning={setSnackWarning}
-          vertical='top'
-          horizontal='center'
-        />
-      </div>
+          <Button
+            sx={{ ...btStyle, m: 1.3, display: loading && 'none' }}
+            variant='contained'
+            startIcon={<CheckIcon />}
+            onClick={() => saveData()}
+          >
+            Save
+          </Button>
+        </div>
+      </Fade>
+
+      <Details
+        dialog={dialog}
+        setOpen={setDialog}
+        setSnackWarning={setSnackWarning}
+      />
+      <SnackBarWarning
+        snackWarning={snackWarning}
+        setSnackWarning={setSnackWarning}
+        vertical='top'
+        horizontal='center'
+      />
     </>
   )
 }

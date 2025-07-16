@@ -1,4 +1,4 @@
-export default [
+const ob_indication = [
   'First ANC',
   'First trimester bleeding',
   'First trimester screening',
@@ -1922,3 +1922,8 @@ export default [
   '40+5 wks, AFI',
   'AF',
 ]
+
+// const newJson = ob_indication.map(item => ({ name: item }))
+// console.log(newJson)
+
+export default ob_indication

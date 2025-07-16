@@ -30,6 +30,7 @@ import {
 import { getHost } from '../../../utils'
 import DataContext from '../../../context/data/dataContext'
 import { red, cyan } from '@mui/material/colors'
+import SkeletonLoading from '../../../components/page-tools/SkeletonLoading'
 
 const imageBorderColor = theme => {
   if (theme === 'dark') return { default: cyan[400], selected: cyan[800] }
@@ -443,11 +444,17 @@ const Image = ({ patient }) => {
           </div>
         </DialogTitle>
         <Divider />
-        {loading && (
+        {/* {loading && (
           <div style={{ position: 'absolute', width: '96%' }}>
             <LinearProgress sx={{ mt: 8, mx: 1, width: '100%' }} />
           </div>
-        )}
+        )} */}
+        <div style={{ position: 'absolute', width: '96%' }}>
+          <SkeletonLoading
+            loading={loading}
+            style={{ mt: 8, mx: 1, width: '100%' }}
+          />
+        </div>
         <DialogContent
           sx={{
             p: 0,
@@ -460,7 +467,7 @@ const Image = ({ patient }) => {
             // border: '1px solid yellow',
           }}
         >
-          <Fade in={!loading ? true : false} timeout={!loading ? 300 : 0}>
+          <Fade in={!loading ? true : false} timeout={!loading ? 200 : 0}>
             <div
               style={{
                 display: 'flex',

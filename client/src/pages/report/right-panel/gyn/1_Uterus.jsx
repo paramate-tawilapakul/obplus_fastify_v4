@@ -48,6 +48,7 @@ import InputTextField from '../../../../components/page-tools/InputTextField'
 import { initFormSend, storeBackupData } from '../../report-utils'
 import './style.css'
 import Fibroids from './Fibroids'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.uterus.id
 let backupData = null
@@ -321,365 +322,352 @@ const Uterus = ({ patient }) => {
   return (
     <>
       {/* {loading && <LinearProgress sx={{ mt: 0.5 }} />} */}
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-      <div
-        style={{
-          // height: '100%',
-          // overflowY: 'auto',
-          // minHeight: 480,
-          // maxHeight: 670,
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'flex-start',
-              width: 700,
-              marginTop: 3,
-              marginLeft: 10,
-            }}
-          >
-            {dataForm.length > 0 &&
-              dataForm
-                .filter(form => form.valueId >= 492 && form.valueId <= 499)
-                .map((form, i) => {
-                  if (form.type === 'S') {
-                    let value = ''
-                    form.options.forEach(op => {
-                      const test = data.find(
-                        data => data.contentOption === op.opId
-                      )
-                      if (test) value = test.contentOption
-                    })
-
-                    if (form.valueId === 492) {
-                      let temp = [...form.options]
-                      let onlyOther = temp.filter(t => t.name === 'Other')
-                      let withOutOther = temp.filter(t => t.name !== 'Other')
-                      form.options = [...onlyOther, ...withOutOther]
-                    }
-
-                    return (
-                      <div
-                        key={i}
-                        style={{ width: form.valueId === 494 && 650 }}
-                      >
-                        <Box sx={{ m: inputMargin }}>
-                          <SelectField
-                            value={value}
-                            handleChange={e => handleChange(e, form)}
-                            form={form}
-                          />
-                        </Box>
-                        {showFreetext && form.valueId === 492 && (
-                          <Box sx={{ m: inputMargin, mt: 2 }}>
-                            <InputTextField
-                              value={
-                                data.find(
-                                  data => data.contentValueName === 'Freetext'
-                                )?.content || ''
-                              }
-                              handleChange={e =>
-                                handleChange(
-                                  e,
-                                  dataForm.find(f => f.name === 'Freetext') ||
-                                    null
-                                )
-                              }
-                              form={
-                                dataForm.find(f => f.name === 'Freetext') ||
-                                null
-                              }
-                              label='Uterus Freetext'
-                            />
-                          </Box>
-                        )}
-                        {showAbnormal.myometrium && form.valueId === 494 && (
-                          <Box sx={{ m: inputMargin }}>
-                            <fieldset
-                              className='abnormal'
-                              style={
-                                {
-                                  // backgroundColor:
-                                  //   theme.palette.mode === 'light'
-                                  //     ? 'white'
-                                  //     : '#393939',
-                                }
-                              }
-                            >
-                              <legend
-                                style={{
-                                  paddingLeft: 5,
-                                  fontWeight: 'bold',
-                                  fontSize: 16,
-                                }}
-                              >
-                                Myometrium Abnormal
-                              </legend>
-                              <Box
-                                sx={{
-                                  pl: 1.6,
-                                  color: theme =>
-                                    MODE[theme.palette.mode].dataGrid.font,
-                                }}
-                              >
-                                <FormGroup
-                                  sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                  }}
-                                >
-                                  <div>
-                                    <FormControlLabel
-                                      control={
-                                        <Checkbox
-                                          defaultChecked={
-                                            data
-                                              .find(
-                                                data => data.refValueId === 495
-                                              )
-                                              ?.content.split('-')[0] ===
-                                            'Thickening'
-                                              ? true
-                                              : false
-                                          }
-                                          onChange={e =>
-                                            handleChange(
-                                              e,
-                                              dataForm.find(
-                                                f => f.valueId === 495
-                                              ) || null
-                                            )
-                                          }
-                                        />
-                                      }
-                                      label='Thickening'
-                                      sx={{ width: 150 }}
-                                    />
-                                    <FormControl
-                                      size='small'
-                                      sx={{
-                                        ...inputStyle,
-                                        m: 0,
-                                        minWidth: 300,
-                                      }}
-                                    >
-                                      <Select
-                                        size='small'
-                                        variant='outlined'
-                                        notched
-                                        sx={{
-                                          fontSize: 16,
-                                          pb: 0,
-                                          color: theme =>
-                                            MODE[theme.palette.mode].dataGrid
-                                              .font,
-                                        }}
-                                        defaultValue={
-                                          data
-                                            .find(d => d.refValueId === 495)
-                                            ?.content?.split('-')[1] || ''
-                                        }
-                                        onChange={e =>
-                                          handleCustomInputChange(e, 495)
-                                        }
-                                      >
-                                        <MenuItem value=''></MenuItem>
-                                        <MenuItem value='Anterior wall'>
-                                          Anterior wall
-                                        </MenuItem>
-                                        <MenuItem value='Posterior wall'>
-                                          Posterior wall
-                                        </MenuItem>
-                                        <MenuItem value='Both wall'>
-                                          Both wall
-                                        </MenuItem>
-                                      </Select>
-                                    </FormControl>
-                                  </div>
-                                  <div
-                                    style={{
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                    }}
-                                  >
-                                    <FormControlLabel
-                                      control={
-                                        <Checkbox
-                                          defaultChecked={
-                                            data.find(
-                                              data => data.refValueId === 496
-                                            )?.content === 'Myoma'
-                                              ? true
-                                              : false
-                                          }
-                                          onChange={e =>
-                                            handleChange(
-                                              e,
-                                              dataForm.find(
-                                                f => f.valueId === 496
-                                              ) || null
-                                            )
-                                          }
-                                        />
-                                      }
-                                      label='Myoma'
-                                      // sx={{ width: 150 }}
-                                    />
-                                    {data.find(data => data.refValueId === 496)
-                                      ?.content === 'Myoma' && (
-                                      <InfoIcon
-                                        color='info'
-                                        titleAccess='Fibroids'
-                                        sx={{ cursor: 'pointer' }}
-                                        onClick={() => setOpenFibroids(true)}
-                                      />
-                                    )}
-                                  </div>
-                                  <div>
-                                    <FormControlLabel
-                                      control={
-                                        <Checkbox
-                                          defaultChecked={
-                                            data
-                                              .find(
-                                                data => data.refValueId === 497
-                                              )
-                                              ?.content.split('-')[0] ===
-                                            'Adenomyosis'
-                                              ? true
-                                              : false
-                                          }
-                                          onChange={e =>
-                                            handleChange(
-                                              e,
-                                              dataForm.find(
-                                                f => f.valueId === 497
-                                              ) || null
-                                            )
-                                          }
-                                        />
-                                      }
-                                      label='Adenomyosis'
-                                      sx={{ width: 150 }}
-                                    />
-                                    <TextField
-                                      size='small'
-                                      variant='outlined'
-                                      inputProps={{
-                                        style: {
-                                          fontSize: 16,
-                                        },
-                                      }}
-                                      sx={{
-                                        ...inputStyle,
-                                        ml: 0,
-                                        // width,
-                                        backgroundColor: theme =>
-                                          theme.palette.mode === 'light'
-                                            ? 'white'
-                                            : '#393939',
-                                      }}
-                                      defaultValue={
-                                        data
-                                          .find(d => d.refValueId === 497)
-                                          ?.content?.split('-')[1] || ''
-                                      }
-                                      onChange={e =>
-                                        handleCustomInputChange(e, 497)
-                                      }
-                                    />
-                                  </div>
-                                </FormGroup>
-                              </Box>
-                            </fieldset>
-                          </Box>
-                        )}
-                      </div>
-                    )
-                  } else if (form.type === 'A') {
-                    let value = ''
-
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+            width: 700,
+            marginTop: 3,
+            marginLeft: 10,
+          }}
+        >
+          {dataForm.length > 0 &&
+            dataForm
+              .filter(form => form.valueId >= 492 && form.valueId <= 499)
+              .map((form, i) => {
+                if (form.type === 'S') {
+                  let value = ''
+                  form.options.forEach(op => {
                     const test = data.find(
-                      data => data.refValueId === form.valueId
+                      data => data.contentOption === op.opId
                     )
-                    if (test && test.content) value = test.content
+                    if (test) value = test.contentOption
+                  })
 
-                    return (
-                      <Box key={i} sx={{ m: inputMargin }}>
-                        {showAbnormal.cervix && (
-                          <CommentField
-                            minWidth={673}
-                            form={form}
-                            value={value}
-                            handleChange={e => handleChange(e, form)}
-                            isRedStyle={true}
-                          />
-                        )}
-                      </Box>
-                    )
+                  if (form.valueId === 492) {
+                    let temp = [...form.options]
+                    let onlyOther = temp.filter(t => t.name === 'Other')
+                    let withOutOther = temp.filter(t => t.name !== 'Other')
+                    form.options = [...onlyOther, ...withOutOther]
                   }
-                })}
-            <Typography variant='h5' sx={{ width: 600, mt: 1 }}>
-              Endometrium
-            </Typography>
-            {dataForm.length > 0 &&
-              dataForm
-                .filter(form => form.valueId >= 500 && form.valueId <= 503)
-                .map((form, i) => {
-                  if (form.type === 'S') {
-                    let value = ''
-                    form.options.forEach(op => {
-                      const test = data.find(
-                        data => data.contentOption === op.opId
-                      )
-                      if (test) value = test.contentOption
-                    })
 
-                    return (
-                      <Box key={i} sx={{ m: inputMargin }}>
+                  return (
+                    <div key={i} style={{ width: form.valueId === 494 && 650 }}>
+                      <Box sx={{ m: inputMargin }}>
                         <SelectField
                           value={value}
                           handleChange={e => handleChange(e, form)}
                           form={form}
-                          minWidth={673}
                         />
                       </Box>
-                    )
-                  } else if (form.type === 'A') {
-                    let value = ''
+                      {showFreetext && form.valueId === 492 && (
+                        <Box sx={{ m: inputMargin, mt: 2 }}>
+                          <InputTextField
+                            value={
+                              data.find(
+                                data => data.contentValueName === 'Freetext'
+                              )?.content || ''
+                            }
+                            handleChange={e =>
+                              handleChange(
+                                e,
+                                dataForm.find(f => f.name === 'Freetext') ||
+                                  null
+                              )
+                            }
+                            form={
+                              dataForm.find(f => f.name === 'Freetext') || null
+                            }
+                            label='Uterus Freetext'
+                          />
+                        </Box>
+                      )}
+                      {showAbnormal.myometrium && form.valueId === 494 && (
+                        <Box sx={{ m: inputMargin }}>
+                          <fieldset
+                            className='abnormal'
+                            style={
+                              {
+                                // backgroundColor:
+                                //   theme.palette.mode === 'light'
+                                //     ? 'white'
+                                //     : '#393939',
+                              }
+                            }
+                          >
+                            <legend
+                              style={{
+                                paddingLeft: 5,
+                                fontWeight: 'bold',
+                                fontSize: 16,
+                              }}
+                            >
+                              Myometrium Abnormal
+                            </legend>
+                            <Box
+                              sx={{
+                                pl: 1.6,
+                                color: theme =>
+                                  MODE[theme.palette.mode].dataGrid.font,
+                              }}
+                            >
+                              <FormGroup
+                                sx={{
+                                  display: 'flex',
+                                  flexDirection: 'column',
+                                }}
+                              >
+                                <div>
+                                  <FormControlLabel
+                                    control={
+                                      <Checkbox
+                                        defaultChecked={
+                                          data
+                                            .find(
+                                              data => data.refValueId === 495
+                                            )
+                                            ?.content.split('-')[0] ===
+                                          'Thickening'
+                                            ? true
+                                            : false
+                                        }
+                                        onChange={e =>
+                                          handleChange(
+                                            e,
+                                            dataForm.find(
+                                              f => f.valueId === 495
+                                            ) || null
+                                          )
+                                        }
+                                      />
+                                    }
+                                    label='Thickening'
+                                    sx={{ width: 150 }}
+                                  />
+                                  <FormControl
+                                    size='small'
+                                    sx={{
+                                      ...inputStyle,
+                                      m: 0,
+                                      minWidth: 300,
+                                    }}
+                                  >
+                                    <Select
+                                      size='small'
+                                      variant='outlined'
+                                      notched
+                                      sx={{
+                                        fontSize: 16,
+                                        pb: 0,
+                                        color: theme =>
+                                          MODE[theme.palette.mode].dataGrid
+                                            .font,
+                                      }}
+                                      defaultValue={
+                                        data
+                                          .find(d => d.refValueId === 495)
+                                          ?.content?.split('-')[1] || ''
+                                      }
+                                      onChange={e =>
+                                        handleCustomInputChange(e, 495)
+                                      }
+                                    >
+                                      <MenuItem value=''></MenuItem>
+                                      <MenuItem value='Anterior wall'>
+                                        Anterior wall
+                                      </MenuItem>
+                                      <MenuItem value='Posterior wall'>
+                                        Posterior wall
+                                      </MenuItem>
+                                      <MenuItem value='Both wall'>
+                                        Both wall
+                                      </MenuItem>
+                                    </Select>
+                                  </FormControl>
+                                </div>
+                                <div
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                  }}
+                                >
+                                  <FormControlLabel
+                                    control={
+                                      <Checkbox
+                                        defaultChecked={
+                                          data.find(
+                                            data => data.refValueId === 496
+                                          )?.content === 'Myoma'
+                                            ? true
+                                            : false
+                                        }
+                                        onChange={e =>
+                                          handleChange(
+                                            e,
+                                            dataForm.find(
+                                              f => f.valueId === 496
+                                            ) || null
+                                          )
+                                        }
+                                      />
+                                    }
+                                    label='Myoma'
+                                    // sx={{ width: 150 }}
+                                  />
+                                  {data.find(data => data.refValueId === 496)
+                                    ?.content === 'Myoma' && (
+                                    <InfoIcon
+                                      color='info'
+                                      titleAccess='Fibroids'
+                                      sx={{ cursor: 'pointer' }}
+                                      onClick={() => setOpenFibroids(true)}
+                                    />
+                                  )}
+                                </div>
+                                <div>
+                                  <FormControlLabel
+                                    control={
+                                      <Checkbox
+                                        defaultChecked={
+                                          data
+                                            .find(
+                                              data => data.refValueId === 497
+                                            )
+                                            ?.content.split('-')[0] ===
+                                          'Adenomyosis'
+                                            ? true
+                                            : false
+                                        }
+                                        onChange={e =>
+                                          handleChange(
+                                            e,
+                                            dataForm.find(
+                                              f => f.valueId === 497
+                                            ) || null
+                                          )
+                                        }
+                                      />
+                                    }
+                                    label='Adenomyosis'
+                                    sx={{ width: 150 }}
+                                  />
+                                  <TextField
+                                    size='small'
+                                    variant='outlined'
+                                    inputProps={{
+                                      style: {
+                                        fontSize: 16,
+                                      },
+                                    }}
+                                    sx={{
+                                      ...inputStyle,
+                                      ml: 0,
+                                      // width,
+                                      backgroundColor: theme =>
+                                        theme.palette.mode === 'light'
+                                          ? 'white'
+                                          : '#393939',
+                                    }}
+                                    defaultValue={
+                                      data
+                                        .find(d => d.refValueId === 497)
+                                        ?.content?.split('-')[1] || ''
+                                    }
+                                    onChange={e =>
+                                      handleCustomInputChange(e, 497)
+                                    }
+                                  />
+                                </div>
+                              </FormGroup>
+                            </Box>
+                          </fieldset>
+                        </Box>
+                      )}
+                    </div>
+                  )
+                } else if (form.type === 'A') {
+                  let value = ''
 
-                    const test = data.find(
-                      data => data.refValueId === form.valueId
-                    )
-                    if (test && test.content) value = test.content
+                  const test = data.find(
+                    data => data.refValueId === form.valueId
+                  )
+                  if (test && test.content) value = test.content
 
-                    return (
-                      <Box key={i} sx={{ m: inputMargin }}>
+                  return (
+                    <Box key={i} sx={{ m: inputMargin }}>
+                      {showAbnormal.cervix && (
                         <CommentField
                           minWidth={673}
                           form={form}
                           value={value}
                           handleChange={e => handleChange(e, form)}
+                          isRedStyle={true}
                         />
-                      </Box>
+                      )}
+                    </Box>
+                  )
+                }
+              })}
+          <Typography variant='h5' sx={{ width: 600, mt: 1 }}>
+            Endometrium
+          </Typography>
+          {dataForm.length > 0 &&
+            dataForm
+              .filter(form => form.valueId >= 500 && form.valueId <= 503)
+              .map((form, i) => {
+                if (form.type === 'S') {
+                  let value = ''
+                  form.options.forEach(op => {
+                    const test = data.find(
+                      data => data.contentOption === op.opId
                     )
-                  }
-                })}
-            <Button
-              sx={{ ...btStyle, m: inputMargin }}
-              variant='contained'
-              startIcon={<CheckIcon />}
-              onClick={() => saveData()}
-            >
-              Save
-            </Button>
-          </div>
-        </Fade>
-      </div>
+                    if (test) value = test.contentOption
+                  })
+
+                  return (
+                    <Box key={i} sx={{ m: inputMargin }}>
+                      <SelectField
+                        value={value}
+                        handleChange={e => handleChange(e, form)}
+                        form={form}
+                        minWidth={673}
+                      />
+                    </Box>
+                  )
+                } else if (form.type === 'A') {
+                  let value = ''
+
+                  const test = data.find(
+                    data => data.refValueId === form.valueId
+                  )
+                  if (test && test.content) value = test.content
+
+                  return (
+                    <Box key={i} sx={{ m: inputMargin }}>
+                      <CommentField
+                        minWidth={673}
+                        form={form}
+                        value={value}
+                        handleChange={e => handleChange(e, form)}
+                      />
+                    </Box>
+                  )
+                }
+              })}
+          <Button
+            sx={{ ...btStyle, m: inputMargin }}
+            variant='contained'
+            startIcon={<CheckIcon />}
+            onClick={() => saveData()}
+          >
+            Save
+          </Button>
+        </div>
+      </Fade>
 
       {openFibroids && (
         <Fibroids

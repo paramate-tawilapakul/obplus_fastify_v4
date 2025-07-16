@@ -242,10 +242,11 @@ const Feedback = () => {
         </form>
       </div>
 
-      {!dataList.data && <SkeletonLoading style={{ mt: 0 }} />}
+      {/* {!dataList.data && <SkeletonLoading style={{ mt: 0 }} />} */}
+      <SkeletonLoading loading={dataList.data == null} style={{ mt: 0 }} />
 
       {dataList.data && (
-        <Fade in={dataList?.data ? true : false} timeout={400}>
+        <Fade in={dataList?.data ? true : false} timeout={200}>
           <div>
             <DataGrid
               // onSelectionModelChange={ids => {

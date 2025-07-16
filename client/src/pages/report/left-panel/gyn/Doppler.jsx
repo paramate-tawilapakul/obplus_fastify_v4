@@ -29,6 +29,7 @@ import { sleep } from '../../../../utils'
 import { cleanUpForm, getReportId, getRiD, randomMs } from '../../helper'
 import SnackBarWarning from '../../../../components/page-tools/SnackBarWarning'
 import { initFormSend } from '../../report-utils'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const boxStyle = {
   ml: 0.5,
@@ -293,9 +294,10 @@ const Doppler = ({ patient }) => {
                 pr: 1,
               }}
             >
-              {loading && <LinearProgress sx={{ mt: 0.5 }} />}
+              {/* {loading && <LinearProgress sx={{ mt: 0.5 }} />} */}
+              <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
               <div style={{ display: loading && 'none', marginTop: 5 }}>
-                <Fade in={!loading ? true : false} timeout={400}>
+                <Fade in={!loading ? true : false} timeout={200}>
                   <div>
                     {showUnit && (
                       <>
@@ -696,9 +698,10 @@ const Doppler = ({ patient }) => {
                 pr: 1,
               }}
             >
-              {loading && <LinearProgress sx={{ mt: 0.5 }} />}
+              {/* {loading && <LinearProgress sx={{ mt: 0.5 }} />} */}
+              <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
               <div style={{ display: loading && 'none', marginTop: 10 }}>
-                <Fade in={!loading ? true : false} timeout={400}>
+                <Fade in={!loading ? true : false} timeout={200}>
                   <div>
                     <Box>
                       <table style={{ width: '100%' }}>

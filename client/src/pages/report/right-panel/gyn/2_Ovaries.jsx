@@ -25,6 +25,7 @@ import CommentField from '../../../../components/page-tools/CommentField'
 import SelectField from '../../../../components/page-tools/SelectField'
 import { initFormSend, storeBackupData } from '../../report-utils'
 import { Typography } from '@mui/material'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.ovaries.id
 let backupData = null
@@ -195,172 +196,167 @@ const Ovaries = ({ patient }) => {
 
   return (
     <>
-      <div
-        style={{
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div>
-            {dataForm.length > 0 && (
-              <div style={{ display: 'flex', gap: 40 }}>
-                <div style={{ width: 350 }}>
-                  <Typography variant='h5' sx={{ ml: 1, mt: 1 }}>
-                    Right Ovary
-                  </Typography>
-                  {dataForm.slice(4).map((form, i) => {
-                    let value = ''
-                    if (form.type === 'S') {
-                      form.options.forEach(op => {
-                        const test = data.find(
-                          data => data.contentOption === op.opId
-                        )
-                        if (test) value = test.contentOption
-                      })
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-                      return (
-                        <div key={i}>
-                          <Box sx={{ m: inputMargin, mt: 2 }}>
-                            <SelectField
-                              // maxWidth={350}
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div>
+          {dataForm.length > 0 && (
+            <div style={{ display: 'flex', gap: 40 }}>
+              <div style={{ width: 350 }}>
+                <Typography variant='h5' sx={{ ml: 1, mt: 1 }}>
+                  Right Ovary
+                </Typography>
+                {dataForm.slice(4).map((form, i) => {
+                  let value = ''
+                  if (form.type === 'S') {
+                    form.options.forEach(op => {
+                      const test = data.find(
+                        data => data.contentOption === op.opId
+                      )
+                      if (test) value = test.contentOption
+                    })
+
+                    return (
+                      <div key={i}>
+                        <Box sx={{ m: inputMargin, mt: 2 }}>
+                          <SelectField
+                            // maxWidth={350}
+                            minWidth={350}
+                            value={value}
+                            handleChange={e => handleChange(e, form)}
+                            form={{
+                              ...form,
+                              name: form.name.replace(' (Right)', ''),
+                            }}
+                          />
+                        </Box>
+                      </div>
+                    )
+                  } else {
+                    const test = data.find(
+                      data => data.refValueId === form.valueId
+                    )
+                    if (test && test.content) value = test.content
+
+                    if (form.valueId === 511) form.name = 'Comments Right ovary'
+                    else form.name = 'Right Morphology Abnormal'
+
+                    return (
+                      <div key={i}>
+                        <Box sx={{ m: inputMargin, mt: 2 }}>
+                          {showAbnormal['right'] && form.valueId === 510 && (
+                            <CommentField
                               minWidth={350}
+                              form={form}
                               value={value}
                               handleChange={e => handleChange(e, form)}
-                              form={{
-                                ...form,
-                                name: form.name.replace(' (Right)', ''),
-                              }}
+                              isRedStyle={true}
+                              row={5}
                             />
-                          </Box>
-                        </div>
-                      )
-                    } else {
-                      const test = data.find(
-                        data => data.refValueId === form.valueId
-                      )
-                      if (test && test.content) value = test.content
+                          )}
 
-                      if (form.valueId === 511)
-                        form.name = 'Comments Right ovary'
-                      else form.name = 'Right Morphology Abnormal'
-
-                      return (
-                        <div key={i}>
-                          <Box sx={{ m: inputMargin, mt: 2 }}>
-                            {showAbnormal['right'] && form.valueId === 510 && (
-                              <CommentField
-                                minWidth={350}
-                                form={form}
-                                value={value}
-                                handleChange={e => handleChange(e, form)}
-                                isRedStyle={true}
-                                row={5}
-                              />
-                            )}
-
-                            {!showAbnormal['right'] && form.valueId === 511 && (
-                              <CommentField
-                                minWidth={350}
-                                form={form}
-                                value={value}
-                                handleChange={e => handleChange(e, form)}
-                                row={5}
-                              />
-                            )}
-                          </Box>
-                        </div>
-                      )
-                    }
-                  })}
-                </div>
-                <div style={{ width: 350 }}>
-                  <Typography variant='h5' sx={{ ml: 1, mt: 1 }}>
-                    Left Ovary
-                  </Typography>
-                  {dataForm.slice(0, 4).map((form, i) => {
-                    let value = ''
-                    if (form.type === 'S') {
-                      form.options.forEach(op => {
-                        const test = data.find(
-                          data => data.contentOption === op.opId
-                        )
-                        if (test) value = test.contentOption
-                      })
-
-                      return (
-                        <div key={i}>
-                          <Box sx={{ m: inputMargin, mt: 2 }}>
-                            <SelectField
+                          {!showAbnormal['right'] && form.valueId === 511 && (
+                            <CommentField
                               minWidth={350}
+                              form={form}
                               value={value}
                               handleChange={e => handleChange(e, form)}
-                              form={{
-                                ...form,
-                                name: form.name.replace(' (Left)', ''),
-                              }}
+                              row={5}
                             />
-                          </Box>
-                        </div>
-                      )
-                    } else {
-                      const test = data.find(
-                        data => data.refValueId === form.valueId
-                      )
-                      if (test && test.content) value = test.content
-
-                      if (form.valueId === 507)
-                        form.name = 'Comments left ovary'
-                      else form.name = 'Left Morphology Abnormal'
-
-                      return (
-                        <div key={i}>
-                          <Box sx={{ m: inputMargin, mt: 2 }}>
-                            {showAbnormal['left'] && form.valueId === 506 && (
-                              <CommentField
-                                minWidth={350}
-                                form={form}
-                                value={value}
-                                handleChange={e => handleChange(e, form)}
-                                isRedStyle={true}
-                                row={5}
-                              />
-                            )}
-
-                            {!showAbnormal['left'] && form.valueId === 507 && (
-                              <CommentField
-                                minWidth={350}
-                                form={form}
-                                value={value}
-                                handleChange={e => handleChange(e, form)}
-                                row={5}
-                              />
-                            )}
-                          </Box>
-                        </div>
-                      )
-                    }
-                  })}
-                </div>
+                          )}
+                        </Box>
+                      </div>
+                    )
+                  }
+                })}
               </div>
-            )}
+              <div style={{ width: 350 }}>
+                <Typography variant='h5' sx={{ ml: 1, mt: 1 }}>
+                  Left Ovary
+                </Typography>
+                {dataForm.slice(0, 4).map((form, i) => {
+                  let value = ''
+                  if (form.type === 'S') {
+                    form.options.forEach(op => {
+                      const test = data.find(
+                        data => data.contentOption === op.opId
+                      )
+                      if (test) value = test.contentOption
+                    })
 
-            <Button
-              sx={{ ...btStyle, m: 1.3 }}
-              variant='contained'
-              startIcon={<CheckIcon />}
-              onClick={() => saveData()}
-            >
-              Save
-            </Button>
-          </div>
-        </Fade>
-        <SnackBarWarning
-          snackWarning={snackWarning}
-          setSnackWarning={setSnackWarning}
-          vertical='top'
-          horizontal='center'
-        />
-      </div>
+                    return (
+                      <div key={i}>
+                        <Box sx={{ m: inputMargin, mt: 2 }}>
+                          <SelectField
+                            minWidth={350}
+                            value={value}
+                            handleChange={e => handleChange(e, form)}
+                            form={{
+                              ...form,
+                              name: form.name.replace(' (Left)', ''),
+                            }}
+                          />
+                        </Box>
+                      </div>
+                    )
+                  } else {
+                    const test = data.find(
+                      data => data.refValueId === form.valueId
+                    )
+                    if (test && test.content) value = test.content
+
+                    if (form.valueId === 507) form.name = 'Comments left ovary'
+                    else form.name = 'Left Morphology Abnormal'
+
+                    return (
+                      <div key={i}>
+                        <Box sx={{ m: inputMargin, mt: 2 }}>
+                          {showAbnormal['left'] && form.valueId === 506 && (
+                            <CommentField
+                              minWidth={350}
+                              form={form}
+                              value={value}
+                              handleChange={e => handleChange(e, form)}
+                              isRedStyle={true}
+                              row={5}
+                            />
+                          )}
+
+                          {!showAbnormal['left'] && form.valueId === 507 && (
+                            <CommentField
+                              minWidth={350}
+                              form={form}
+                              value={value}
+                              handleChange={e => handleChange(e, form)}
+                              row={5}
+                            />
+                          )}
+                        </Box>
+                      </div>
+                    )
+                  }
+                })}
+              </div>
+            </div>
+          )}
+
+          <Button
+            sx={{ ...btStyle, m: 1.3 }}
+            variant='contained'
+            startIcon={<CheckIcon />}
+            onClick={() => saveData()}
+          >
+            Save
+          </Button>
+        </div>
+      </Fade>
+
+      <SnackBarWarning
+        snackWarning={snackWarning}
+        setSnackWarning={setSnackWarning}
+        vertical='top'
+        horizontal='center'
+      />
     </>
   )
 }

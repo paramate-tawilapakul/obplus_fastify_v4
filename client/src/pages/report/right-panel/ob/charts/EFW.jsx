@@ -24,6 +24,7 @@ import {
 } from 'recharts'
 import { API, FETUS_NAME, MODE } from '../../../../../config'
 import DataContext from '../../../../../context/data/dataContext'
+import SkeletonLoading from '../../../../../components/page-tools/SkeletonLoading'
 
 const data = [
   {
@@ -406,6 +407,7 @@ const EFW = ({ patient }) => {
 
   return (
     <>
+      <SkeletonLoading loading={efw == null} style={{ mt: 0.5 }} />
       {efw && (
         <div style={{ display: 'flex' }}>
           <div

@@ -31,6 +31,7 @@ import CommentField from '../../../../components/page-tools/CommentField'
 import SelectField from '../../../../components/page-tools/SelectField'
 import InputTextField from '../../../../components/page-tools/InputTextField'
 import { initFormSend, storeBackupData } from '../../report-utils'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.abnormalMass.id
 let backupData = null
@@ -236,320 +237,300 @@ const AbnormalMass = ({ patient }) => {
 
   return (
     <>
-      {/* {loading && <LinearProgress sx={{ mt: 0.5 }} />} */}
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-      <div
-        style={{
-          // height: '100%',
-          // overflowY: 'auto',
-          // minHeight: 480,
-          // maxHeight: 670,
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'flex-start',
-              width: 500,
-              marginTop: 3,
-              marginLeft: 10,
-            }}
-          >
-            {dataForm.length > 0 &&
-              dataForm.slice(0, 3).map((form, i) => {
-                let value = ''
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+            width: 500,
+            marginTop: 3,
+            marginLeft: 10,
+          }}
+        >
+          {dataForm.length > 0 &&
+            dataForm.slice(0, 3).map((form, i) => {
+              let value = ''
 
-                if (form.type === 'S') {
-                  form.options.forEach(op => {
-                    const test = data.find(
-                      data => data.contentOption === op.opId
+              if (form.type === 'S') {
+                form.options.forEach(op => {
+                  const test = data.find(data => data.contentOption === op.opId)
+                  if (test) value = test.contentOption
+                })
+
+                return (
+                  <Box key={i} sx={{ m: inputMargin }}>
+                    <SelectField
+                      minWidth={420}
+                      value={value}
+                      handleChange={e => handleChange(e, form)}
+                      form={form}
+                    />
+                  </Box>
+                )
+              } else if (form.type === 'A') {
+                const test = data.find(data => data.refValueId === form.valueId)
+                if (test && test.content) value = test.content
+
+                return (
+                  <Box key={i} sx={{ m: inputMargin }}>
+                    <CommentField
+                      minWidth={420}
+                      form={form}
+                      value={value}
+                      handleChange={e => handleChange(e, form)}
+                    />
+                  </Box>
+                )
+              } else if (form.type === 'T') {
+                const test = data.find(data => data.refValueId === form.valueId)
+                if (test && test.content) value = test.content
+
+                if (form.valueId === 512) {
+                  value = value.split('*')
+                  return (
+                    <Box
+                      key={i}
+                      sx={{
+                        m: inputMargin,
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <div style={{ marginRight: 5 }}>
+                        Size (W*L*H) ({unit('mm')})
+                      </div>
+                      <InputTextField
+                        width={87}
+                        form={form}
+                        value={value[0] || ''}
+                        handleChange={e => handleChange(e, form, 0)}
+                        label='Width'
+                        sx={{ mr: 1 }}
+                      />
+                      <InputTextField
+                        width={87}
+                        form={form}
+                        value={value[1] || ''}
+                        handleChange={e => handleChange(e, form, 1)}
+                        label='Length'
+                        sx={{ mr: 1 }}
+                      />
+                      <InputTextField
+                        width={87}
+                        form={form}
+                        value={value[2] || ''}
+                        handleChange={e => handleChange(e, form, 2)}
+                        label='Height'
+                      />
+                    </Box>
+                  )
+                }
+
+                return (
+                  <Box key={i} sx={{ m: inputMargin }}>
+                    <InputTextField
+                      minWidth={673}
+                      form={form}
+                      value={value}
+                      handleChange={e => handleChange(e, form)}
+                    />
+                  </Box>
+                )
+              }
+            })}
+
+          {showCyst && (
+            <fieldset
+              style={{
+                // backgroundColor:
+                //   theme.palette.mode === 'light' ? 'white' : '#393939',
+                border: '1px solid #CCC',
+                borderRadius: '4px',
+                paddingLeft: '8px',
+                marginLeft: 7,
+                marginBottom: 10,
+              }}
+            >
+              <legend
+                style={{
+                  paddingLeft: 5,
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                }}
+              >
+                Cyst Content
+              </legend>
+              {dataForm.length > 0 &&
+                dataForm.slice(3, 9).map((form, i) => {
+                  let value = ''
+                  if (form.type === 'S') {
+                    form.options.forEach(op => {
+                      const test = data.find(
+                        data => data.contentOption === op.opId
+                      )
+                      if (test) value = test.contentOption
+                    })
+
+                    return (
+                      <Box key={i} sx={{ m: inputMargin, mt: 2 }}>
+                        <SelectField
+                          minWidth={406}
+                          value={value}
+                          handleChange={e => handleChange(e, form)}
+                          form={form}
+                        />
+                      </Box>
                     )
-                    if (test) value = test.contentOption
-                  })
+                  } else {
+                    const test = data.find(
+                      data => data.refValueId === form.valueId
+                    )
+                    if (test && test.content) value = test.content
 
-                  return (
-                    <Box key={i} sx={{ m: inputMargin }}>
-                      <SelectField
-                        minWidth={420}
-                        value={value}
-                        handleChange={e => handleChange(e, form)}
-                        form={form}
-                      />
-                    </Box>
-                  )
-                } else if (form.type === 'A') {
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
+                    return (
+                      <Box key={i} sx={{ m: inputMargin, display: 'inline' }}>
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              defaultChecked={
+                                data.find(
+                                  data => data.refValueId === form.valueId
+                                )?.content === value
+                              }
+                              onChange={e =>
+                                handleChange(
+                                  e,
+                                  dataForm.find(
+                                    f => f.valueId === form.valueId
+                                  ) || null
+                                )
+                              }
+                            />
+                          }
+                          label={form.name}
+                          sx={{ width: form.valueId === 520 ? 180 : 200 }}
+                        />
+                      </Box>
+                    )
+                  }
+                })}
+            </fieldset>
+          )}
+          {showSolid && (
+            <fieldset
+              style={{
+                width: 425,
+                border: '1px solid #CCC',
+                borderRadius: '4px',
+                paddingLeft: '8px',
+                marginLeft: 7,
+                marginBottom: 10,
+              }}
+            >
+              <legend
+                style={{
+                  paddingLeft: 5,
+                  fontWeight: 'bold',
+                  fontSize: 16,
+                }}
+              >
+                Solid Content
+              </legend>
+              {dataForm.length > 0 &&
+                dataForm
+                  .filter(f => [521, 522].includes(f.valueId))
+                  .map((form, i) => {
+                    let value = ''
 
-                  return (
-                    <Box key={i} sx={{ m: inputMargin }}>
-                      <CommentField
-                        minWidth={420}
-                        form={form}
-                        value={value}
-                        handleChange={e => handleChange(e, form)}
-                      />
-                    </Box>
-                  )
-                } else if (form.type === 'T') {
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
+                    const test = data.find(
+                      data => data.refValueId === form.valueId
+                    )
+                    if (test && test.content) value = test.content
 
-                  if (form.valueId === 512) {
-                    value = value.split('*')
                     return (
                       <Box
                         key={i}
                         sx={{
                           m: inputMargin,
-                          display: 'flex',
-                          alignItems: 'center',
+                          mt: -1,
+                          mb: 0,
+                          display: 'inline',
                         }}
                       >
-                        <div style={{ marginRight: 5 }}>
-                          Size (W*L*H) ({unit('mm')})
-                        </div>
-                        <InputTextField
-                          width={87}
-                          form={form}
-                          value={value[0] || ''}
-                          handleChange={e => handleChange(e, form, 0)}
-                          label='Width'
-                          sx={{ mr: 1 }}
-                        />
-                        <InputTextField
-                          width={87}
-                          form={form}
-                          value={value[1] || ''}
-                          handleChange={e => handleChange(e, form, 1)}
-                          label='Length'
-                          sx={{ mr: 1 }}
-                        />
-                        <InputTextField
-                          width={87}
-                          form={form}
-                          value={value[2] || ''}
-                          handleChange={e => handleChange(e, form, 2)}
-                          label='Height'
+                        <FormControlLabel
+                          control={
+                            <Checkbox
+                              defaultChecked={
+                                data.find(
+                                  data => data.refValueId === form.valueId
+                                )?.content === value
+                              }
+                              onChange={e =>
+                                handleChange(
+                                  e,
+                                  dataForm.find(
+                                    f => f.valueId === form.valueId
+                                  ) || null
+                                )
+                              }
+                            />
+                          }
+                          label={form.name}
+                          sx={{ width: 160 }}
                         />
                       </Box>
                     )
-                  }
-
-                  return (
-                    <Box key={i} sx={{ m: inputMargin }}>
-                      <InputTextField
-                        minWidth={673}
-                        form={form}
-                        value={value}
-                        handleChange={e => handleChange(e, form)}
-                      />
-                    </Box>
-                  )
-                }
-              })}
-
-            {showCyst && (
-              <fieldset
-                style={{
-                  // backgroundColor:
-                  //   theme.palette.mode === 'light' ? 'white' : '#393939',
-                  border: '1px solid #CCC',
-                  borderRadius: '4px',
-                  paddingLeft: '8px',
-                  marginLeft: 7,
-                  marginBottom: 10,
-                }}
-              >
-                <legend
-                  style={{
-                    paddingLeft: 5,
-                    fontWeight: 'bold',
-                    fontSize: 16,
-                  }}
-                >
-                  Cyst Content
-                </legend>
-                {dataForm.length > 0 &&
-                  dataForm.slice(3, 9).map((form, i) => {
-                    let value = ''
-                    if (form.type === 'S') {
-                      form.options.forEach(op => {
-                        const test = data.find(
-                          data => data.contentOption === op.opId
-                        )
-                        if (test) value = test.contentOption
-                      })
-
-                      return (
-                        <Box key={i} sx={{ m: inputMargin, mt: 2 }}>
-                          <SelectField
-                            minWidth={406}
-                            value={value}
-                            handleChange={e => handleChange(e, form)}
-                            form={form}
-                          />
-                        </Box>
-                      )
-                    } else {
-                      const test = data.find(
-                        data => data.refValueId === form.valueId
-                      )
-                      if (test && test.content) value = test.content
-
-                      return (
-                        <Box key={i} sx={{ m: inputMargin, display: 'inline' }}>
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                defaultChecked={
-                                  data.find(
-                                    data => data.refValueId === form.valueId
-                                  )?.content === value
-                                }
-                                onChange={e =>
-                                  handleChange(
-                                    e,
-                                    dataForm.find(
-                                      f => f.valueId === form.valueId
-                                    ) || null
-                                  )
-                                }
-                              />
-                            }
-                            label={form.name}
-                            sx={{ width: form.valueId === 520 ? 180 : 200 }}
-                          />
-                        </Box>
-                      )
-                    }
                   })}
-              </fieldset>
-            )}
-            {showSolid && (
-              <fieldset
-                style={{
-                  width: 425,
-                  border: '1px solid #CCC',
-                  borderRadius: '4px',
-                  paddingLeft: '8px',
-                  marginLeft: 7,
-                  marginBottom: 10,
-                }}
-              >
-                <legend
-                  style={{
-                    paddingLeft: 5,
-                    fontWeight: 'bold',
-                    fontSize: 16,
-                  }}
-                >
-                  Solid Content
-                </legend>
-                {dataForm.length > 0 &&
-                  dataForm
-                    .filter(f => [521, 522].includes(f.valueId))
-                    .map((form, i) => {
-                      let value = ''
+            </fieldset>
+          )}
+          {dataForm.length > 0 &&
+            dataForm.slice(9).map((form, i) => {
+              let value = ''
+              if (form.type === 'S') {
+                form.options.forEach(op => {
+                  const test = data.find(data => data.contentOption === op.opId)
+                  if (test) value = test.contentOption
+                })
 
-                      const test = data.find(
-                        data => data.refValueId === form.valueId
-                      )
-                      if (test && test.content) value = test.content
+                return (
+                  <Box key={i} sx={{ m: inputMargin }}>
+                    <SelectField
+                      minWidth={420}
+                      value={value}
+                      handleChange={e => handleChange(e, form)}
+                      form={form}
+                    />
+                  </Box>
+                )
+              } else if (form.type === 'A') {
+                const test = data.find(data => data.refValueId === form.valueId)
+                if (test && test.content) value = test.content
 
-                      return (
-                        <Box
-                          key={i}
-                          sx={{
-                            m: inputMargin,
-                            mt: -1,
-                            mb: 0,
-                            display: 'inline',
-                          }}
-                        >
-                          <FormControlLabel
-                            control={
-                              <Checkbox
-                                defaultChecked={
-                                  data.find(
-                                    data => data.refValueId === form.valueId
-                                  )?.content === value
-                                }
-                                onChange={e =>
-                                  handleChange(
-                                    e,
-                                    dataForm.find(
-                                      f => f.valueId === form.valueId
-                                    ) || null
-                                  )
-                                }
-                              />
-                            }
-                            label={form.name}
-                            sx={{ width: 160 }}
-                          />
-                        </Box>
-                      )
-                    })}
-              </fieldset>
-            )}
-            {dataForm.length > 0 &&
-              dataForm.slice(9).map((form, i) => {
-                let value = ''
-                if (form.type === 'S') {
-                  form.options.forEach(op => {
-                    const test = data.find(
-                      data => data.contentOption === op.opId
-                    )
-                    if (test) value = test.contentOption
-                  })
-
-                  return (
-                    <Box key={i} sx={{ m: inputMargin }}>
-                      <SelectField
-                        minWidth={420}
-                        value={value}
-                        handleChange={e => handleChange(e, form)}
-                        form={form}
-                      />
-                    </Box>
-                  )
-                } else if (form.type === 'A') {
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
-
-                  return (
-                    <Box key={i} sx={{ m: inputMargin }}>
-                      <CommentField
-                        minWidth={420}
-                        form={form}
-                        value={value}
-                        handleChange={e => handleChange(e, form)}
-                      />
-                    </Box>
-                  )
-                }
-              })}
-            <Button
-              sx={{ ...btStyle, m: inputMargin }}
-              variant='contained'
-              startIcon={<CheckIcon />}
-              onClick={() => saveData()}
-            >
-              Save
-            </Button>
-          </div>
-        </Fade>
-      </div>
+                return (
+                  <Box key={i} sx={{ m: inputMargin }}>
+                    <CommentField
+                      minWidth={420}
+                      form={form}
+                      value={value}
+                      handleChange={e => handleChange(e, form)}
+                    />
+                  </Box>
+                )
+              }
+            })}
+          <Button
+            sx={{ ...btStyle, m: inputMargin }}
+            variant='contained'
+            startIcon={<CheckIcon />}
+            onClick={() => saveData()}
+          >
+            Save
+          </Button>
+        </div>
+      </Fade>
 
       <SnackBarWarning
         snackWarning={snackWarning}

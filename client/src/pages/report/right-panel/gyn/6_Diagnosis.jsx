@@ -27,6 +27,7 @@ import SelectField from '../../../../components/page-tools/SelectField'
 import { initFormSend, storeBackupData } from '../../report-utils'
 import InputTextField from '../../../../components/page-tools/InputTextField'
 import MultipleAutoCompleteField from '../../../../components/page-tools/MultipleAutoCompleteField'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.gynDiagnosis.id
 let backupData = null
@@ -217,14 +218,14 @@ const Diagnosis = ({ patient }) => {
 
   return (
     <>
-      {/* {loading && <LinearProgress sx={{ mt: 0.5 }} />} */}
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
       <div
         style={{
           display: loading && 'none',
         }}
       >
-        <Fade in={!loading ? true : false} timeout={300}>
+        <Fade in={!loading ? true : false} timeout={200}>
           <div
             style={{
               display: 'flex',

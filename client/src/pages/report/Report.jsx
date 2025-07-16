@@ -15,6 +15,7 @@ import ReportNavBar from '../../components/page-tools/ReportNavBar'
 import { API, APP_ROUTES, FETUS_NAME, MODE, STORAGE_NAME } from '../../config'
 import LeftTabIndex from './left-panel/TabIndex'
 import RightTabIndex from './right-panel/TabIndex'
+import SkeletonLoading from '../../components/page-tools/SkeletonLoading'
 
 const Report = () => {
   const history = useHistory()
@@ -133,8 +134,9 @@ const Report = () => {
           }}
         >
           <ReportNavBar />
-          {loading && <LinearProgress sx={{ mt: 1 }} />}
-          <Fade in={!loading && user && patient ? true : false} timeout={400}>
+          {/* {loading && <LinearProgress sx={{ mt: 1 }} />} */}
+          <SkeletonLoading loading={loading} style={{ mt: 1 }} />
+          <Fade in={!loading && user && patient ? true : false} timeout={200}>
             <Box sx={{ display: 'flex', mt: 1 }}>
               {!loading && user && patient && (
                 <>

@@ -53,6 +53,7 @@ import TreeFolder from '../../components/page-tools/TreeFolder'
 import { inputStyle2, btStyle } from '../../components/page-tools/form-style'
 import StatusChip from '../../components/page-tools/StatusChip'
 import BackDrop from '../../components/page-tools/BackDrop'
+import SkeletonLoading from '../../components/page-tools/SkeletonLoading'
 
 const mr = { mr: 1.5 }
 const lh = { lineHeight: '1.5' }
@@ -672,7 +673,8 @@ export default function Search() {
                   // border: '1px solid black',
                 }}
               >
-                {showLoading && <LinearProgress sx={{ ml: 9 }} />}
+                {/* {showLoading && <LinearProgress sx={{ ml: 9 }} />} */}
+                <SkeletonLoading loading={showLoading} style={{ ml: 9 }} />
                 {dataList.length > 0 && (
                   <>
                     {dataList.map((d, i) => {

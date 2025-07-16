@@ -1,4 +1,4 @@
-export default [
+const gyn_indication = [
   'Abdominopelvic mass',
   'Follow up myoma/adenomyosis',
   'Abnormal vaginal bleeding',
@@ -788,3 +788,8 @@ export default [
   'AUB',
   'AUR',
 ]
+
+// const newJson = gyn_indication.map(item => ({ name: item }))
+// console.log(newJson)
+
+export default gyn_indication

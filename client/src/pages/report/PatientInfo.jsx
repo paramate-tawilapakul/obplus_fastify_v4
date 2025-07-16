@@ -56,6 +56,7 @@ import Feedback from '../../components/page-tools/Feedback'
 import obExtIndications from '../../data/ob_indications'
 import gynExtIndications from '../../data/gyn_indications'
 import { manageComma } from './report-utils'
+import SkeletonLoading from '../../components/page-tools/SkeletonLoading'
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />
 const checkedIcon = <CheckBoxIcon fontSize='small' />
@@ -347,9 +348,10 @@ const PatientInfo = () => {
       >
         <ReportNavBar />
         {loading ? (
-          <LinearProgress sx={{ mt: 1 }} />
+          // <LinearProgress sx={{ mt: 1 }} />
+          <SkeletonLoading loading={loading} style={{ mt: 1 }} />
         ) : (
-          <Fade in={patient ? true : false} timeout={400}>
+          <Fade in={patient ? true : false} timeout={200}>
             <Paper
               elevation={2}
               sx={{

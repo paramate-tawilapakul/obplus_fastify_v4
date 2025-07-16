@@ -43,6 +43,7 @@ import {
 import SnackBarWarning from '../../../../components/page-tools/SnackBarWarning'
 import DataContext from '../../../../context/data/dataContext'
 import { initFormSend } from '../../report-utils'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const chipStyle = {
   ml: 1,
@@ -506,7 +507,8 @@ const TwoDMesurements = ({ patient }) => {
               }}
             >
               <Divider />
-              {loadingMes && <LinearProgress sx={{ mt: 0.5 }} />}
+              {/* {loadingMes && <LinearProgress sx={{ mt: 0.5 }} />} */}
+              <SkeletonLoading loading={loadingMes} style={{ mt: 0.5 }} />
               <div style={{ display: loadingMes && 'none' }}>
                 <Fade
                   in={!loadingMes && mesurement.length > 0 ? true : false}

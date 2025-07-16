@@ -34,6 +34,7 @@ import InputTextField from '../../../../components/page-tools/InputTextField'
 import { Divider, Typography } from '@mui/material'
 import { qs, qsa } from '../../../../utils/domUtils'
 import CommentField from '../../../../components/page-tools/CommentField'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const unit = u => (
   <Box
@@ -393,352 +394,322 @@ const FollicleScreen = ({ patient }) => {
 
   return (
     <>
-      <div
-        style={{
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
+
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            // justifyContent: 'center',
+            width: 800,
+            alignContent: 'center',
+            marginTop: 10,
+            marginLeft: 10,
+          }}
+        >
+          {data &&
+            dataForm.length > 0 &&
+            dataForm.slice(0, 4).map((form, i) => {
+              // console.log(form)
+              if (i <= 1) {
+                return (
+                  <LocalizationProvider dateAdapter={AdapterDateFns} key={i}>
+                    <DatePicker
+                      slotProps={{
+                        actionBar: { actions: ['clear', 'today'] },
+                        textField: {
+                          size: 'small',
+                          name: 'dateFrom',
+                          sx: {
+                            ...inputStyle,
+                            '& .MuiOutlinedInput-root': {
+                              '& fieldset': {
+                                fontSize: 20,
+                                // mt: 0,
+                              },
+                            },
+                            mr: 1.5,
+                            width: 185,
+                          },
+                          InputLabelProps: {
+                            shrink: true,
+                            sx: { fontSize: 20 },
+                          },
+                        },
+                      }}
+                      allowSameDateSelection
+                      clearable
+                      label={date[i].name}
+                      value={date[i].value}
+                      format='dd/MM/yyyy'
+                      onChange={newValue => {
+                        setDate(prev => ({
+                          ...prev,
+                          [i]: {
+                            ...prev[i],
+                            value: newValue,
+                          },
+                        }))
+                        handleChange(null, form, newValue)
+                      }}
+                    />
+                  </LocalizationProvider>
+                )
+              }
+              if (i === 2) {
+                return (
+                  <div style={{ marginLeft: 4, marginRight: 15 }} key={i}>
+                    <InputTextField
+                      inputRef={cycleInputRef}
+                      width={185}
+                      key={i}
+                      value={
+                        data.find(d => d.refValueId === 531)?.content || ''
+                      }
+                      form={form}
+                      label='Day of cycle'
+                      readOnly={true}
+                    />
+                  </div>
+                )
+              }
+              if (i === 3) {
+                let value = ''
+                form.options.forEach(op => {
+                  const test = data.find(data => data.contentOption === op.opId)
+                  if (test) value = test.contentOption
+                })
+
+                return (
+                  <SelectField
+                    key={i}
+                    minWidth={185}
+                    value={value}
+                    handleChange={e => handleChange(e, form)}
+                    form={form}
+                  />
+                )
+              }
+            })}
+
           <div
             style={{
               display: 'flex',
-              flexWrap: 'wrap',
-              // justifyContent: 'center',
-              width: 800,
-              alignContent: 'center',
+              width: '100%',
               marginTop: 10,
-              marginLeft: 10,
+              marginLeft: 5,
             }}
           >
-            {data &&
-              dataForm.length > 0 &&
-              dataForm.slice(0, 4).map((form, i) => {
-                // console.log(form)
-                if (i <= 1) {
-                  return (
-                    <LocalizationProvider dateAdapter={AdapterDateFns} key={i}>
-                      <DatePicker
-                        slotProps={{
-                          actionBar: { actions: ['clear', 'today'] },
-                          textField: {
-                            size: 'small',
-                            name: 'dateFrom',
-                            sx: {
-                              ...inputStyle,
-                              '& .MuiOutlinedInput-root': {
-                                '& fieldset': {
-                                  fontSize: 20,
-                                  // mt: 0,
-                                },
-                              },
-                              mr: 1.5,
-                              width: 185,
-                            },
-                            InputLabelProps: {
-                              shrink: true,
-                              sx: { fontSize: 20 },
-                            },
-                          },
-                        }}
-                        allowSameDateSelection
-                        clearable
-                        label={date[i].name}
-                        value={date[i].value}
-                        format='dd/MM/yyyy'
-                        onChange={newValue => {
-                          setDate(prev => ({
-                            ...prev,
-                            [i]: {
-                              ...prev[i],
-                              value: newValue,
-                            },
-                          }))
-                          handleChange(null, form, newValue)
-                        }}
-                      />
-                    </LocalizationProvider>
-                  )
-                }
-                if (i === 2) {
-                  return (
-                    <div style={{ marginLeft: 4, marginRight: 15 }} key={i}>
-                      <InputTextField
-                        inputRef={cycleInputRef}
-                        width={185}
-                        key={i}
-                        value={
-                          data.find(d => d.refValueId === 531)?.content || ''
-                        }
-                        form={form}
-                        label='Day of cycle'
-                        readOnly={true}
-                      />
-                    </div>
-                  )
-                }
-                if (i === 3) {
-                  let value = ''
-                  form.options.forEach(op => {
-                    const test = data.find(
-                      data => data.contentOption === op.opId
-                    )
-                    if (test) value = test.contentOption
-                  })
+            <div style={{ width: '50%' }}>
+              <Typography variant='h6' sx={{ ml: 1 }}>
+                Left
+              </Typography>
+              <form
+                ref={leftFormRef}
+                onChange={handleFollicleChange}
+                autoComplete='off'
+              >
+                <table cellSpacing={3} cellPadding={3}>
+                  <thead>
+                    <tr>
+                      <td>Follicle</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>D1({unit('mm')})</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>D2({unit('mm')})</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>D3({unit('mm')})</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>Mean value</td>
+                    </tr>
+                    <tr>
+                      <td colSpan={5}>
+                        <Divider sx={{ mt: -1 }} />
+                      </td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dataForm.slice(6, 16).map((form, i) => {
+                      // console.log(form.name)
+                      let value = ['', '', '', '']
 
-                  return (
-                    <SelectField
-                      key={i}
-                      minWidth={185}
-                      value={value}
-                      handleChange={e => handleChange(e, form)}
-                      form={form}
-                    />
-                  )
-                }
-              })}
+                      const test = data.find(
+                        data => data.refValueId === form.valueId
+                      )
+                      if (test && test.content) value = test.content.split('-')
 
-            <div
-              style={{
-                display: 'flex',
-                width: '100%',
-                marginTop: 10,
-                marginLeft: 5,
-              }}
-            >
-              <div style={{ width: '50%' }}>
-                <Typography variant='h6' sx={{ ml: 1 }}>
-                  Left
-                </Typography>
-                <form
-                  ref={leftFormRef}
-                  onChange={handleFollicleChange}
-                  autoComplete='off'
-                >
-                  <table cellSpacing={3} cellPadding={3}>
-                    <thead>
-                      <tr>
-                        <td>Follicle</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>
-                          D1({unit('mm')})
-                        </td>
-                        <td style={{ whiteSpace: 'nowrap' }}>
-                          D2({unit('mm')})
-                        </td>
-                        <td style={{ whiteSpace: 'nowrap' }}>
-                          D3({unit('mm')})
-                        </td>
-                        <td style={{ whiteSpace: 'nowrap' }}>Mean value</td>
-                      </tr>
-                      <tr>
-                        <td colSpan={5}>
-                          <Divider sx={{ mt: -1 }} />
-                        </td>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dataForm.slice(6, 16).map((form, i) => {
-                        // console.log(form.name)
-                        let value = ['', '', '', '']
+                      return (
+                        <tr key={i}>
+                          <td style={{ paddingLeft: 10 }}>{i + 1}</td>
+                          <td>
+                            <input
+                              name={`d1_${i + 1}`}
+                              type='text'
+                              style={{ ...iStyle, width: 55 }}
+                              defaultValue={value[0] || ''}
+                              onChange={() => calculateMean(i + 1, leftFormRef)}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              name={`d2_${i + 1}`}
+                              type='text'
+                              style={{ ...iStyle, width: 55 }}
+                              defaultValue={value[1] || ''}
+                              onChange={() => calculateMean(i + 1, leftFormRef)}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              name={`d3_${i + 1}`}
+                              type='text'
+                              style={{ ...iStyle, width: 55 }}
+                              defaultValue={value[2] || ''}
+                              onChange={() => calculateMean(i + 1, leftFormRef)}
+                            />
+                          </td>
+                          <td>
+                            <input
+                              name={`mean_${i + 1}`}
+                              type='text'
+                              style={{ ...iStyle, width: 80 }}
+                              defaultValue={value[3] || ''}
+                              readOnly={true}
+                            />
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
 
-                        const test = data.find(
-                          data => data.refValueId === form.valueId
-                        )
-                        if (test && test.content)
-                          value = test.content.split('-')
-
-                        return (
-                          <tr key={i}>
-                            <td style={{ paddingLeft: 10 }}>{i + 1}</td>
-                            <td>
-                              <input
-                                name={`d1_${i + 1}`}
-                                type='text'
-                                style={{ ...iStyle, width: 55 }}
-                                defaultValue={value[0] || ''}
-                                onChange={() =>
-                                  calculateMean(i + 1, leftFormRef)
-                                }
-                              />
-                            </td>
-                            <td>
-                              <input
-                                name={`d2_${i + 1}`}
-                                type='text'
-                                style={{ ...iStyle, width: 55 }}
-                                defaultValue={value[1] || ''}
-                                onChange={() =>
-                                  calculateMean(i + 1, leftFormRef)
-                                }
-                              />
-                            </td>
-                            <td>
-                              <input
-                                name={`d3_${i + 1}`}
-                                type='text'
-                                style={{ ...iStyle, width: 55 }}
-                                defaultValue={value[2] || ''}
-                                onChange={() =>
-                                  calculateMean(i + 1, leftFormRef)
-                                }
-                              />
-                            </td>
-                            <td>
-                              <input
-                                name={`mean_${i + 1}`}
-                                type='text'
-                                style={{ ...iStyle, width: 80 }}
-                                defaultValue={value[3] || ''}
-                                readOnly={true}
-                              />
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-
-                  {data && dataForm && (
-                    <CommentField
-                      m={1.5}
-                      minWidth={360}
-                      form={dataForm?.find(f => f.valueId === 533)}
-                      value={
-                        data?.find(d => d.refValueId === 533)?.content || ''
-                      }
-                      handleChange={e => {
-                        handleChange(
-                          e,
-                          dataForm?.find(f => f.valueId === 533)
-                        )
-                      }}
-                    />
-                  )}
-                </form>
-              </div>
-              <div style={{ width: '50%' }}>
-                <Typography variant='h6' sx={{ ml: 1 }}>
-                  Right
-                </Typography>
-                <form
-                  ref={rightFormRef}
-                  onChange={handleFollicleChange}
-                  autoComplete='off'
-                >
-                  <table cellSpacing={3} cellPadding={3}>
-                    <thead>
-                      <tr>
-                        <td>Follicle</td>
-                        <td style={{ whiteSpace: 'nowrap' }}>
-                          D1({unit('mm')})
-                        </td>
-                        <td style={{ whiteSpace: 'nowrap' }}>
-                          D2({unit('mm')})
-                        </td>
-                        <td style={{ whiteSpace: 'nowrap' }}>
-                          D3({unit('mm')})
-                        </td>
-                        <td style={{ whiteSpace: 'nowrap' }}>Mean value</td>
-                      </tr>
-                      <tr>
-                        <td colSpan={5}>
-                          <Divider sx={{ mt: -1 }} />
-                        </td>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dataForm.slice(16).map((form, i) => {
-                        // console.log(form.name)
-                        let value = ['', '', '', '']
-
-                        const test = data.find(
-                          data => data.refValueId === form.valueId
-                        )
-                        if (test && test.content)
-                          value = test.content.split('-')
-
-                        return (
-                          <tr key={i}>
-                            <td style={{ paddingLeft: 10 }}>{i + 1}</td>
-                            <td>
-                              <input
-                                name={`d1_${i + 1}`}
-                                type='text'
-                                style={{
-                                  ...iStyle,
-                                  width: 55,
-                                }}
-                                defaultValue={value[0] || ''}
-                                onChange={() =>
-                                  calculateMean(i + 1, rightFormRef)
-                                }
-                              />
-                            </td>
-                            <td>
-                              <input
-                                name={`d2_${i + 1}`}
-                                type='text'
-                                style={{ ...iStyle, width: 55 }}
-                                defaultValue={value[1] || ''}
-                                onChange={() =>
-                                  calculateMean(i + 1, rightFormRef)
-                                }
-                              />
-                            </td>
-                            <td>
-                              <input
-                                name={`d3_${i + 1}`}
-                                type='text'
-                                style={{ ...iStyle, width: 55 }}
-                                defaultValue={value[2] || ''}
-                                onChange={() =>
-                                  calculateMean(i + 1, rightFormRef)
-                                }
-                              />
-                            </td>
-                            <td>
-                              <input
-                                name={`mean_${i + 1}`}
-                                type='text'
-                                style={{ ...iStyle, width: 80 }}
-                                defaultValue={value[3] || ''}
-                                readOnly={true}
-                              />
-                            </td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                  {data && dataForm && (
-                    <CommentField
-                      m={1.5}
-                      minWidth={360}
-                      form={dataForm?.find(f => f.valueId === 534)}
-                      value={
-                        data?.find(d => d.refValueId === 534)?.content || ''
-                      }
-                      handleChange={e => {
-                        handleChange(
-                          e,
-                          dataForm?.find(f => f.valueId === 534)
-                        )
-                      }}
-                    />
-                  )}
-                </form>
-              </div>
+                {data && dataForm && (
+                  <CommentField
+                    m={1.5}
+                    minWidth={360}
+                    form={dataForm?.find(f => f.valueId === 533)}
+                    value={data?.find(d => d.refValueId === 533)?.content || ''}
+                    handleChange={e => {
+                      handleChange(
+                        e,
+                        dataForm?.find(f => f.valueId === 533)
+                      )
+                    }}
+                  />
+                )}
+              </form>
             </div>
-            <Button
-              sx={{ ...btStyle, m: inputMargin }}
-              variant='contained'
-              startIcon={<CheckIcon />}
-              onClick={() => saveData()}
-            >
-              Save
-            </Button>
+            <div style={{ width: '50%' }}>
+              <Typography variant='h6' sx={{ ml: 1 }}>
+                Right
+              </Typography>
+              <form
+                ref={rightFormRef}
+                onChange={handleFollicleChange}
+                autoComplete='off'
+              >
+                <table cellSpacing={3} cellPadding={3}>
+                  <thead>
+                    <tr>
+                      <td>Follicle</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>D1({unit('mm')})</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>D2({unit('mm')})</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>D3({unit('mm')})</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>Mean value</td>
+                    </tr>
+                    <tr>
+                      <td colSpan={5}>
+                        <Divider sx={{ mt: -1 }} />
+                      </td>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {dataForm.slice(16).map((form, i) => {
+                      // console.log(form.name)
+                      let value = ['', '', '', '']
+
+                      const test = data.find(
+                        data => data.refValueId === form.valueId
+                      )
+                      if (test && test.content) value = test.content.split('-')
+
+                      return (
+                        <tr key={i}>
+                          <td style={{ paddingLeft: 10 }}>{i + 1}</td>
+                          <td>
+                            <input
+                              name={`d1_${i + 1}`}
+                              type='text'
+                              style={{
+                                ...iStyle,
+                                width: 55,
+                              }}
+                              defaultValue={value[0] || ''}
+                              onChange={() =>
+                                calculateMean(i + 1, rightFormRef)
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
+                              name={`d2_${i + 1}`}
+                              type='text'
+                              style={{ ...iStyle, width: 55 }}
+                              defaultValue={value[1] || ''}
+                              onChange={() =>
+                                calculateMean(i + 1, rightFormRef)
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
+                              name={`d3_${i + 1}`}
+                              type='text'
+                              style={{ ...iStyle, width: 55 }}
+                              defaultValue={value[2] || ''}
+                              onChange={() =>
+                                calculateMean(i + 1, rightFormRef)
+                              }
+                            />
+                          </td>
+                          <td>
+                            <input
+                              name={`mean_${i + 1}`}
+                              type='text'
+                              style={{ ...iStyle, width: 80 }}
+                              defaultValue={value[3] || ''}
+                              readOnly={true}
+                            />
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+                {data && dataForm && (
+                  <CommentField
+                    m={1.5}
+                    minWidth={360}
+                    form={dataForm?.find(f => f.valueId === 534)}
+                    value={data?.find(d => d.refValueId === 534)?.content || ''}
+                    handleChange={e => {
+                      handleChange(
+                        e,
+                        dataForm?.find(f => f.valueId === 534)
+                      )
+                    }}
+                  />
+                )}
+              </form>
+            </div>
           </div>
-        </Fade>
-      </div>
+          <Button
+            sx={{ ...btStyle, m: inputMargin }}
+            variant='contained'
+            startIcon={<CheckIcon />}
+            onClick={() => saveData()}
+          >
+            Save
+          </Button>
+        </div>
+      </Fade>
 
       <SnackBarWarning
         snackWarning={snackWarning}

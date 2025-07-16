@@ -483,7 +483,7 @@ const ReportEditor = ({ patient, editorRef }) => {
 
   return (
     <div>
-      <Fade in={!loading ? true : false} timeout={300}>
+      <Fade in={!loading ? true : false} timeout={200}>
         <div style={{}}>
           {!loading && (
             <Editor
@@ -611,7 +611,7 @@ const ReportEditor = ({ patient, editorRef }) => {
           )}
         </div>
       </Fade>
-      <Fade in={!loading ? true : false} timeout={300}>
+      <Fade in={!loading ? true : false} timeout={200}>
         <div>
           <Button
             startIcon={<SaveIcon />}

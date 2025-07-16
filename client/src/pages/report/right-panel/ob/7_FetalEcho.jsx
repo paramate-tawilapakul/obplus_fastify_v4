@@ -45,6 +45,7 @@ import {
 } from '../../report-utils'
 import Details from './early-abnormal/Details'
 import { qsa } from '../../../../utils/domUtils'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 // import indications from '../../../../data/indications'
 
 const flexCenter = { display: 'flex', alignItems: 'center' }
@@ -1098,326 +1099,224 @@ const FetalEcho = ({ patient }) => {
 
   return (
     <>
-      <div
-        style={{
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div>
-            {data && dataForm?.length > 0 && dataCardiacForm?.length > 0 && (
-              <>
-                {dataForm
-                  ?.filter(form => form.name === 'Reason/Indications')
-                  .map((form, i) => {
-                    // let value = ''
-                    // form.options.forEach(op => {
-                    //   console.log(data)
-                    //   const test = data.find(
-                    //     data => data.contentOption === op.opId
-                    //   )
-                    //   if (test) value = test.contentOption
-                    // })
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-                    return (
-                      <Box key={i} sx={{ m: inputMargin }}>
-                        <AutoCompleteField
-                          width={676}
-                          ctrlValue={indication}
-                          handleChange={(e, newValue) =>
-                            handleChange(e, form, newValue, true)
-                          }
-                          form={form}
-                          freeSolo={false}
-                        />
-                      </Box>
-                    )
-                  })}
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div>
+          {data && dataForm?.length > 0 && dataCardiacForm?.length > 0 && (
+            <>
+              {dataForm
+                ?.filter(form => form.name === 'Reason/Indications')
+                .map((form, i) => {
+                  // let value = ''
+                  // form.options.forEach(op => {
+                  //   console.log(data)
+                  //   const test = data.find(
+                  //     data => data.contentOption === op.opId
+                  //   )
+                  //   if (test) value = test.contentOption
+                  // })
 
+                  return (
+                    <Box key={i} sx={{ m: inputMargin }}>
+                      <AutoCompleteField
+                        width={676}
+                        ctrlValue={indication}
+                        handleChange={(e, newValue) =>
+                          handleChange(e, form, newValue, true)
+                        }
+                        form={form}
+                        freeSolo={false}
+                      />
+                    </Box>
+                  )
+                })}
+
+              <Box
+                sx={{
+                  display: 'flex',
+                  columnGap: 0,
+                  mt: 1.2,
+                  width: 700,
+                }}
+              >
                 <Box
                   sx={{
-                    display: 'flex',
-                    columnGap: 0,
-                    mt: 1.2,
-                    width: 700,
+                    width: '50%',
                   }}
                 >
-                  <Box
-                    sx={{
-                      width: '50%',
-                    }}
-                  >
-                    {dataForm
-                      ?.filter(form => form.name !== 'Reason/Indications')
-                      .map((form, i) => {
-                        if (i % 2 === 0 && i <= 20) {
-                          let value = ''
-                          let controlled = false
-                          form.options.forEach(op => {
-                            const test = data.find(
-                              data => data.contentOption === op.opId
-                            )
-                            if (test) value = test.contentOption
-                          })
+                  {dataForm
+                    ?.filter(form => form.name !== 'Reason/Indications')
+                    .map((form, i) => {
+                      if (i % 2 === 0 && i <= 20) {
+                        let value = ''
+                        let controlled = false
+                        form.options.forEach(op => {
+                          const test = data.find(
+                            data => data.contentOption === op.opId
+                          )
+                          if (test) value = test.contentOption
+                        })
 
-                          let componentOption = null
-                          let showFreetext = true
-                          let formOption = {}
-                          if (form.name === 'Pericardial Effusion') {
-                            formOption = {
-                              width: 70,
-                              unit: 'mm.',
-                              optionText: 'thick',
-                              style: { textAlign: 'right', paddingRight: 7 },
-                            }
-                            controlled = true
-                          } else if (
-                            form.name === 'Intracardiac Echogenic Foci'
-                          ) {
-                            controlled = true
-                            componentOption = (
-                              <div style={{ marginLeft: 10 }}>
-                                {CheckBox(
-                                  {
-                                    ...form,
-                                    cname: 'RV',
-                                  },
-                                  data
-                                )}
-                                {CheckBox(
-                                  {
-                                    ...form,
-                                    cname: 'LV',
-                                  },
-                                  data
-                                )}
-                                {CheckBox(
-                                  {
-                                    ...form,
-                                    cname: 'Both ventricles',
-                                  },
-                                  data
-                                )}
-                              </div>
-                            )
-                          } else if (form.name === 'Ventricular Septum') {
-                            controlled = true
-                            formOption = {
-                              width: 70,
-                              unit: 'mm.',
-                              inputName: 'Size',
-                              style: { textAlign: 'right', paddingRight: 7 },
-                            }
-                            componentOption = (
-                              <div style={{ marginLeft: 10 }}>
-                                {CheckBox(
-                                  {
-                                    ...form,
-                                    cname: 'AVSD',
-                                  },
-                                  data
-                                )}
-                                {CheckBox(
-                                  {
-                                    ...form,
-                                    cname: 'Perimembranous',
-                                  },
-                                  data
-                                )}
-                                {CheckBox(
-                                  {
-                                    ...form,
-                                    cname: 'Muscular',
-                                  },
-                                  data
-                                )}
-                              </div>
-                            )
-                          } else if (form.name === 'Atrial Septum') {
-                            controlled = true
-                            showFreetext = false
-                            componentOption = (
-                              <div style={{ marginLeft: 10 }}>
-                                {CheckBox(
-                                  {
-                                    ...form,
-                                    cname: 'Primum',
-                                  },
-                                  data
-                                )}
-                                {CheckBox(
-                                  {
-                                    ...form,
-                                    cname: 'Secondum',
-                                  },
-                                  data
-                                )}
-                              </div>
-                            )
-                          } else if (
-                            [
-                              '4 Chamber View',
-                              'Foramen Ovale',
-                              'AV Junctions',
-                            ].includes(form.name)
-                          ) {
-                            controlled = true
+                        let componentOption = null
+                        let showFreetext = true
+                        let formOption = {}
+                        if (form.name === 'Pericardial Effusion') {
+                          formOption = {
+                            width: 70,
+                            unit: 'mm.',
+                            optionText: 'thick',
+                            style: { textAlign: 'right', paddingRight: 7 },
                           }
-
-                          return (
-                            <Box key={i} sx={{ m: inputMargin, mb: 2, mr: 0 }}>
-                              <SelectField
-                                value={value}
-                                handleChange={e => handleChange(e, form)}
-                                form={form}
-                                // minWidth={i >= 26 ? 675 : undefined}
-                                controlled={controlled}
-                              />
-                              {InputText(
+                          controlled = true
+                        } else if (
+                          form.name === 'Intracardiac Echogenic Foci'
+                        ) {
+                          controlled = true
+                          componentOption = (
+                            <div style={{ marginLeft: 10 }}>
+                              {CheckBox(
                                 {
                                   ...form,
-                                  ...formOption,
+                                  cname: 'RV',
                                 },
-                                data,
-                                elRef[form.name],
-                                componentOption,
-                                showFreetext
+                                data
                               )}
-                            </Box>
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'LV',
+                                },
+                                data
+                              )}
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'Both ventricles',
+                                },
+                                data
+                              )}
+                            </div>
                           )
+                        } else if (form.name === 'Ventricular Septum') {
+                          controlled = true
+                          formOption = {
+                            width: 70,
+                            unit: 'mm.',
+                            inputName: 'Size',
+                            style: { textAlign: 'right', paddingRight: 7 },
+                          }
+                          componentOption = (
+                            <div style={{ marginLeft: 10 }}>
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'AVSD',
+                                },
+                                data
+                              )}
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'Perimembranous',
+                                },
+                                data
+                              )}
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'Muscular',
+                                },
+                                data
+                              )}
+                            </div>
+                          )
+                        } else if (form.name === 'Atrial Septum') {
+                          controlled = true
+                          showFreetext = false
+                          componentOption = (
+                            <div style={{ marginLeft: 10 }}>
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'Primum',
+                                },
+                                data
+                              )}
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'Secondum',
+                                },
+                                data
+                              )}
+                            </div>
+                          )
+                        } else if (
+                          [
+                            '4 Chamber View',
+                            'Foramen Ovale',
+                            'AV Junctions',
+                          ].includes(form.name)
+                        ) {
+                          controlled = true
                         }
-                      })}
-                    <Box sx={{ ml: 1, pr: 1.5, mb: 1 }}>
-                      <Accordion
-                        expanded={expanded1 === 'Atrio'}
-                        onChange={handleChangeAccordion1('Atrio')}
-                      >
-                        <AccordionSummary sx={bgcolorStyleH}>
-                          <Typography sx={{ mr: 1 }}>
-                            Atrio-ventricular Valves
-                          </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails
-                          sx={{ ...bgcolorStyle, mt: 0, pt: 0 }}
-                        >
-                          {dataForm
-                            ?.filter(form =>
-                              ['Tricuspid Valves', 'Mitral Valves'].includes(
-                                form.name
-                              )
-                            )
-                            .map((form, i) => {
-                              let value = ''
-                              form.options.forEach(op => {
-                                const test = data.find(
-                                  data => data.contentOption === op.opId
-                                )
-                                if (test) value = test.contentOption
-                              })
 
-                              let componentOption = (
-                                <div style={{ marginLeft: 10 }}>
-                                  {CheckBox(
-                                    {
-                                      ...form,
-                                      cname: 'Tenosis',
-                                    },
-                                    data
-                                  )}
-                                  {CheckBox(
-                                    {
-                                      ...form,
-                                      cname: 'Regurgitation',
-                                    },
-                                    data
-                                  )}
-                                  {CheckBox(
-                                    {
-                                      ...form,
-                                      cname: 'Atresia',
-                                    },
-                                    data
-                                  )}
-                                  {CheckBox(
-                                    {
-                                      ...form,
-                                      cname: 'Dysplasia',
-                                    },
-                                    data
-                                  )}
-                                </div>
-                              )
-
-                              return (
-                                <Box key={i} sx={{ ml: -0.5, mt: 2 }}>
-                                  <SelectField
-                                    value={value}
-                                    handleChange={e => handleChange(e, form)}
-                                    form={form}
-                                    minWidth={300}
-                                    controlled={true}
-                                  />
-
-                                  {InputText(
-                                    form,
-                                    data,
-                                    elRef[form.name],
-                                    componentOption
-                                  )}
-                                </Box>
-                              )
-                            })}
-                        </AccordionDetails>
-                      </Accordion>
-                    </Box>
-                  </Box>
-                  <Box
-                    sx={{
-                      width: '50%',
-                      ml: -0.5,
-                    }}
-                  >
-                    {dataForm
-                      ?.filter(form => form.name !== 'Reason/Indications')
-                      .map((form, i) => {
-                        if (i % 2 !== 0 && i <= 22) {
-                          let value = ''
-
-                          let controlled = false
-                          // console.log(form)
-                          // let hasAbnormal = form.options.find(option =>
-                          //   ['Abnormal', 'Other'].includes(option.name)
-                          // )
-
-                          form.options.forEach(op => {
-                            const test = data.find(
-                              data => data.contentOption === op.opId
-                            )
-                            if (test) {
-                              value = test.contentOption
-                            }
-                          })
-
-                          let componentOption = null
-                          if (
-                            ['Pulmonic Valve', 'Aotic Valve'].includes(
+                        return (
+                          <Box key={i} sx={{ m: inputMargin, mb: 2, mr: 0 }}>
+                            <SelectField
+                              value={value}
+                              handleChange={e => handleChange(e, form)}
+                              form={form}
+                              // minWidth={i >= 26 ? 675 : undefined}
+                              controlled={controlled}
+                            />
+                            {InputText(
+                              {
+                                ...form,
+                                ...formOption,
+                              },
+                              data,
+                              elRef[form.name],
+                              componentOption,
+                              showFreetext
+                            )}
+                          </Box>
+                        )
+                      }
+                    })}
+                  <Box sx={{ ml: 1, pr: 1.5, mb: 1 }}>
+                    <Accordion
+                      expanded={expanded1 === 'Atrio'}
+                      onChange={handleChangeAccordion1('Atrio')}
+                    >
+                      <AccordionSummary sx={bgcolorStyleH}>
+                        <Typography sx={{ mr: 1 }}>
+                          Atrio-ventricular Valves
+                        </Typography>
+                      </AccordionSummary>
+                      <AccordionDetails sx={{ ...bgcolorStyle, mt: 0, pt: 0 }}>
+                        {dataForm
+                          ?.filter(form =>
+                            ['Tricuspid Valves', 'Mitral Valves'].includes(
                               form.name
                             )
-                          ) {
-                            controlled = true
-                            componentOption = (
+                          )
+                          .map((form, i) => {
+                            let value = ''
+                            form.options.forEach(op => {
+                              const test = data.find(
+                                data => data.contentOption === op.opId
+                              )
+                              if (test) value = test.contentOption
+                            })
+
+                            let componentOption = (
                               <div style={{ marginLeft: 10 }}>
                                 {CheckBox(
                                   {
                                     ...form,
-                                    cname: 'Stenosis',
-                                  },
-                                  data
-                                )}
-                                {CheckBox(
-                                  {
-                                    ...form,
-                                    cname: 'Dysplasia',
+                                    cname: 'Tenosis',
                                   },
                                   data
                                 )}
@@ -1428,443 +1327,535 @@ const FetalEcho = ({ patient }) => {
                                   },
                                   data
                                 )}
-                              </div>
-                            )
-                          } else if (form.name === 'Aortic Arch') {
-                            controlled = true
-                            componentOption = (
-                              <div style={{ marginLeft: 10 }}>
                                 {CheckBox(
-                                  { ...form, cname: 'Coarctation' },
-                                  data
-                                )}
-                                {CheckBox(
-                                  { ...form, cname: 'Right-sided' },
-                                  data
-                                )}
-                                {CheckBox({ ...form, cname: 'Double' }, data)}
-                              </div>
-                            )
-                          } else if (form.name === 'Ductal Arch and DA') {
-                            controlled = true
-                            componentOption = (
-                              <div style={{ marginLeft: 10 }}>
-                                {CheckBox(
-                                  { ...form, cname: 'Reverse flow in DA' },
-                                  data
-                                )}
-                              </div>
-                            )
-                          } else if (form.name === 'Rate and Rhythm') {
-                            controlled = true
-                            componentOption = (
-                              <div style={{ marginLeft: 10 }}>
-                                {OptionText(
                                   {
                                     ...form,
-                                    fname: 'Atrial Rate',
-                                    unit: '/min',
+                                    cname: 'Atresia',
                                   },
                                   data
                                 )}
-                                {OptionText(
+                                {CheckBox(
                                   {
                                     ...form,
-                                    fname: 'Ventricular Rate',
-                                    unit: '/min',
+                                    cname: 'Dysplasia',
                                   },
                                   data
                                 )}
+                              </div>
+                            )
 
-                                {CheckBox({ ...form, cname: 'PAC' }, data)}
-                                {CheckBox(
-                                  { ...form, cname: 'PAC with block' },
-                                  data
-                                )}
-                                {CheckBox({ ...form, cname: 'PVC' }, data)}
-                                {CheckBox({ ...form, cname: 'SVT' }, data)}
-                                {CheckBox(
-                                  {
-                                    ...form,
-                                    cname: 'Ventricular fibrillation',
-                                  },
-                                  data
-                                )}
-                                {CheckBox(
-                                  { ...form, cname: 'Atrial flutter' },
-                                  data
-                                )}
-                                {CheckBox(
-                                  { ...form, cname: 'Atrial fibrillation' },
-                                  data
-                                )}
-                                {CheckBox(
-                                  { ...form, cname: '1st degree AV block' },
-                                  data
-                                )}
-                                {CheckBox(
-                                  { ...form, cname: '2nd degree AV block' },
-                                  data
-                                )}
-                                {CheckBox(
-                                  { ...form, cname: '3rd degree AV block' },
-                                  data
-                                )}
-                              </div>
-                            )
-                          } else if (
-                            [
-                              'LVOT',
-                              'RVOT',
-                              'MPA and Branches PA',
-                              'Pulmonary Veins',
-                              'SVC and IVC',
-                              'Ductus Venosus',
-                            ].includes(form.name)
-                          ) {
-                            controlled = true
-                          }
+                            return (
+                              <Box key={i} sx={{ ml: -0.5, mt: 2 }}>
+                                <SelectField
+                                  value={value}
+                                  handleChange={e => handleChange(e, form)}
+                                  form={form}
+                                  minWidth={300}
+                                  controlled={true}
+                                />
 
-                          return (
-                            <Box key={i} sx={{ m: inputMargin, mb: 2 }}>
-                              <SelectField
-                                value={value}
-                                handleChange={e => handleChange(e, form)}
-                                form={form}
-                                // minWidth={i >= 26 ? 675 : undefined}
-                                controlled={controlled}
-                              />
-                              {InputText(
-                                form,
-                                data,
-                                elRef[form.name],
-                                componentOption
-                              )}
-                            </Box>
+                                {InputText(
+                                  form,
+                                  data,
+                                  elRef[form.name],
+                                  componentOption
+                                )}
+                              </Box>
+                            )
+                          })}
+                      </AccordionDetails>
+                    </Accordion>
+                  </Box>
+                </Box>
+                <Box
+                  sx={{
+                    width: '50%',
+                    ml: -0.5,
+                  }}
+                >
+                  {dataForm
+                    ?.filter(form => form.name !== 'Reason/Indications')
+                    .map((form, i) => {
+                      if (i % 2 !== 0 && i <= 22) {
+                        let value = ''
+
+                        let controlled = false
+                        // console.log(form)
+                        // let hasAbnormal = form.options.find(option =>
+                        //   ['Abnormal', 'Other'].includes(option.name)
+                        // )
+
+                        form.options.forEach(op => {
+                          const test = data.find(
+                            data => data.contentOption === op.opId
                           )
+                          if (test) {
+                            value = test.contentOption
+                          }
+                        })
+
+                        let componentOption = null
+                        if (
+                          ['Pulmonic Valve', 'Aotic Valve'].includes(form.name)
+                        ) {
+                          controlled = true
+                          componentOption = (
+                            <div style={{ marginLeft: 10 }}>
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'Stenosis',
+                                },
+                                data
+                              )}
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'Dysplasia',
+                                },
+                                data
+                              )}
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'Regurgitation',
+                                },
+                                data
+                              )}
+                            </div>
+                          )
+                        } else if (form.name === 'Aortic Arch') {
+                          controlled = true
+                          componentOption = (
+                            <div style={{ marginLeft: 10 }}>
+                              {CheckBox(
+                                { ...form, cname: 'Coarctation' },
+                                data
+                              )}
+                              {CheckBox(
+                                { ...form, cname: 'Right-sided' },
+                                data
+                              )}
+                              {CheckBox({ ...form, cname: 'Double' }, data)}
+                            </div>
+                          )
+                        } else if (form.name === 'Ductal Arch and DA') {
+                          controlled = true
+                          componentOption = (
+                            <div style={{ marginLeft: 10 }}>
+                              {CheckBox(
+                                { ...form, cname: 'Reverse flow in DA' },
+                                data
+                              )}
+                            </div>
+                          )
+                        } else if (form.name === 'Rate and Rhythm') {
+                          controlled = true
+                          componentOption = (
+                            <div style={{ marginLeft: 10 }}>
+                              {OptionText(
+                                {
+                                  ...form,
+                                  fname: 'Atrial Rate',
+                                  unit: '/min',
+                                },
+                                data
+                              )}
+                              {OptionText(
+                                {
+                                  ...form,
+                                  fname: 'Ventricular Rate',
+                                  unit: '/min',
+                                },
+                                data
+                              )}
+
+                              {CheckBox({ ...form, cname: 'PAC' }, data)}
+                              {CheckBox(
+                                { ...form, cname: 'PAC with block' },
+                                data
+                              )}
+                              {CheckBox({ ...form, cname: 'PVC' }, data)}
+                              {CheckBox({ ...form, cname: 'SVT' }, data)}
+                              {CheckBox(
+                                {
+                                  ...form,
+                                  cname: 'Ventricular fibrillation',
+                                },
+                                data
+                              )}
+                              {CheckBox(
+                                { ...form, cname: 'Atrial flutter' },
+                                data
+                              )}
+                              {CheckBox(
+                                { ...form, cname: 'Atrial fibrillation' },
+                                data
+                              )}
+                              {CheckBox(
+                                { ...form, cname: '1st degree AV block' },
+                                data
+                              )}
+                              {CheckBox(
+                                { ...form, cname: '2nd degree AV block' },
+                                data
+                              )}
+                              {CheckBox(
+                                { ...form, cname: '3rd degree AV block' },
+                                data
+                              )}
+                            </div>
+                          )
+                        } else if (
+                          [
+                            'LVOT',
+                            'RVOT',
+                            'MPA and Branches PA',
+                            'Pulmonary Veins',
+                            'SVC and IVC',
+                            'Ductus Venosus',
+                          ].includes(form.name)
+                        ) {
+                          controlled = true
                         }
-                      })}
-                    <Box sx={{ ml: 1, pr: 1.5, mb: 1 }}>
-                      <Accordion
-                        expanded={expanded2 === 'Cardiac'}
-                        onChange={handleChangeAccordion2('Cardiac')}
-                      >
-                        <AccordionSummary sx={bgcolorStyleH}>
-                          <Typography sx={{ mr: 1 }}>
-                            Cardiac Function
-                          </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails sx={bgcolorStyle}>
-                          <form ref={formRef} autoComplete='off'>
+
+                        return (
+                          <Box key={i} sx={{ m: inputMargin, mb: 2 }}>
+                            <SelectField
+                              value={value}
+                              handleChange={e => handleChange(e, form)}
+                              form={form}
+                              // minWidth={i >= 26 ? 675 : undefined}
+                              controlled={controlled}
+                            />
+                            {InputText(
+                              form,
+                              data,
+                              elRef[form.name],
+                              componentOption
+                            )}
+                          </Box>
+                        )
+                      }
+                    })}
+                  <Box sx={{ ml: 1, pr: 1.5, mb: 1 }}>
+                    <Accordion
+                      expanded={expanded2 === 'Cardiac'}
+                      onChange={handleChangeAccordion2('Cardiac')}
+                    >
+                      <AccordionSummary sx={bgcolorStyleH}>
+                        <Typography sx={{ mr: 1 }}>Cardiac Function</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails sx={bgcolorStyle}>
+                        <form ref={formRef} autoComplete='off'>
+                          {dataCardiacForm
+                            .filter(data => data.name === 'Cardiac Function')
+                            .map((form, i) => {
+                              return (
+                                <div style={flexCenter} key={i}>
+                                  {CardiacInputText(form)}
+                                </div>
+                              )
+                            })}
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                name='Longitudial Strain'
+                                defaultChecked={
+                                  dataCardiacForm
+                                    .filter(
+                                      d => d.name === 'Longitudial Strain'
+                                    )
+                                    .map(d => d.content)
+                                    .reduce((acc, cv) => acc + cv, '') !== ''
+                                }
+                                sx={{ p: 0.5 }}
+                                onChange={e =>
+                                  handleCardiacChange(e, {
+                                    cname: 'Longitudial Strain',
+                                    valueId: 0,
+                                  })
+                                }
+                              />
+                            }
+                            label='Longitudial Strain'
+                            sx={{
+                              m: 0,
+                            }}
+                          />
+                          <div ref={longitudialStrainRef}>
                             {dataCardiacForm
-                              .filter(data => data.name === 'Cardiac Function')
+                              .filter(
+                                data => data.name === 'Longitudial Strain'
+                              )
                               .map((form, i) => {
                                 return (
-                                  <div style={flexCenter} key={i}>
+                                  <div
+                                    style={{ ...flexCenter, marginLeft: 28 }}
+                                    key={i}
+                                  >
                                     {CardiacInputText(form)}
                                   </div>
                                 )
                               })}
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  name='Longitudial Strain'
-                                  defaultChecked={
-                                    dataCardiacForm
-                                      .filter(
-                                        d => d.name === 'Longitudial Strain'
-                                      )
-                                      .map(d => d.content)
-                                      .reduce((acc, cv) => acc + cv, '') !== ''
-                                  }
-                                  sx={{ p: 0.5 }}
-                                  onChange={e =>
-                                    handleCardiacChange(e, {
-                                      cname: 'Longitudial Strain',
-                                      valueId: 0,
-                                    })
-                                  }
-                                />
-                              }
-                              label='Longitudial Strain'
-                              sx={{
-                                m: 0,
-                              }}
-                            />
-                            <div ref={longitudialStrainRef}>
-                              {dataCardiacForm
-                                .filter(
-                                  data => data.name === 'Longitudial Strain'
-                                )
-                                .map((form, i) => {
-                                  return (
-                                    <div
-                                      style={{ ...flexCenter, marginLeft: 28 }}
-                                      key={i}
-                                    >
-                                      {CardiacInputText(form)}
-                                    </div>
-                                  )
-                                })}
-                            </div>
+                          </div>
 
+                          <FormControlLabel
+                            control={
+                              <Checkbox
+                                name='Circumferential Strain'
+                                defaultChecked={
+                                  dataCardiacForm
+                                    .filter(
+                                      d => d.name === 'Circumferential Strain'
+                                    )
+                                    .map(d => d.content)
+                                    .reduce((acc, cv) => acc + cv, '') !== ''
+                                }
+                                sx={{ p: 0.5 }}
+                                onChange={e =>
+                                  handleCardiacChange(e, {
+                                    valueId: shortAxisValueId,
+                                    cname: 'Circumferential Strain',
+                                  })
+                                }
+                              />
+                            }
+                            label='Circumferential Strain'
+                            sx={{
+                              m: 0,
+                              width: 250,
+                            }}
+                          />
+                          <div ref={circumferentialStrainRef}>
                             <FormControlLabel
                               control={
                                 <Checkbox
-                                  name='Circumferential Strain'
-                                  defaultChecked={
-                                    dataCardiacForm
-                                      .filter(
-                                        d => d.name === 'Circumferential Strain'
-                                      )
-                                      .map(d => d.content)
-                                      .reduce((acc, cv) => acc + cv, '') !== ''
-                                  }
+                                  name='Short Axis'
+                                  defaultChecked={shortAxisContent[0] !== ''}
                                   sx={{ p: 0.5 }}
                                   onChange={e =>
                                     handleCardiacChange(e, {
+                                      cname: 'Short Axis',
                                       valueId: shortAxisValueId,
-                                      cname: 'Circumferential Strain',
                                     })
                                   }
                                 />
                               }
-                              label='Circumferential Strain'
+                              label='Short Axis'
                               sx={{
                                 m: 0,
                                 width: 250,
+                                ml: 3.5,
                               }}
                             />
-                            <div ref={circumferentialStrainRef}>
+                            <div
+                              ref={shortAxisRef}
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                marginLeft: 55,
+                              }}
+                            >
                               <FormControlLabel
                                 control={
                                   <Checkbox
-                                    name='Short Axis'
-                                    defaultChecked={shortAxisContent[0] !== ''}
+                                    name={shortAxisValueId + '1'}
+                                    defaultChecked={shortAxisContent.includes(
+                                      'Apical'
+                                    )}
                                     sx={{ p: 0.5 }}
+                                    inputProps={{
+                                      'data-value': 'Apical',
+                                      'data-name': 'Short Axis',
+                                    }}
                                     onChange={e =>
                                       handleCardiacChange(e, {
-                                        cname: 'Short Axis',
+                                        cname: 'Apical',
                                         valueId: shortAxisValueId,
                                       })
                                     }
                                   />
                                 }
-                                label='Short Axis'
+                                label='Apical'
                                 sx={{
                                   m: 0,
-                                  width: 250,
-                                  ml: 3.5,
+                                  width: 200,
                                 }}
                               />
-                              <div
-                                ref={shortAxisRef}
-                                style={{
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  marginLeft: 55,
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    name={shortAxisValueId + '2'}
+                                    defaultChecked={shortAxisContent.includes(
+                                      'Mid'
+                                    )}
+                                    sx={{ p: 0.5 }}
+                                    inputProps={{
+                                      'data-value': 'Mid',
+                                      'data-name': 'Short Axis',
+                                    }}
+                                    onChange={e =>
+                                      handleCardiacChange(e, {
+                                        cname: 'Mid',
+                                        valueId: shortAxisValueId,
+                                      })
+                                    }
+                                  />
+                                }
+                                label='Mid'
+                                sx={{
+                                  m: 0,
+                                  width: 200,
                                 }}
-                              >
-                                <FormControlLabel
-                                  control={
-                                    <Checkbox
-                                      name={shortAxisValueId + '1'}
-                                      defaultChecked={shortAxisContent.includes(
-                                        'Apical'
-                                      )}
-                                      sx={{ p: 0.5 }}
-                                      inputProps={{
-                                        'data-value': 'Apical',
-                                        'data-name': 'Short Axis',
-                                      }}
-                                      onChange={e =>
-                                        handleCardiacChange(e, {
-                                          cname: 'Apical',
-                                          valueId: shortAxisValueId,
-                                        })
-                                      }
-                                    />
-                                  }
-                                  label='Apical'
-                                  sx={{
-                                    m: 0,
-                                    width: 200,
-                                  }}
-                                />
-                                <FormControlLabel
-                                  control={
-                                    <Checkbox
-                                      name={shortAxisValueId + '2'}
-                                      defaultChecked={shortAxisContent.includes(
-                                        'Mid'
-                                      )}
-                                      sx={{ p: 0.5 }}
-                                      inputProps={{
-                                        'data-value': 'Mid',
-                                        'data-name': 'Short Axis',
-                                      }}
-                                      onChange={e =>
-                                        handleCardiacChange(e, {
-                                          cname: 'Mid',
-                                          valueId: shortAxisValueId,
-                                        })
-                                      }
-                                    />
-                                  }
-                                  label='Mid'
-                                  sx={{
-                                    m: 0,
-                                    width: 200,
-                                  }}
-                                />
-                                <FormControlLabel
-                                  control={
-                                    <Checkbox
-                                      name={shortAxisValueId + '3'}
-                                      defaultChecked={shortAxisContent.includes(
-                                        'Basal'
-                                      )}
-                                      sx={{ p: 0.5 }}
-                                      inputProps={{
-                                        'data-value': 'Basal',
-                                        'data-name': 'Short Axis',
-                                      }}
-                                      onChange={e =>
-                                        handleCardiacChange(e, {
-                                          cname: 'Basal',
-                                          valueId: shortAxisValueId,
-                                        })
-                                      }
-                                    />
-                                  }
-                                  label='Basal'
-                                  sx={{
-                                    m: 0,
-                                    width: 200,
-                                    mb: 1,
-                                  }}
-                                />
-                              </div>
-
-                              {dataCardiacForm
-                                .filter(
-                                  data =>
-                                    data.name === 'Circumferential Strain' &&
-                                    data.display !== 'Short Axis'
-                                )
-                                .map((form, i) => {
-                                  return (
-                                    <div
-                                      style={{ ...flexCenter, marginLeft: 28 }}
-                                      key={i}
-                                    >
-                                      {CardiacInputText(form)}
-                                    </div>
-                                  )
-                                })}
+                              />
+                              <FormControlLabel
+                                control={
+                                  <Checkbox
+                                    name={shortAxisValueId + '3'}
+                                    defaultChecked={shortAxisContent.includes(
+                                      'Basal'
+                                    )}
+                                    sx={{ p: 0.5 }}
+                                    inputProps={{
+                                      'data-value': 'Basal',
+                                      'data-name': 'Short Axis',
+                                    }}
+                                    onChange={e =>
+                                      handleCardiacChange(e, {
+                                        cname: 'Basal',
+                                        valueId: shortAxisValueId,
+                                      })
+                                    }
+                                  />
+                                }
+                                label='Basal'
+                                sx={{
+                                  m: 0,
+                                  width: 200,
+                                  mb: 1,
+                                }}
+                              />
                             </div>
-                          </form>
-                        </AccordionDetails>
-                      </Accordion>
-                    </Box>
+
+                            {dataCardiacForm
+                              .filter(
+                                data =>
+                                  data.name === 'Circumferential Strain' &&
+                                  data.display !== 'Short Axis'
+                              )
+                              .map((form, i) => {
+                                return (
+                                  <div
+                                    style={{ ...flexCenter, marginLeft: 28 }}
+                                    key={i}
+                                  >
+                                    {CardiacInputText(form)}
+                                  </div>
+                                )
+                              })}
+                          </div>
+                        </form>
+                      </AccordionDetails>
+                    </Accordion>
                   </Box>
                 </Box>
-              </>
-            )}
-            <div
-              style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'flex-start',
-                width: 750,
-                marginTop: 1,
-                // marginLeft: 10,
-              }}
-            >
-              {data && dataForm?.length > 0 && (
-                <>
-                  {dataForm?.slice(-5).map((form, i) => {
-                    let value = ''
-                    if (form.options?.length > 0) {
-                      form.options.forEach(op => {
-                        const test = data.find(
-                          data => data.contentOption === op.opId
-                        )
-                        if (test) value = test.contentOption
-                      })
+              </Box>
+            </>
+          )}
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              justifyContent: 'flex-start',
+              width: 750,
+              marginTop: 1,
+              // marginLeft: 10,
+            }}
+          >
+            {data && dataForm?.length > 0 && (
+              <>
+                {dataForm?.slice(-5).map((form, i) => {
+                  let value = ''
+                  if (form.options?.length > 0) {
+                    form.options.forEach(op => {
+                      const test = data.find(
+                        data => data.contentOption === op.opId
+                      )
+                      if (test) value = test.contentOption
+                    })
 
-                      return (
-                        <div key={i}>
+                    return (
+                      <div key={i}>
+                        <Box sx={{ m: inputMargin }}>
+                          <SelectField
+                            value={value}
+                            handleChange={e => handleChange(e, form)}
+                            form={form}
+                            minWidth={675}
+                            controlled={false}
+                          />
+                        </Box>
+                      </div>
+                    )
+                  } else {
+                    const test = data.find(
+                      data => data.refValueId === form.valueId
+                    )
+                    if (test && test.content) value = test.content
+
+                    return (
+                      <div key={i}>
+                        {form.type === 'A' || form.name === 'Comments' ? (
                           <Box sx={{ m: inputMargin }}>
-                            <SelectField
+                            <CommentField
+                              minWidth={675}
+                              form={form}
                               value={value}
                               handleChange={e => handleChange(e, form)}
-                              form={form}
-                              minWidth={675}
-                              controlled={false}
                             />
                           </Box>
-                        </div>
-                      )
-                    } else {
-                      const test = data.find(
-                        data => data.refValueId === form.valueId
-                      )
-                      if (test && test.content) value = test.content
+                        ) : (
+                          <Box sx={{ m: inputMargin }}>
+                            {i === 0 && <Divider sx={{ mt: 1, mb: 3 }} />}
+                            <InputTextField
+                              form={form}
+                              value={value}
+                              handleChange={e => handleChange(e, form)}
+                              width={675}
+                            />
+                          </Box>
+                        )}
+                      </div>
+                    )
+                  }
+                })}
+              </>
+            )}
 
-                      return (
-                        <div key={i}>
-                          {form.type === 'A' || form.name === 'Comments' ? (
-                            <Box sx={{ m: inputMargin }}>
-                              <CommentField
-                                minWidth={675}
-                                form={form}
-                                value={value}
-                                handleChange={e => handleChange(e, form)}
-                              />
-                            </Box>
-                          ) : (
-                            <Box sx={{ m: inputMargin }}>
-                              {i === 0 && <Divider sx={{ mt: 1, mb: 3 }} />}
-                              <InputTextField
-                                form={form}
-                                value={value}
-                                handleChange={e => handleChange(e, form)}
-                                width={675}
-                              />
-                            </Box>
-                          )}
-                        </div>
-                      )
-                    }
-                  })}
-                </>
-              )}
-
-              <Button
-                sx={{ ...btStyle, m: 1.3 }}
-                variant='contained'
-                startIcon={<CheckIcon />}
-                onClick={() => saveData()}
-              >
-                Save
-              </Button>
-            </div>
+            <Button
+              sx={{ ...btStyle, m: 1.3, display: loading && 'none' }}
+              variant='contained'
+              startIcon={<CheckIcon />}
+              onClick={() => saveData()}
+            >
+              Save
+            </Button>
           </div>
-        </Fade>
+        </div>
+      </Fade>
 
-        <Details
-          dialog={dialog}
-          setOpen={setDialog}
-          setSnackWarning={setSnackWarning}
-        />
-        <SnackBarWarning
-          snackWarning={snackWarning}
-          setSnackWarning={setSnackWarning}
-          vertical='top'
-          horizontal='center'
-        />
-      </div>
+      <Details
+        dialog={dialog}
+        setOpen={setDialog}
+        setSnackWarning={setSnackWarning}
+      />
+      <SnackBarWarning
+        snackWarning={snackWarning}
+        setSnackWarning={setSnackWarning}
+        vertical='top'
+        horizontal='center'
+      />
     </>
   )
 }

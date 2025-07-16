@@ -29,6 +29,7 @@ import { sleep } from '../../../../utils'
 import SelectField from '../../../../components/page-tools/SelectField'
 import InputTextField from '../../../../components/page-tools/InputTextField'
 import { storeBackupData, initFormSend } from '../../report-utils'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.bpp.id
 let backupData = null
@@ -233,174 +234,161 @@ const BPP = ({ patient }) => {
   return (
     <>
       {/* {loading && <LinearProgress sx={{ mt: 0.5 }} />} */}
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-      <div
-        style={{
-          // height: '100%',
-          // overflowY: 'auto',
-          // minHeight: 480,
-          // maxHeight: 670,
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'flex-start',
-              width: 550,
-              marginTop: 3,
-              marginLeft: 10,
-            }}
-          >
-            {dataForm.length > 0 &&
-              dataForm.map((form, i) => {
-                if (form.valueId === 140) return
-                if (form.type === 'S') {
-                  let value = ''
-                  form.options.forEach(op => {
-                    const test = data.find(
-                      data => data.contentOption === op.opId
-                    )
-                    if (test) value = test.contentOption
-                  })
-                  let firstOptionBlank = true
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+            width: 550,
+            marginTop: 3,
+            marginLeft: 10,
+          }}
+        >
+          {dataForm.length > 0 &&
+            dataForm.map((form, i) => {
+              if (form.valueId === 140) return
+              if (form.type === 'S') {
+                let value = ''
+                form.options.forEach(op => {
+                  const test = data.find(data => data.contentOption === op.opId)
+                  if (test) value = test.contentOption
+                })
+                let firstOptionBlank = true
 
-                  let newForm = { ...form }
-                  if (form.valueId === 139) {
-                    // Scoring system
-                    newForm.options = [form.options[0]]
-                    value = newForm.options[0].id
-                    firstOptionBlank = false
-                  }
+                let newForm = { ...form }
+                if (form.valueId === 139) {
+                  // Scoring system
+                  newForm.options = [form.options[0]]
+                  value = newForm.options[0].id
+                  firstOptionBlank = false
+                }
 
-                  if (form.valueId === 141) {
-                    newForm.options = [
-                      {
-                        ...form.options[1],
-                        opName: form.options[1].opName + ' / 30mins',
-                      },
-                      {
-                        ...form.options[2],
-                        opName: form.options[2].opName + ' / 30mins',
-                      },
-                    ]
-                  }
+                if (form.valueId === 141) {
+                  newForm.options = [
+                    {
+                      ...form.options[1],
+                      opName: form.options[1].opName + ' / 30mins',
+                    },
+                    {
+                      ...form.options[2],
+                      opName: form.options[2].opName + ' / 30mins',
+                    },
+                  ]
+                }
 
-                  if (form.valueId > 141) {
-                    newForm.options = [form.options[0], form.options[2]]
-                  }
+                if (form.valueId > 141) {
+                  newForm.options = [form.options[0], form.options[2]]
+                }
 
-                  return (
-                    <Box key={i} sx={{ m: inputMargin, display: 'flex' }}>
-                      <SelectField
-                        minWidth={450}
-                        maxWidth={450}
-                        value={value}
-                        handleChange={e => handleChange(e, form)}
-                        form={newForm}
-                        firstOptionBlank={firstOptionBlank}
+                return (
+                  <Box key={i} sx={{ m: inputMargin, display: 'flex' }}>
+                    <SelectField
+                      minWidth={450}
+                      maxWidth={450}
+                      value={value}
+                      handleChange={e => handleChange(e, form)}
+                      form={newForm}
+                      firstOptionBlank={firstOptionBlank}
+                    />
+                    {form.valueId > 140 && (
+                      <TextField
+                        sx={{
+                          ...inputStyle,
+                          height: 40,
+                          width: 40,
+                          ml: 1,
+                          pl: 0.2,
+                        }}
+                        size='small'
+                        value={score[form.valueId]}
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
-                      {form.valueId > 140 && (
-                        <TextField
-                          sx={{
-                            ...inputStyle,
-                            height: 40,
-                            width: 40,
-                            ml: 1,
-                            pl: 0.2,
-                          }}
-                          size='small'
-                          value={score[form.valueId]}
-                          InputProps={{
-                            readOnly: true,
-                          }}
-                        />
-                      )}
-                    </Box>
-                  )
-                } else {
-                  let value = ''
+                    )}
+                  </Box>
+                )
+              } else {
+                let value = ''
 
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
+                const test = data.find(data => data.refValueId === form.valueId)
+                if (test && test.content) value = test.content
 
-                  if (form.name === 'Duration')
-                    return (
-                      <Box key={i} sx={{ m: inputMargin }}>
-                        <InputTextField
-                          width={300}
-                          form={form}
-                          value='30 minutes'
-                          handleChange={e => handleChange(e, form)}
-                          readOnly={true}
-                        />
-                      </Box>
-                    )
-                  // console.log(value)
+                if (form.name === 'Duration')
                   return (
                     <Box key={i} sx={{ m: inputMargin }}>
                       <InputTextField
-                        inputRef={currentTimeRef}
                         width={300}
                         form={form}
-                        value={value}
+                        value='30 minutes'
                         handleChange={e => handleChange(e, form)}
+                        readOnly={true}
                       />
-                      <Button
-                        sx={{ height: 40, ml: 1 }}
-                        variant='contained'
-                        color='info'
-                        startIcon={<AccessTimeIcon />}
-                        onClick={e => {
-                          let currentTime = moment().format('HH:mm a')
-                          e.target.value = currentTime
-                          currentTimeRef.current.value = currentTime
-                          handleChange(e, form)
-                        }}
-                      >
-                        Current Time
-                      </Button>
                     </Box>
                   )
-                }
-              })}
+                // console.log(value)
+                return (
+                  <Box key={i} sx={{ m: inputMargin }}>
+                    <InputTextField
+                      inputRef={currentTimeRef}
+                      width={300}
+                      form={form}
+                      value={value}
+                      handleChange={e => handleChange(e, form)}
+                    />
+                    <Button
+                      sx={{ height: 40, ml: 1 }}
+                      variant='contained'
+                      color='info'
+                      startIcon={<AccessTimeIcon />}
+                      onClick={e => {
+                        let currentTime = moment().format('HH:mm a')
+                        e.target.value = currentTime
+                        currentTimeRef.current.value = currentTime
+                        handleChange(e, form)
+                      }}
+                    >
+                      Current Time
+                    </Button>
+                  </Box>
+                )
+              }
+            })}
 
-            {!loading && maxScore && (
-              <div
-                style={{
-                  width: 500,
-                  marginLeft: 10,
-                  textAlign: 'right',
-                }}
-              >
-                <strong>TOTAL SCORE</strong> &nbsp;&nbsp; &nbsp;&nbsp;
-                {Object.keys(score)
-                  .map(key => (scoreKeys.includes(key) ? key : undefined))
-                  .reduce(
-                    (accumulator, currentValue) =>
-                      accumulator + parseInt(score[currentValue]),
-                    0
-                  )}
-                /{maxScore}
-                &nbsp;&nbsp;
-              </div>
-            )}
-
-            <Button
-              sx={{ ...btStyle, m: inputMargin }}
-              variant='contained'
-              startIcon={<CheckIcon />}
-              onClick={() => saveData()}
+          {!loading && maxScore && (
+            <div
+              style={{
+                width: 500,
+                marginLeft: 10,
+                textAlign: 'right',
+              }}
             >
-              Save
-            </Button>
-          </div>
-        </Fade>
-      </div>
+              <strong>TOTAL SCORE</strong> &nbsp;&nbsp; &nbsp;&nbsp;
+              {Object.keys(score)
+                .map(key => (scoreKeys.includes(key) ? key : undefined))
+                .reduce(
+                  (accumulator, currentValue) =>
+                    accumulator + parseInt(score[currentValue]),
+                  0
+                )}
+              /{maxScore}
+              &nbsp;&nbsp;
+            </div>
+          )}
+
+          <Button
+            sx={{ ...btStyle, m: inputMargin, display: loading && 'none' }}
+            variant='contained'
+            startIcon={<CheckIcon />}
+            onClick={() => saveData()}
+          >
+            Save
+          </Button>
+        </div>
+      </Fade>
 
       <SnackBarWarning
         snackWarning={snackWarning}

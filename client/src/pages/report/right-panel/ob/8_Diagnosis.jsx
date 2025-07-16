@@ -33,6 +33,7 @@ import AutoCompleteField from '../../../../components/page-tools/AutoCompleteFie
 import { initFormSend, storeBackupData } from '../../report-utils'
 import InputTextField from '../../../../components/page-tools/InputTextField'
 import MultipleAutoCompleteField from '../../../../components/page-tools/MultipleAutoCompleteField'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.obDiagnosis.id
 let backupData = null
@@ -285,93 +286,126 @@ const Diagnosis = ({ patient }) => {
   return (
     <>
       {/* {loading && <LinearProgress sx={{ mt: 0.5 }} />} */}
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-      <div
-        style={{
-          // height: '100%',
-          // overflowY: 'auto',
-          // minHeight: 480,
-          // maxHeight: 670,
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div
-            style={{
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+            width: 700,
+            marginTop: 3,
+            marginLeft: 10,
+          }}
+        >
+          <Typography
+            variant='h5'
+            sx={{
+              width: 500,
               display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'flex-start',
-              width: 700,
-              marginTop: 3,
-              marginLeft: 10,
+              alignItems: 'center',
+              mb: 1,
             }}
           >
-            <Typography
-              variant='h5'
-              sx={{
-                width: 500,
-                display: 'flex',
-                alignItems: 'center',
-                mb: 1,
-              }}
-            >
-              <ChildCareIcon fontSize='large' />
-              &nbsp; <div>Fetus</div>
-            </Typography>
+            <ChildCareIcon fontSize='large' />
+            &nbsp; <div>Fetus</div>
+          </Typography>
 
-            {dataForm.length > 0 &&
-              dataForm.map((form, i) => {
-                if (form.valueId === 1) return
-                if (form.type === 'S') {
-                  let value = ''
-                  form.options.forEach(op => {
-                    const test = data.find(
-                      data => data.contentOption === op.opId
-                    )
-                    if (test) value = test.contentOption
-                  })
+          {dataForm.length > 0 &&
+            dataForm.map((form, i) => {
+              if (form.valueId === 1) return
+              if (form.type === 'S') {
+                let value = ''
+                form.options.forEach(op => {
+                  const test = data.find(data => data.contentOption === op.opId)
+                  if (test) value = test.contentOption
+                })
 
-                  return (
-                    <Box key={i} sx={{ m: inputMargin, ml: 3 }}>
-                      {form.valueId === 70 ? ( //fetus
-                        <AutoCompleteField
-                          ctrlValue={fetusRecommendation}
-                          handleChange={(e, newValue) => {
-                            handleChange(e, form, newValue, true)
-                          }}
-                          form={form}
-                          width={670}
-                        />
-                      ) : form.valueId === 73 ? ( //mother
-                        <AutoCompleteField
-                          ctrlValue={motherRecommendation}
-                          handleChange={(e, newValue) => {
-                            handleChange(e, form, newValue, true)
-                          }}
-                          form={form}
-                          width={670}
-                        />
-                      ) : form.valueId === 69 ? ( //multiple diagnosis
-                        <MultipleAutoCompleteField
-                          selected={diagnosisSelected}
-                          options={diagnosisList}
-                          handleChange={handleChange}
-                          setSelected={setDiagnosisSelected}
-                          form={form}
-                          width={671}
-                        />
-                      ) : (
-                        <SelectField
-                          minWidth={670}
-                          maxWidth={670}
-                          value={value}
-                          handleChange={e => handleChange(e, form)}
-                          form={form}
-                        />
-                      )}
+                return (
+                  <Box key={i} sx={{ m: inputMargin, ml: 3 }}>
+                    {form.valueId === 70 ? ( //fetus
+                      <AutoCompleteField
+                        ctrlValue={fetusRecommendation}
+                        handleChange={(e, newValue) => {
+                          handleChange(e, form, newValue, true)
+                        }}
+                        form={form}
+                        width={670}
+                      />
+                    ) : form.valueId === 73 ? ( //mother
+                      <AutoCompleteField
+                        ctrlValue={motherRecommendation}
+                        handleChange={(e, newValue) => {
+                          handleChange(e, form, newValue, true)
+                        }}
+                        form={form}
+                        width={670}
+                      />
+                    ) : form.valueId === 69 ? ( //multiple diagnosis
+                      <MultipleAutoCompleteField
+                        selected={diagnosisSelected}
+                        options={diagnosisList}
+                        handleChange={handleChange}
+                        setSelected={setDiagnosisSelected}
+                        form={form}
+                        width={671}
+                      />
+                    ) : (
+                      <SelectField
+                        minWidth={670}
+                        maxWidth={670}
+                        value={value}
+                        handleChange={e => handleChange(e, form)}
+                        form={form}
+                      />
+                    )}
+                  </Box>
+                )
+              } else if (form.type === 'A') {
+                let value = ''
+
+                const test = data.find(data => data.refValueId === form.valueId)
+                if (test && test.content) value = test.content
+
+                return (
+                  <div key={i}>
+                    <Box sx={{ m: inputMargin, ml: 3 }}>
+                      <CommentField
+                        minWidth={670}
+                        form={form}
+                        value={value}
+                        row={2}
+                        handleChange={e => handleChange(e, form)}
+                        placeholder={
+                          ['Diagnosis(Fetus)', 'Diagnosis(Mother)'].includes(
+                            form.name
+                          )
+                            ? 'Choose Diagnosis from select list or fill in here...'
+                            : undefined
+                        }
+                      />
                     </Box>
-                  )
-                } else if (form.type === 'A') {
+                    {form.valueId === 71 && (
+                      <Typography
+                        variant='h5'
+                        sx={{
+                          width: 670,
+                          display: 'flex',
+                          alignItems: 'center',
+                          mb: 1,
+                          ml: -1,
+                        }}
+                      >
+                        <PregnantWomanIcon fontSize='large' />
+                        &nbsp;
+                        <div>Mother</div>
+                      </Typography>
+                    )}
+                  </div>
+                )
+              } else {
+                {
                   let value = ''
 
                   const test = data.find(
@@ -380,75 +414,34 @@ const Diagnosis = ({ patient }) => {
                   if (test && test.content) value = test.content
 
                   return (
-                    <div key={i}>
-                      <Box sx={{ m: inputMargin, ml: 3 }}>
-                        <CommentField
-                          minWidth={670}
-                          form={form}
-                          value={value}
-                          row={2}
-                          handleChange={e => handleChange(e, form)}
-                          placeholder={
-                            ['Diagnosis(Fetus)', 'Diagnosis(Mother)'].includes(
-                              form.name
-                            )
-                              ? 'Choose Diagnosis from select list or fill in here...'
-                              : undefined
-                          }
-                        />
-                      </Box>
-                      {form.valueId === 71 && (
-                        <Typography
-                          variant='h5'
-                          sx={{
-                            width: 670,
-                            display: 'flex',
-                            alignItems: 'center',
-                            mb: 1,
-                            ml: -1,
-                          }}
-                        >
-                          <PregnantWomanIcon fontSize='large' />
-                          &nbsp;
-                          <div>Mother</div>
-                        </Typography>
-                      )}
-                    </div>
+                    <Box key={i} sx={{ m: inputMargin, ml: 3 }}>
+                      <InputTextField
+                        width={670}
+                        form={{ ...form, name: '' }}
+                        value={value}
+                        handleChange={e => handleChange(e, form)}
+                        // placeholder='Choose Diagnosis from select list or fill in here...'
+                      />
+                    </Box>
                   )
-                } else {
-                  {
-                    let value = ''
-
-                    const test = data.find(
-                      data => data.refValueId === form.valueId
-                    )
-                    if (test && test.content) value = test.content
-
-                    return (
-                      <Box key={i} sx={{ m: inputMargin, ml: 3 }}>
-                        <InputTextField
-                          width={670}
-                          form={{ ...form, name: '' }}
-                          value={value}
-                          handleChange={e => handleChange(e, form)}
-                          // placeholder='Choose Diagnosis from select list or fill in here...'
-                        />
-                      </Box>
-                    )
-                  }
                 }
-              })}
-            <Button
-              sx={{ ...btStyle, m: inputMargin, ml: 3 }}
-              variant='contained'
-              startIcon={<CheckIcon />}
-              onClick={() => saveData()}
-            >
-              Save
-            </Button>
-          </div>
-        </Fade>
-      </div>
+              }
+            })}
+          <Button
+            sx={{
+              ...btStyle,
+              m: inputMargin,
+              ml: 3,
+              display: loading && 'none',
+            }}
+            variant='contained'
+            startIcon={<CheckIcon />}
+            onClick={() => saveData()}
+          >
+            Save
+          </Button>
+        </div>
+      </Fade>
 
       <SnackBarWarning
         snackWarning={snackWarning}

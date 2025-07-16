@@ -28,6 +28,7 @@ import CommentField from '../../../../components/page-tools/CommentField'
 import SelectField from '../../../../components/page-tools/SelectField'
 import AutoCompleteField from '../../../../components/page-tools/AutoCompleteField'
 import { storeBackupData, initFormSend } from '../../report-utils'
+import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const templateId = TEMPLATES.anc.id
 let backupData = null
@@ -200,91 +201,77 @@ const Anc = ({ patient }) => {
 
   return (
     <>
-      {/* {loading && <LinearProgress sx={{ mt: 0.5 }} />} */}
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
-      <div
-        style={{
-          // height: '100%',
-          // overflowY: 'auto',
-          // minHeight: 480,
-          // maxHeight: 670,
-          display: loading && 'none',
-        }}
-      >
-        <Fade in={!loading ? true : false} timeout={300}>
-          <div
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              justifyContent: 'flex-start',
-              width: 500,
-              marginTop: 3,
-              marginLeft: 10,
-            }}
-          >
-            {dataForm.length > 0 &&
-              dataForm.map((form, i) => {
-                if (form.valueId === 1) return
-                if (form.type === 'S') {
-                  let value = ''
-                  form.options.forEach(op => {
-                    const test = data.find(
-                      data => data.contentOption === op.opId
-                    )
-                    if (test) value = test.contentOption
-                  })
+      <Fade in={!loading ? true : false} timeout={200}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'flex-start',
+            width: 500,
+            marginTop: 3,
+            marginLeft: 10,
+          }}
+        >
+          {dataForm.length > 0 &&
+            dataForm.map((form, i) => {
+              if (form.valueId === 1) return
+              if (form.type === 'S') {
+                let value = ''
+                form.options.forEach(op => {
+                  const test = data.find(data => data.contentOption === op.opId)
+                  if (test) value = test.contentOption
+                })
 
-                  return (
-                    <Box key={i} sx={{ m: inputMargin }}>
-                      {form.name === 'Placenta Location' ? (
-                        <AutoCompleteField
-                          ctrlValue={placenta}
-                          handleChange={(e, newValue) => {
-                            // console.log(newValue)
-                            handleChange(e, form, newValue, true)
-                          }}
-                          form={form}
-                        />
-                      ) : (
-                        <SelectField
-                          value={value}
-                          handleChange={e => handleChange(e, form)}
-                          form={form}
-                        />
-                      )}
-                    </Box>
-                  )
-                } else if (form.type === 'A') {
-                  let value = ''
-
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
-
-                  return (
-                    <Box key={i} sx={{ m: inputMargin }}>
-                      <CommentField
-                        minWidth={673}
+                return (
+                  <Box key={i} sx={{ m: inputMargin }}>
+                    {form.name === 'Placenta Location' ? (
+                      <AutoCompleteField
+                        ctrlValue={placenta}
+                        handleChange={(e, newValue) => {
+                          // console.log(newValue)
+                          handleChange(e, form, newValue, true)
+                        }}
                         form={form}
+                      />
+                    ) : (
+                      <SelectField
                         value={value}
                         handleChange={e => handleChange(e, form)}
+                        form={form}
                       />
-                    </Box>
-                  )
-                }
-              })}
-            <Button
-              sx={{ ...btStyle, m: inputMargin }}
-              variant='contained'
-              startIcon={<CheckIcon />}
-              onClick={() => saveData()}
-            >
-              Save
-            </Button>
-          </div>
-        </Fade>
-      </div>
+                    )}
+                  </Box>
+                )
+              } else if (form.type === 'A') {
+                let value = ''
+
+                const test = data.find(data => data.refValueId === form.valueId)
+                if (test && test.content) value = test.content
+
+                return (
+                  <Box key={i} sx={{ m: inputMargin }}>
+                    <CommentField
+                      minWidth={673}
+                      form={form}
+                      value={value}
+                      handleChange={e => handleChange(e, form)}
+                    />
+                  </Box>
+                )
+              }
+            })}
+          <Button
+            sx={{ ...btStyle, m: inputMargin, display: loading && 'none' }}
+            variant='contained'
+            startIcon={<CheckIcon />}
+            onClick={() => saveData()}
+          >
+            Save
+          </Button>
+        </div>
+      </Fade>
 
       <SnackBarWarning
         snackWarning={snackWarning}
