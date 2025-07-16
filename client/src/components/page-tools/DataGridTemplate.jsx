@@ -82,7 +82,8 @@ function DataGridTemplate({
         width: '100%',
       }}
     >
-      {!dataList.data && <SkeletonLoading />}
+      {/* {!dataList.data && <SkeletonLoading />} */}
+      <SkeletonLoading loading={dataList.data == null} />
       <div
         style={{
           minHeight: elHeight,

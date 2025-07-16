@@ -20,6 +20,12 @@ exports.getServerTime = getServerTime
 
 exports.isEmptyObject = obj => Object.keys(obj).length === 0
 
+exports.sleep = duration => {
+  return new Promise(resolve => {
+    setTimeout(resolve, duration)
+  })
+}
+
 exports.responseError = (res, status, message) =>
   res.code(status).send({ message })
 

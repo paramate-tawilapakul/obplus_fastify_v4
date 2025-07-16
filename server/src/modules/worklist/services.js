@@ -10,7 +10,10 @@ const {
   createOrder,
   getTemplateData,
 } = require('../patient-data/services')
-const { handleErrorLog } = require('../../utils/utils')
+const {
+  handleErrorLog,
+  // sleep
+} = require('../../utils/utils')
 
 const fileModule = 'worklist > services >'
 
@@ -52,6 +55,7 @@ const columns2 = [
 ]
 
 exports.getWorklist = async req => {
+  // return sleep(500).then(async () => {
   try {
     const { tab, rowsPerPage, pageNum, status, stype } = req.query
 
@@ -162,6 +166,7 @@ exports.getWorklist = async req => {
   } catch (error) {
     handleErrorLog(`${fileModule} getWorklist(): ${error}`)
   }
+  // })
 }
 
 exports.getPatientOb = async req => {
