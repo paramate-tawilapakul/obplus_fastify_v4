@@ -11,7 +11,7 @@ import DialogTitle from '@mui/material/DialogTitle'
 import Divider from '@mui/material/Divider'
 import useTheme from '@mui/material/styles/useTheme'
 
-import { API, STORAGE_NAME, TEMPLATES, REPORT_ID } from '../../../../config'
+import { API, TEMPLATES, REPORT_ID } from '../../../../config'
 import {
   btStyle,
   dialogTitleStyle,

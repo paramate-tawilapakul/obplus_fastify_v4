@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react'
+import { useReducer } from 'react'
 import DataContext from './dataContext'
 import dataReducer from './dataReducer'
 

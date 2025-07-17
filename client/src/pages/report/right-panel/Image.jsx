@@ -4,7 +4,6 @@ import { FileUploader } from 'react-drag-drop-files'
 import Lightbox from 'yet-another-react-lightbox'
 import { Zoom, Thumbnails, Counter } from 'yet-another-react-lightbox/plugins'
 import Box from '@mui/material/Box'
-import LinearProgress from '@mui/material/LinearProgress'
 import Fade from '@mui/material/Fade'
 import IconButton from '@mui/material/IconButton'
 import RefreshIcon from '@mui/icons-material/Refresh'
@@ -402,6 +401,7 @@ const Image = ({ patient }) => {
                 />
               </div>
               <img
+                alt='img_dicom'
                 src={`${host}${img.src}`}
                 width={imageColumn === '2' ? 390 : 600}
                 style={{ borderRadius: 4, cursor: 'pointer' }}
@@ -555,6 +555,7 @@ const Image = ({ patient }) => {
                         </div> */}
                       </div>
                       <img
+                        alt='img_dicom'
                         src={img.url}
                         width='450'
                         style={{

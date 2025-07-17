@@ -5,7 +5,6 @@ import axios from 'axios'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import LoadingButton from '@mui/lab/LoadingButton'
-import LinearProgress from '@mui/material/LinearProgress'
 import Paper from '@mui/material/Paper'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
@@ -348,7 +347,6 @@ const PatientInfo = () => {
       >
         <ReportNavBar />
         {loading ? (
-          // <LinearProgress sx={{ mt: 1 }} />
           <SkeletonLoading loading={loading} style={{ mt: 1 }} />
         ) : (
           <Fade in={patient ? true : false} timeout={200}>

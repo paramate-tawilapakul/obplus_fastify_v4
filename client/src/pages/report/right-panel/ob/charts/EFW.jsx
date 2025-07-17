@@ -13,7 +13,6 @@ import {
   //    toSvg
 } from 'html-to-image'
 import {
-  ResponsiveContainer,
   LineChart,
   Line,
   XAxis,

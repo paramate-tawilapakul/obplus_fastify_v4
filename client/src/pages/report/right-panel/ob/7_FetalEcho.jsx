@@ -4,7 +4,6 @@ import axios from 'axios'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import Button from '@mui/material/Button'
-// import LinearProgress from '@mui/material/LinearProgress'
 import CheckIcon from '@mui/icons-material/Check'
 import Divider from '@mui/material/Divider'
 import ArrowForwardIosSharpIcon from '@mui/icons-material/ArrowForwardIosSharp'
@@ -17,7 +16,7 @@ import { styled } from '@mui/material/styles'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
 
-import { API, STORAGE_NAME, TEMPLATES, REPORT_ID } from '../../../../config'
+import { API, TEMPLATES, REPORT_ID } from '../../../../config'
 import {
   btStyle,
   inputMargin,

@@ -5,7 +5,6 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 // import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
-import LinearProgress from '@mui/material/LinearProgress'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
@@ -20,7 +19,6 @@ import { orange } from '@mui/material/colors'
 import {
   API,
   MODE,
-  STORAGE_NAME,
   TEMPLATES,
   REPORT_ID,
   reqHeader,

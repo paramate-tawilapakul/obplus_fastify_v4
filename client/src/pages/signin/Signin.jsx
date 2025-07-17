@@ -231,7 +231,11 @@ export default function Signin() {
           border: 'none',
         }}
       >
-        <img src={logoImg} style={{ width: 150, marginBottom: 20 }} />
+        <img
+          alt='img_logo'
+          src={logoImg}
+          style={{ width: 150, marginBottom: 20 }}
+        />
         <TextField
           disabled={!license}
           name='username'

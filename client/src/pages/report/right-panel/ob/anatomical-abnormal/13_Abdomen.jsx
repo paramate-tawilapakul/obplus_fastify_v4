@@ -71,7 +71,7 @@ function Details({ dialog, setOpen, setSnackWarning }) {
 
   useEffect(() => {
     if (dialog?.form) {
-      console.log(dialog.form)
+      // console.log(dialog.form)
       setDialogWidth(dialog.type === 'Not Visible' ? 500 : 800)
       setTimeout(() => {
         dialog.form.forEach(form => {

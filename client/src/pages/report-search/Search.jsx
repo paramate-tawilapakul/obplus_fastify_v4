@@ -19,7 +19,6 @@ import Alert from '@mui/material/Alert'
 import { blue, orange, red } from '@mui/material/colors'
 import Autocomplete from '@mui/material/Autocomplete'
 import Button from '@mui/material/Button'
-import LinearProgress from '@mui/material/LinearProgress'
 
 import SnackBarWarning from '../../components/page-tools/SnackBarWarning'
 import {
@@ -673,7 +672,6 @@ export default function Search() {
                   // border: '1px solid black',
                 }}
               >
-                {/* {showLoading && <LinearProgress sx={{ ml: 9 }} />} */}
                 <SkeletonLoading loading={showLoading} style={{ ml: 9 }} />
                 {dataList.length > 0 && (
                   <>

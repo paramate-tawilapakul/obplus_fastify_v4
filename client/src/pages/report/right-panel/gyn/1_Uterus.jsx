@@ -5,7 +5,6 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 // import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
-// import LinearProgress from '@mui/material/LinearProgress'
 import CheckIcon from '@mui/icons-material/Check'
 import Typography from '@mui/material/Typography'
 // import useTheme from '@mui/material/styles/useTheme'
@@ -18,13 +17,7 @@ import FormControl from '@mui/material/FormControl'
 import TextField from '@mui/material/TextField'
 import InfoIcon from '@mui/icons-material/Info'
 
-import {
-  API,
-  STORAGE_NAME,
-  TEMPLATES,
-  REPORT_ID,
-  MODE,
-} from '../../../../config'
+import { API, TEMPLATES, REPORT_ID, MODE } from '../../../../config'
 import {
   btStyle,
   inputMargin,

@@ -2,7 +2,6 @@ import PropTypes from 'prop-types'
 import Snackbar from '@mui/material/Snackbar'
 import MuiAlert from '@mui/material/Alert'
 import Typography from '@mui/material/Typography'
-import NoteAltIcon from '@mui/icons-material/NoteAlt'
 function SnackBarWarning({
   snackWarning,
   setSnackWarning,
@@ -21,7 +20,7 @@ function SnackBarWarning({
           show: false,
           message: null,
           component: null,
-          bgcolor: null
+          bgcolor: null,
         }))
       }
       key={vertical + horizontal}
@@ -32,7 +31,11 @@ function SnackBarWarning({
         variant='filled'
         severity={snackWarning.severity}
         icon={snackWarning.icon || undefined}
-        sx={{ fontSize: 16, color: 'white', bgcolor: snackWarning.bgcolor || undefined }}
+        sx={{
+          fontSize: 16,
+          color: 'white',
+          bgcolor: snackWarning.bgcolor || undefined,
+        }}
       >
         {snackWarning.component ? (
           snackWarning.component

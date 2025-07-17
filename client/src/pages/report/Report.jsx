@@ -5,7 +5,6 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 import ChildCareIcon from '@mui/icons-material/ChildCare'
 import Button from '@mui/material/Button'
-import LinearProgress from '@mui/material/LinearProgress'
 import Paper from '@mui/material/Paper'
 import ButtonGroup from '@mui/material/ButtonGroup'
 
@@ -134,7 +133,6 @@ const Report = () => {
           }}
         >
           <ReportNavBar />
-          {/* {loading && <LinearProgress sx={{ mt: 1 }} />} */}
           <SkeletonLoading loading={loading} style={{ mt: 1 }} />
           <Fade in={!loading && user && patient ? true : false} timeout={200}>
             <Box sx={{ display: 'flex', mt: 1 }}>

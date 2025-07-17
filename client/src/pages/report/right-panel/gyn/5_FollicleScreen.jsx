@@ -11,7 +11,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 import { parseISO } from 'date-fns'
 import useTheme from '@mui/material/styles/useTheme'
 
-import { API, STORAGE_NAME, TEMPLATES, REPORT_ID } from '../../../../config'
+import { API, TEMPLATES, REPORT_ID } from '../../../../config'
 import {
   btStyle,
   inputMargin,

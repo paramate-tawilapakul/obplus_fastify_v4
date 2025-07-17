@@ -17,7 +17,6 @@ import ImageIcon from '@mui/icons-material/Image'
 import { useConfirm } from 'material-ui-confirm'
 
 import {
-  DEFAULT_OPTION_STATE,
   DEFAULT_DATE_STATE,
   DEFAULT_DATA_LIST_STATE,
   API,
@@ -62,7 +61,6 @@ function List({ selectedFolder, systemProperties }) {
   const [rowsPerPage, setRowsPerPage] = useState(
     systemProperties?.defaultList || 10
   )
-  // const [optionSelected, setOptionSelected] = useState(DEFAULT_OPTION_STATE)
   const [rowSelected, setRowSelected] = useState([])
   const [selectedMoveFolder, setSelectedMoveFolder] = useState('')
   // const [tag, setTag] = useState([])
@@ -331,7 +329,6 @@ function List({ selectedFolder, systemProperties }) {
 
   function resetForm() {
     setStateFilterOptions(null)
-    // setOptionSelected(DEFAULT_OPTION_STATE)
     setDate(DEFAULT_DATE_STATE)
     // setTag([])
     const formData = formRef.current
