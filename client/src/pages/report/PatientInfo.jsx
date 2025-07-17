@@ -143,7 +143,7 @@ const PatientInfo = () => {
 
   function initData(patientData, consultantArr = []) {
     doctor = JSON.parse(window.localStorage.getItem(STORAGE_NAME.doctor))
-    doctor = doctor.filter(d => d.radCode !== '')
+    doctor = doctor.filter(d => d.radCode !== '' && d.radConsult === '1')
     // console.log(indications)
     // obIndications = orderBy(
     //   indications.filter(i => i.type === '1'),

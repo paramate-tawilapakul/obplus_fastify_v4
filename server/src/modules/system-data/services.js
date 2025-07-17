@@ -142,7 +142,8 @@ exports.getDoctor = async () => {
         // 'ONLINEL_FLAG as isOnline',
         'RAD_TYPE as radType',
         // 'RAD_LOCATION as radLocation',
-        'RIS_USER_GROUP.GR_NAME as radTypeName'
+        'RIS_USER_GROUP.GR_NAME as radTypeName',
+        'RAD_CONSULT as radConsult'
       )
       .join(
         'RIS_USER_GROUP',
@@ -449,6 +450,9 @@ exports.updateUser = async obj => {
         RAD_ALWAYS_ONLINE: obj.radAlwaysOnline,
         RAD_TYPE: obj.radType,
         // RAD_ORIGINAL_LOCATION: obj.radOriginalLocation,
+        RAD_CONSULT: ['2', '3', '4'].includes(obj.radType)
+          ? obj.radConsult
+          : '0',
       },
       {
         RAD_SYS_ID: obj.radSysId,
@@ -469,6 +473,26 @@ exports.updateUser = async obj => {
     //     userid: obj.radCode,
     //   }
     // )
+
+    return true
+  } catch (error) {
+    console.error(error)
+    Logger('error').error(logFormat(null, error))
+    return false
+  }
+}
+
+exports.updateUserAllowConsult = async obj => {
+  try {
+    await updateDB(
+      'RIS_RADIOLOGIST',
+      {
+        RAD_CONSULT: obj.radConsult,
+      },
+      {
+        RAD_SYS_ID: obj.radSysId,
+      }
+    )
 
     return true
   } catch (error) {
@@ -511,6 +535,7 @@ exports.createUser = async obj => {
       RAD_ALERT: '1',
       RAD_EXPIRY_DATE: '20501231',
       RAD_ALLOW_ASSIGN: 'N',
+      RAD_CONSULT: ['2', '3', '4'].includes(obj.radType) ? obj.radConsult : '0',
     })
 
     // await updateUserLocations(obj)

@@ -402,6 +402,7 @@ export const EXCEPT_COLUMNS = [
   'reportSeverity',
   'orderItemExpectResult',
   'info',
+  'allowConsult',
 ]
 
 export const dialogStyle = {

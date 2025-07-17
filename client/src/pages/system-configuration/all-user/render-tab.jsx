@@ -27,8 +27,6 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import Divider from '@mui/material/Divider'
 import Fade from '@mui/material/Fade'
-import Typography from '@mui/material/Typography'
-import Tooltip from '@mui/material/Tooltip'
 import { orange } from '@mui/material/colors'
 import InputAdornment from '@mui/material/InputAdornment'
 import SearchIcon from '@mui/icons-material/Search'
@@ -43,6 +41,7 @@ import DataContext from '../../../context/data/dataContext'
 import {
   API,
   DEFAULT_DATA_LIST_STATE,
+  EXCEPT_COLUMNS,
   MODE,
   ROW_HEIGHT,
   STORAGE_NAME,
@@ -87,7 +86,7 @@ const RenderTab = ({ typeId, setAllTabs, setTabSelected }) => {
   const [snackWarning, setSnackWarning] = useState({
     show: false,
     message: null,
-    autoHideDuration: 2500,
+    autoHideDuration: 2000,
     severity: null,
   })
   const defaultError = {
@@ -116,60 +115,87 @@ const RenderTab = ({ typeId, setAllTabs, setTabSelected }) => {
       hideable: false,
       sortable: false,
       renderCell: params => (
-        <Tooltip
-          componentsProps={{
-            tooltip: {
-              sx: {
-                bgcolor: theme =>
-                  theme.palette.mode === 'dark' ? '#F5F5F5' : '#004b49   ',
-                color: theme =>
-                  theme.palette.mode === 'dark' ? '#333' : '#f2f2f2',
-              },
-            },
-            arrow: {
-              sx: {
-                '&::before': {
-                  bgcolor: theme =>
-                    theme.palette.mode === 'dark' ? '#F5F5F5' : '#004b49   ',
-                },
-              },
-            },
-          }}
-          enterDelay={0}
-          placement='right'
-          arrow
-          title={
-            <Typography sx={{ p: 0.5 }} variant='body1'>
-              {params.row.radCode} is{' '}
-              {params.row.onlinelFlag === '1' ? 'online' : 'offline'}
-            </Typography>
-          }
+        <div
+          title={`${params.row.radDescription} ${
+            params.row.onlinelFlag === '1' ? 'online' : 'offline'
+          }`}
         >
           {params.row.onlinelFlag === '1' ? (
-            <RecordVoiceOverIcon style={{ color: orange[500] }} />
+            <RecordVoiceOverIcon style={{ color: orange[600] }} />
           ) : (
             <PersonOffIcon />
           )}
-        </Tooltip>
+        </div>
       ),
     },
+
     {
       field: 'radCode',
       headerName: 'User ID',
-      width: 190,
+      width: 150,
     },
     {
       field: 'radDescription',
       headerName: 'Name TH',
-      width: 280,
+      flex: 1,
+      minWidth: 260,
     },
     {
       field: 'radDescriptionEng',
       headerName: 'Name EN',
       flex: 1,
-      minWidth: 280,
+      minWidth: 260,
     },
   ]
+
+  if ([0, 2, 3, 4].includes(typeId)) {
+    cols.splice(
+      1,
+      0,
+      ...[
+        {
+          field: 'allowConsult',
+          headerName: 'Allow Consult',
+          width: 110,
+          disableColumnMenu: true,
+          hideable: false,
+          sortable: false,
+          renderCell: params => (
+            <div
+              title={`${params.row.radDescription} ${
+                params.row.radConsult === '1'
+                  ? 'allow to consult'
+                  : 'not allow to consult'
+              }`}
+            >
+              {/* {params.row.radConsult === '1' ? (
+                <CheckCircleIcon style={{ color: 'limegreen' }} />
+              ) : (
+                <BlockIcon />
+              )} */}
+
+              {['2', '3', '4'].includes(params.row.radType) && (
+                <select
+                  style={{
+                    width: 60,
+                    height: 24,
+                    fontSize: 15,
+                    backgroundColor:
+                      params.row.radConsult === '1' ? 'greenyellow' : undefined,
+                  }}
+                  value={params.row.radConsult}
+                  onChange={e => updateUserConsult(e, params)}
+                >
+                  <option value='1'>Yes</option>
+                  <option value='0'>No</option>
+                </select>
+              )}
+            </div>
+          ),
+        },
+      ]
+    )
+  }
 
   if (typeId === 0) {
     cols = cols.concat({
@@ -195,6 +221,39 @@ const RenderTab = ({ typeId, setAllTabs, setTabSelected }) => {
     return () => {}
     // eslint-disable-next-line
   }, [])
+
+  async function updateUserConsult(e, params) {
+    setDataList(prev => {
+      let newData = prev.data.map(p => {
+        if (p.radCode === params.row.radCode) {
+          return { ...p, radConsult: e.target.value }
+        }
+        return p
+      })
+
+      return { ...prev, data: newData }
+    })
+
+    let result = await axios.patch(API.USER + '/allow-consult', {
+      radConsult: e.target.value,
+      radSysId: params.row.radSysId,
+    })
+
+    if (!result.data.data.result)
+      return setSnackWarning(prev => ({
+        ...prev,
+        show: true,
+        message: 'Error, save fail',
+        severity: 'error',
+      }))
+
+    setSnackWarning(prev => ({
+      ...prev,
+      show: true,
+      message: 'Update completed',
+      severity: 'success',
+    }))
+  }
 
   async function checkIsExist(params) {
     try {
@@ -267,7 +326,7 @@ const RenderTab = ({ typeId, setAllTabs, setTabSelected }) => {
       const field = fields[i]
 
       if (field === 'radType') {
-        if (form[field] === 0) {
+        if (form[field] === 0 || form[field] === '0') {
           setSnackWarning(prev => ({
             ...prev,
             show: true,
@@ -579,8 +638,9 @@ const RenderTab = ({ typeId, setAllTabs, setTabSelected }) => {
       radUserId: '',
       // radPassword: '',
       radRePassword: '',
-      radType: typeId,
+      radType: typeId === 0 ? '0' : typeId + '',
       isCreate: true,
+      radConsult: '1',
     })
     setOpen(true)
   }
@@ -692,6 +752,9 @@ const RenderTab = ({ typeId, setAllTabs, setTabSelected }) => {
 
   async function handleEditClick(params) {
     // setSelected({ ...params.row, radRePassword: params.row.radPassword })
+
+    if (EXCEPT_COLUMNS.includes(params.field)) return
+
     setSelected(params.row)
     setOpen(true)
   }
@@ -899,7 +962,8 @@ const RenderTab = ({ typeId, setAllTabs, setTabSelected }) => {
               isRowSelectable={params => params.row.radCode !== 'admin'}
               columns={cols}
               disableSelectionOnClick
-              onRowClick={handleEditClick}
+              // onRowClick={handleEditClick}
+              onCellClick={handleEditClick}
               hideFooterPagination
               rowHeight={ROW_HEIGHT}
               headerHeight={ROW_HEIGHT}
@@ -1342,10 +1406,10 @@ const RenderTab = ({ typeId, setAllTabs, setTabSelected }) => {
                 sx={inputStyle2}
               /> */}
 
-              <Divider />
+              {/* <Divider /> */}
 
               <FormControl
-                sx={{ ...inputStyle2, width: '100%', mt: 2 }}
+                sx={{ ...inputStyle2, width: '100%', mt: 1 }}
                 size='small'
               >
                 <InputLabel>Group</InputLabel>
@@ -1353,13 +1417,14 @@ const RenderTab = ({ typeId, setAllTabs, setTabSelected }) => {
                   label='Group'
                   fullWidth
                   value={selected.radType}
-                  onChange={e =>
+                  onChange={e => {
                     setSelected(prev => ({
                       ...prev,
-                      radType: e.target.value,
+                      radType: e.target.value + '',
                     }))
-                  }
+                  }}
                 >
+                  <MenuItem value='0'>Select Group</MenuItem>
                   {masterGroup.map(g => (
                     <MenuItem key={g.id} value={g.id}>
                       {g.name}
@@ -1367,6 +1432,28 @@ const RenderTab = ({ typeId, setAllTabs, setTabSelected }) => {
                   ))}
                 </Select>
               </FormControl>
+              {['2', '3', '4'].includes(selected.radType) && (
+                <FormControl
+                  sx={{ ...inputStyle2, width: '100%', mt: 1.5 }}
+                  size='small'
+                >
+                  <InputLabel>Allow Consult</InputLabel>
+                  <Select
+                    label='Allow Consult'
+                    fullWidth
+                    value={selected.radConsult}
+                    onChange={e =>
+                      setSelected(prev => ({
+                        ...prev,
+                        radConsult: e.target.value + '',
+                      }))
+                    }
+                  >
+                    <MenuItem value='1'>Yes</MenuItem>
+                    <MenuItem value='0'>No</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
             </DialogContent>
             <DialogActions
               sx={{

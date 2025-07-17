@@ -42,6 +42,11 @@ module.exports = function (fastify, opts, done) {
     { onRequest: [fastify.authenticate] },
     systemDataController.updateUser
   )
+  fastify.patch(
+    '/user/allow-consult',
+    { onRequest: [fastify.authenticate] },
+    systemDataController.updateUserAllowConsult
+  )
   fastify.delete(
     '/user',
     { onRequest: [fastify.authenticate] },

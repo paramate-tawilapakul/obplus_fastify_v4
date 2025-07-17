@@ -62,6 +62,11 @@ exports.updateUser = async (req, res) => {
   responseData(res, { result })
 }
 
+exports.updateUserAllowConsult = async (req, res) => {
+  const result = await systemDataService.updateUserAllowConsult(req.body)
+  responseData(res, { result })
+}
+
 exports.deleteUser = async (req, res) => {
   const result = await systemDataService.deleteUser(req.query.userCode)
   responseData(res, { result })
