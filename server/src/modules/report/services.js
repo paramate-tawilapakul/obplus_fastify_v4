@@ -419,22 +419,27 @@ exports.createReportContent = async req => {
     // console.log('reportData', reportData)
     const reportId = reportData.reportId
     delete reportData.reportId
-    // await deleteReportContent(reportId)
-    if (isAllNormal) {
-      // console.log('isAllNormal', isAllNormal)
-      let reportIdArr = await db('OB_REPORT')
-        .select()
-        .column([{ reportId: 'REPORT_ID' }])
-        .where('ACCESSION', accession)
-        .andWhere('REPORT_FETUS_NO', currentFetus)
-        .andWhere('REF_TEMPLATE_ID', '<>', 17) // not include Cord
 
-      reportIdArr = reportIdArr.map(d => d.reportId)
-      // console.log('reportIdArr', reportIdArr)
-      await db('OB_REPORT_CONTENT').del().whereIn('REF_REPORT_ID', reportIdArr)
-    }
     await db.transaction(async trx => {
-      await trx('OB_REPORT_CONTENT').del().where('REF_REPORT_ID', '=', reportId)
+      if (isAllNormal) {
+        // console.log('isAllNormal', isAllNormal)
+        let reportIdArr = await trx('OB_REPORT')
+          .select()
+          .column([{ reportId: 'REPORT_ID' }])
+          .whereIn(
+            'REF_TEMPLATE_ID',
+            [17, 18, 19, 25, 28, 30, 23, 20, 27, 21, 26, 22, 24]
+          )
+          .andWhere('ACCESSION', accession)
+          .andWhere('REPORT_FETUS_NO', currentFetus)
+
+        reportIdArr = reportIdArr.map(d => d.reportId)
+        await trx('OB_REPORT_CONTENT')
+          .del()
+          .whereIn('REF_REPORT_ID', reportIdArr)
+      }
+
+      await trx('OB_REPORT_CONTENT').del().where('REF_REPORT_ID', reportId)
 
       const valueIdData = Object.keys(reportData)
       let length = valueIdData.length

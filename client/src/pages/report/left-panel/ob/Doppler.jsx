@@ -5,7 +5,6 @@ import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 // import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
-import LinearProgress from '@mui/material/LinearProgress'
 import TextField from '@mui/material/TextField'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
@@ -16,13 +15,7 @@ import IconButton from '@mui/material/IconButton'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import Divider from '@mui/material/Divider'
 
-import {
-  API,
-  MODE,
-  STORAGE_NAME,
-  TEMPLATES,
-  REPORT_ID,
-} from '../../../../config'
+import { API, MODE, TEMPLATES, REPORT_ID } from '../../../../config'
 import {
   btStyle,
   inputStyle,
@@ -30,8 +23,8 @@ import {
 import { sleep } from '../../../../utils'
 import { cleanUpForm, getReportId, getRiD, randomMs } from '../../helper'
 import SnackBarWarning from '../../../../components/page-tools/SnackBarWarning'
-import { computeMOM, initFormSend } from '../../report-utils'
-import { blue } from '@mui/material/colors'
+import { computeMOM, computeUaPi95, initFormSend } from '../../report-utils'
+import { blue, red } from '@mui/material/colors'
 import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const boxStyle = {
@@ -459,6 +452,33 @@ const Doppler = ({ patient }) => {
                                             let t = arteries[key].find(
                                               a => a.refValueId === f.valueId
                                             )
+                                            let pi95p = null
+
+                                            if (t?.refValueId === 36) {
+                                              let umaPi95p = computeUaPi95(
+                                                t.content,
+                                                patient
+                                              )
+
+                                              pi95p = umaPi95p && (
+                                                <div
+                                                  title='95% Percentile UA PI'
+                                                  style={{
+                                                    cursor: 'default',
+
+                                                    fontSize: 11,
+                                                    whiteSpace: 'nowrap',
+                                                    color:
+                                                      theme.palette.mode ===
+                                                      'dark'
+                                                        ? blue[100]
+                                                        : 'blue',
+                                                  }}
+                                                >
+                                                  95P={umaPi95p}
+                                                </div>
+                                              )
+                                            }
 
                                             if (!t)
                                               return (
@@ -506,7 +526,6 @@ const Doppler = ({ patient }) => {
                                                     sx={{
                                                       ...chipStyle,
                                                       pointerEvents: 'none',
-
                                                       bgcolor:
                                                         chipColor[edfName],
                                                     }}
@@ -528,7 +547,20 @@ const Doppler = ({ patient }) => {
                                                     : 'center',
                                                 }}
                                               >
-                                                {value}
+                                                <span
+                                                  style={
+                                                    pi95p && {
+                                                      color:
+                                                        theme.palette.mode ===
+                                                        'dark'
+                                                          ? red[200]
+                                                          : 'red',
+                                                    }
+                                                  }
+                                                >
+                                                  {value}
+                                                </span>
+                                                {pi95p}
                                                 {['Lt.MCA', 'Rt.MCA'].includes(
                                                   key
                                                 ) &&
@@ -538,7 +570,7 @@ const Doppler = ({ patient }) => {
                                                       title='Multiples of Median'
                                                       style={{
                                                         cursor: 'default',
-                                                        fontSize: 12,
+                                                        fontSize: 11,
                                                         color:
                                                           theme.palette.mode ===
                                                           'dark'
@@ -819,6 +851,7 @@ const Doppler = ({ patient }) => {
                                     .map(form => {
                                       let dataValue =
                                         dataFormSend[form.valueId].value
+
                                       return (
                                         <Box
                                           key={form.valueId}

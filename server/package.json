@@ -1,6 +1,6 @@
 {
   "name": "obplus-server",
-  "version": "3.2.1-fastify-v4",
+  "version": "3.3.0-fastify-v4",
   "author": "Paramate Tawilapakul",
   "main": "./src/index.js",
   "scripts": {

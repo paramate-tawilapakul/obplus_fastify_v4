@@ -16,6 +16,7 @@ import {
 } from '../../utils'
 import { autoSave, autoSave2, updateDataChange } from './helper'
 import { isEmpty } from 'lodash'
+import doppler_uma_pi_95p from '../../data/doppler_uma_pi_95p'
 
 export const REPORT_TEMPLATE = {
   RVH: {
@@ -2736,26 +2737,15 @@ function getDopplerValue(
       if (c === 'Reverse Flow') c = c.replace('Reverse Flow', 'Reverse')
     }
 
-    if (['Lt.MCA-Vmax', 'Rt.MCA-Vmax'].includes(m?.display)) {
-      let momCol = undefined
-      if (PATIENT_INFO.edcGa || PATIENT_INFO.usGa) {
-        let key = m.display === 'Lt.MCA-Vmax' ? 'Lt.MCA' : 'Rt.MCA'
-        // console.log(PATIENT_INFO.edcGa)
-        // console.log(m)
+    if (['Lt.MCA-Vmax', 'Rt.MCA-Vmax', 'UmA-PI'].includes(m?.display)) {
+      if (m.display === 'UmA-PI') {
+        let p95Col = undefined
+        let umaPi95 = computeUaPi95(c, PATIENT_INFO)
 
-        let mom = computeMOM(
-          [
-            {
-              ...m,
-              contentValueName: key,
-            },
-          ],
-          PATIENT_INFO
-        )
-
-        if (mom[key]) {
-          momCol = {
-            text: mom[key],
+        if (umaPi95) {
+          p95Col = {
+            text: `95P=${umaPi95}`,
+            // color: 'red',
             listType: 'none',
             marginTop: -5,
             fontSize: 8,
@@ -2763,14 +2753,52 @@ function getDopplerValue(
             // marginLeft: 7,
           }
         }
-      }
 
-      newArray.push({
-        ul: [{ text: c, listType: 'none' }, momCol],
-        listType: 'none',
-        alignment: 'center',
-        marginLeft: -10,
-      })
+        newArray.push({
+          ul: [
+            { text: c, color: umaPi95 ? 'red' : undefined, listType: 'none' },
+            p95Col,
+          ],
+          listType: 'none',
+          alignment: 'center',
+          marginLeft: -12,
+        })
+      } else if (['Lt.MCA-Vmax', 'Rt.MCA-Vmax'].includes(m?.display)) {
+        let momCol = undefined
+        if (PATIENT_INFO.edcGa || PATIENT_INFO.usGa) {
+          let key = m.display === 'Lt.MCA-Vmax' ? 'Lt.MCA' : 'Rt.MCA'
+          // console.log(PATIENT_INFO.edcGa)
+          // console.log(m)
+
+          let mom = computeMOM(
+            [
+              {
+                ...m,
+                contentValueName: key,
+              },
+            ],
+            PATIENT_INFO
+          )
+
+          if (mom[key]) {
+            momCol = {
+              text: mom[key],
+              listType: 'none',
+              marginTop: -5,
+              fontSize: 8,
+              // alignment: 'left',
+              // marginLeft: 7,
+            }
+          }
+        }
+
+        newArray.push({
+          ul: [{ text: c, listType: 'none' }, momCol],
+          listType: 'none',
+          alignment: 'center',
+          marginLeft: -10,
+        })
+      }
     } else {
       newArray.push({
         text: c,
@@ -3618,5 +3646,18 @@ export function computeMOM(doppler, patient, setMom = null) {
     if (!setMom) return temp
 
     setMom(temp)
+  }
+}
+
+export function computeUaPi95(pi, patient) {
+  if (patient?.edcGa?.includes('w') || patient?.usGa?.includes('w')) {
+    let ga = patient?.edcGa || patient?.usGa
+    ga = parseInt(ga.split('w')[0])
+
+    if (ga >= 20 && ga <= 40) {
+      if (parseFloat(pi) > doppler_uma_pi_95p[ga]) {
+        return doppler_uma_pi_95p[ga]
+      }
+    }
   }
 }
