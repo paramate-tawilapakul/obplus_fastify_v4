@@ -14,7 +14,7 @@ import {
   capitalizeSentence,
   sleep,
 } from '../../utils'
-import { autoSave, autoSave2, updateDataChange } from './helper'
+import { autoSave, autoSave2, autoSave3, updateDataChange } from './helper'
 import { isEmpty } from 'lodash'
 import doppler_uma_pi_95p from '../../data/doppler_uma_pi_95p'
 
@@ -289,6 +289,14 @@ export async function getDocDef(
             updateDataChange('1')
             res = await autoSave(JSON.parse(newForm2))
           }
+        }
+
+        if (window.localStorage.getItem(STORAGE_NAME.isCvlDataChange) === '1') {
+          let newForm = window.localStorage.getItem(
+            STORAGE_NAME.lastActiveTabData4
+          )
+
+          await autoSave3(JSON.parse(newForm))
         }
       }
     }
@@ -2929,6 +2937,14 @@ export function storeBackupData2(data) {
 export function storeBackupData3(data) {
   window.localStorage.setItem(
     STORAGE_NAME.lastActiveTabData3,
+    JSON.stringify(data)
+  )
+}
+
+//for cvl
+export function storeBackupData4(data) {
+  window.localStorage.setItem(
+    STORAGE_NAME.lastActiveTabData4,
     JSON.stringify(data)
   )
 }

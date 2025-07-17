@@ -101,6 +101,13 @@ const TabIndex = ({
       ? 'EFWCharts'
       : TEMPLATES[camelCase(tSelected)].id
 
+  // console.log(selected)
+
+  // let storageValue = selected
+  // if ([4, 6].includes(selected)) {
+  //   storageValue = `${selected},39`
+  // }
+
   window.localStorage.setItem(STORAGE_NAME.lastActiveTab, selected)
 
   const obTabs = [
@@ -133,14 +140,14 @@ const TabIndex = ({
         TEMPLATES['anatomicalScan'].id
       ),
     },
-    {
-      name: 'Cervical Length',
-      id: TEMPLATES['cervical'].name,
-      component: <CervicalLength patient={patient} />,
-      hasData: templateNotification?.reportTemplateId?.includes(
-        TEMPLATES['cervical'].id
-      ),
-    },
+    // {
+    //   name: 'Cervical Length',
+    //   id: TEMPLATES['cervical'].name,
+    //   component: <CervicalLength patient={patient} />,
+    //   hasData: templateNotification?.reportTemplateId?.includes(
+    //     TEMPLATES['cervical'].id
+    //   ),
+    // },
     {
       name: 'Bpp',
       id: TEMPLATES['bpp'].name,
@@ -256,7 +263,8 @@ const TabIndex = ({
   }
 
   const handleChange = (event, tabSelected) => {
-    window.localStorage.setItem(STORAGE_NAME.lastActiveTab, selected)
+    // console.log('handleChange', selected)
+    // window.localStorage.setItem(STORAGE_NAME.lastActiveTab, selected)
     setTabSelected(tabSelected)
   }
 

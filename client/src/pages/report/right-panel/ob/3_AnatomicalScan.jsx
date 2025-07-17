@@ -44,6 +44,7 @@ import Cord from './anatomical-abnormal/12_Cord'
 import Abdomen from './anatomical-abnormal/13_Abdomen'
 import Genitalia from './anatomical-abnormal/14_Genitalia'
 import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
+import Cervical from './CervicalLength'
 
 const templateId = TEMPLATES.anatomicalScan.id
 let backupData = null
@@ -653,30 +654,35 @@ const AnatomicalScan = ({ patient }) => {
                   if (test && test.content) value = test.content
 
                   return (
-                    <div key={i}>
-                      <Box sx={{ m: inputMargin }}>
-                        <CommentField
-                          minWidth={673}
-                          form={form}
-                          value={value}
-                          handleChange={e => handleChange(e, form)}
-                        />
-                      </Box>
-                    </div>
+                    <Fade in={!loading ? true : false} timeout={400}>
+                      <div key={i}>
+                        <Box sx={{ m: inputMargin }}>
+                          <CommentField
+                            minWidth={673}
+                            form={form}
+                            value={value}
+                            handleChange={e => handleChange(e, form)}
+                          />
+                        </Box>
+                        <Cervical patient={patient} />
+                      </div>
+                    </Fade>
                   )
                 }
               })}
             </>
           )}
 
-          <Button
-            sx={{ ...btStyle, m: 1.3, display: loading && 'none' }}
-            variant='contained'
-            startIcon={<CheckIcon />}
-            onClick={() => saveData()}
-          >
-            Save
-          </Button>
+          <Fade in={!loading ? true : false} timeout={400}>
+            <Button
+              sx={{ ...btStyle, m: 1.3, display: loading && 'none' }}
+              variant='contained'
+              startIcon={<CheckIcon />}
+              onClick={() => saveData()}
+            >
+              Save
+            </Button>
+          </Fade>
         </div>
       </Fade>
 

@@ -153,8 +153,11 @@ export default function Signin() {
     window.localStorage.setItem(STORAGE_NAME.lastActiveTabData, '')
     window.localStorage.setItem(STORAGE_NAME.lastActiveTabData2, '')
     window.localStorage.setItem(STORAGE_NAME.lastActiveTabData3, '')
+    window.localStorage.setItem(STORAGE_NAME.lastActiveTabData4, '')
+    window.localStorage.setItem(STORAGE_NAME.cvl, '')
     window.localStorage.setItem(STORAGE_NAME.isDataChange, '0')
     window.localStorage.setItem(STORAGE_NAME.isProcedureDataChange, '0')
+    window.localStorage.setItem(STORAGE_NAME.isCvlDataChange, '0')
     window.localStorage.setItem(STORAGE_NAME.diagReport, '')
     window.localStorage.setItem(STORAGE_NAME.activeFetus, '1')
 

@@ -13,7 +13,9 @@ const InputTextField = ({
   sx = {},
   name = undefined,
   endAdornment = undefined,
+  paddingTop = 10,
   paddingLeft = 22,
+  showLabel = true,
 }) => {
   // console.log('InputTextField', form.valueId, value)
   // console.log('InputTextField', stateValue, value)
@@ -25,7 +27,7 @@ const InputTextField = ({
       inputRef={inputRef}
       size='small'
       variant='outlined'
-      label={label || form.name}
+      label={showLabel ? label || form.name : ''}
       InputProps={{
         readOnly,
         endAdornment,
@@ -40,7 +42,7 @@ const InputTextField = ({
       inputProps={{
         style: {
           fontSize: 16,
-          paddingTop: 10,
+          paddingTop,
           paddingBottom: 8,
           paddingLeft,
         },

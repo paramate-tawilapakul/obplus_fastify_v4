@@ -78,6 +78,27 @@ export async function autoSave2(data) {
   }
 }
 
+export async function autoSave3(data) {
+  if (window.localStorage.getItem(STORAGE_NAME.isCvlDataChange) === '1') {
+    let res
+
+    if (data) {
+      let cvl = window.localStorage.getItem(STORAGE_NAME.cvl)
+      let form = { ...cleanUpForm(data), 633: { type: 'T', value: cvl } }
+
+      if (!cvl) delete form['633']
+
+      // console.log('form', form)
+      res = await axios.post(API.REPORT_CONTENT, {
+        reportData: form,
+      })
+
+      updateCvlDataChange('0')
+      return res.data.data
+    }
+  }
+}
+
 export function cleanUpForm(dataFormSend) {
   let cleanUpForm = {}
 
@@ -227,6 +248,10 @@ export function newGa(name, valueInput, masterGa, callback, setAlert) {
 
 export function updateDataChange(val) {
   window.localStorage.setItem(STORAGE_NAME.isDataChange, val)
+}
+
+export function updateCvlDataChange(val) {
+  window.localStorage.setItem(STORAGE_NAME.isCvlDataChange, val)
 }
 
 export function updateProcedureDataChange(val) {

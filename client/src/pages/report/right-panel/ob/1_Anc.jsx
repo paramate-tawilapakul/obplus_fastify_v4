@@ -6,6 +6,7 @@ import Fade from '@mui/material/Fade'
 // import LoadingButton from '@mui/lab/LoadingButton'
 import Button from '@mui/material/Button'
 import CheckIcon from '@mui/icons-material/Check'
+import Grid from '@mui/material/Grid'
 
 import { API, TEMPLATES, REPORT_ID } from '../../../../config'
 import {
@@ -28,6 +29,7 @@ import SelectField from '../../../../components/page-tools/SelectField'
 import AutoCompleteField from '../../../../components/page-tools/AutoCompleteField'
 import { storeBackupData, initFormSend } from '../../report-utils'
 import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
+import Cervical from './CervicalLength'
 
 const templateId = TEMPLATES.anc.id
 let backupData = null
@@ -201,76 +203,91 @@ const Anc = ({ patient }) => {
   return (
     <>
       <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
+      <Grid container spacing={0}>
+        <Grid item xs={12} sm={6}>
+          <Fade in={!loading ? true : false} timeout={200}>
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'flex-start',
+                width: 500,
+                marginTop: 3,
+                marginLeft: 10,
+              }}
+            >
+              {dataForm.length > 0 &&
+                dataForm.map((form, i) => {
+                  if (form.valueId === 1) return
+                  if (form.type === 'S') {
+                    let value = ''
+                    form.options.forEach(op => {
+                      const test = data.find(
+                        data => data.contentOption === op.opId
+                      )
+                      if (test) value = test.contentOption
+                    })
 
-      <Fade in={!loading ? true : false} timeout={200}>
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'flex-start',
-            width: 500,
-            marginTop: 3,
-            marginLeft: 10,
-          }}
-        >
-          {dataForm.length > 0 &&
-            dataForm.map((form, i) => {
-              if (form.valueId === 1) return
-              if (form.type === 'S') {
-                let value = ''
-                form.options.forEach(op => {
-                  const test = data.find(data => data.contentOption === op.opId)
-                  if (test) value = test.contentOption
-                })
+                    return (
+                      <Box key={i} sx={{ m: inputMargin }}>
+                        {form.name === 'Placenta Location' ? (
+                          <AutoCompleteField
+                            ctrlValue={placenta}
+                            handleChange={(e, newValue) => {
+                              // console.log(newValue)
+                              handleChange(e, form, newValue, true)
+                            }}
+                            form={form}
+                          />
+                        ) : (
+                          <SelectField
+                            value={value}
+                            handleChange={e => handleChange(e, form)}
+                            form={form}
+                          />
+                        )}
+                      </Box>
+                    )
+                  } else if (form.type === 'A') {
+                    let value = ''
 
-                return (
-                  <Box key={i} sx={{ m: inputMargin }}>
-                    {form.name === 'Placenta Location' ? (
-                      <AutoCompleteField
-                        ctrlValue={placenta}
-                        handleChange={(e, newValue) => {
-                          // console.log(newValue)
-                          handleChange(e, form, newValue, true)
-                        }}
-                        form={form}
-                      />
-                    ) : (
-                      <SelectField
-                        value={value}
-                        handleChange={e => handleChange(e, form)}
-                        form={form}
-                      />
-                    )}
-                  </Box>
-                )
-              } else if (form.type === 'A') {
-                let value = ''
+                    const test = data.find(
+                      data => data.refValueId === form.valueId
+                    )
+                    if (test && test.content) value = test.content
 
-                const test = data.find(data => data.refValueId === form.valueId)
-                if (test && test.content) value = test.content
+                    return (
+                      <Box key={i} sx={{ m: inputMargin }}>
+                        <CommentField
+                          minWidth={673}
+                          form={form}
+                          value={value}
+                          handleChange={e => handleChange(e, form)}
+                        />
+                      </Box>
+                    )
+                  }
+                })}
 
-                return (
-                  <Box key={i} sx={{ m: inputMargin }}>
-                    <CommentField
-                      minWidth={673}
-                      form={form}
-                      value={value}
-                      handleChange={e => handleChange(e, form)}
-                    />
-                  </Box>
-                )
-              }
-            })}
-          <Button
-            sx={{ ...btStyle, m: inputMargin, display: loading && 'none' }}
-            variant='contained'
-            startIcon={<CheckIcon />}
-            onClick={() => saveData()}
-          >
-            Save
-          </Button>
-        </div>
-      </Fade>
+              <Button
+                sx={{ ...btStyle, m: inputMargin, display: loading && 'none' }}
+                variant='contained'
+                startIcon={<CheckIcon />}
+                onClick={() => saveData()}
+              >
+                Save
+              </Button>
+            </div>
+          </Fade>
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <Fade in={!loading ? true : false} timeout={200}>
+            <div>
+              <Cervical patient={patient} />
+            </div>
+          </Fade>
+        </Grid>
+      </Grid>
 
       <SnackBarWarning
         snackWarning={snackWarning}

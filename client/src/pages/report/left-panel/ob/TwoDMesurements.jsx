@@ -24,6 +24,7 @@ import {
   reqHeader,
   EFW_CHARTS,
   allowedAutoGa,
+  STORAGE_NAME,
 } from '../../../../config'
 import {
   btStyle,
@@ -181,7 +182,15 @@ const TwoDMesurements = ({ patient }) => {
         // console.log('no cvl')
       }
 
-      setShortestCvl(shortest)
+      if (shortest) {
+        setShortestCvl(shortest)
+        // window.localStorage.setItem(STORAGE_NAME.isCvlDataChange, '1')
+        window.localStorage.setItem(STORAGE_NAME.cvl, shortest)
+      } else {
+        // window.localStorage.setItem(STORAGE_NAME.isCvlDataChange, '1')
+        window.localStorage.setItem(STORAGE_NAME.cvl, '')
+        setShortestCvl('')
+      }
     } catch (error) {
       console.log(error)
     }
@@ -225,6 +234,15 @@ const TwoDMesurements = ({ patient }) => {
       setShowEditForm(false)
 
       let newForm = cleanUpForm(dataFormSend)
+
+      // console.log(newForm)
+      if (newForm['1899']?.value) {
+        window.localStorage.setItem(STORAGE_NAME.isCvlDataChange, '1')
+        window.localStorage.setItem(STORAGE_NAME.cvl, newForm['1899'].value)
+      } else {
+        window.localStorage.setItem(STORAGE_NAME.isCvlDataChange, '1')
+        window.localStorage.setItem(STORAGE_NAME.cvl, '')
+      }
 
       const res = await axios.post(
         API.REPORT_CONTENT,
