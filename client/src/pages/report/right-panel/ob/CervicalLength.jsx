@@ -4,18 +4,18 @@ import axios from 'axios'
 import Box from '@mui/material/Box'
 import Fade from '@mui/material/Fade'
 // import LoadingButton from '@mui/lab/LoadingButton'
-import Button from '@mui/material/Button'
-import CheckIcon from '@mui/icons-material/Check'
+// import Button from '@mui/material/Button'
+// import CheckIcon from '@mui/icons-material/Check'
 
 import { API, TEMPLATES, REPORT_ID } from '../../../../config'
 import {
-  btStyle,
+  //   btStyle,
   inputMargin,
 } from '../../../../components/page-tools/form-style'
 import SnackBarWarning from '../../../../components/page-tools/SnackBarWarning'
 import {
   autoSave3,
-  cleanUpForm,
+  //   cleanUpForm,
   getReportId,
   getRiD,
   randomMs,
@@ -34,7 +34,7 @@ const Cervical = ({ patient }) => {
   const { shortestCvl } = useContext(DataContext)
   const [data, setData] = useState(null)
   const [dataForm, setDataForm] = useState([])
-  const [dataFormSend, setDataFormSend] = useState([])
+  const [_, setDataFormSend] = useState([])
   const [loading, setLoading] = useState(false)
 
   const [snackWarning, setSnackWarning] = useState({
