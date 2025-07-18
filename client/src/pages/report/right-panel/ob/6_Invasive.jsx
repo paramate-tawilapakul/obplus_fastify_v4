@@ -12,7 +12,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Typography from '@mui/material/Typography'
 import { Divider } from '@mui/material'
 
-import { API, TEMPLATES, REPORT_ID } from '../../../../config'
+import { API, TEMPLATES, REPORT_ID, STORAGE_NAME } from '../../../../config'
 import {
   btStyle,
   inputMargin,
@@ -43,7 +43,6 @@ import CVS from './invasive-procedure/2_CVS'
 import Cordocentesis from './invasive-procedure/3_Cordocentesis'
 import IntrauterineTransfusion from './invasive-procedure/4_IntrauterineTransfusion'
 import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
-// import MultipleAutoCompleteField from '../../../../components/page-tools/MultipleAutoCompleteField'
 import ProcedureAutoCompleteField from '../../../../components/page-tools/ProcedureAutoComplete'
 
 const templateId = TEMPLATES.invasivePrerequisite.id
@@ -447,9 +446,9 @@ const Invasive = ({ patient }) => {
     }
 
     // setTimeout(() => {
-    await getProcedureForm(pname)
+    // await getProcedureForm(pname)
     // }, 500)
-
+    // console.log(formSend)
     setDataFormSend(formSend)
     backupData = formSend
     storeBackupData(formSend)
@@ -580,9 +579,14 @@ const Invasive = ({ patient }) => {
     }
 
     // console.log(formSend)
+    // console.log(procedure)
+    window.localStorage.setItem(
+      STORAGE_NAME.activeProcedure,
+      procedure.replace(' ', '')
+    )
     backupProcedureData = formSend
     setProcedureDataFormSend(formSend)
-    storeBackupData3(formSend)
+    // storeBackupData3(formSend)
     // console.log(tempArr)
     setData1Form(tempArr)
     setProcedure(prev => ({ ...prev, [procedure]: tempArr }))
@@ -609,11 +613,11 @@ const Invasive = ({ patient }) => {
           }
         })
 
-      console.log({
-        prerequisite: { ...prev.prerequisite, active: true },
-        showProcedure: true,
-        procedure: temp,
-      })
+      // console.log({
+      //   prerequisite: { ...prev.prerequisite, active: true },
+      //   showProcedure: true,
+      //   procedure: temp,
+      // })
 
       return {
         prerequisite: { ...prev.prerequisite, active: true },
@@ -624,9 +628,9 @@ const Invasive = ({ patient }) => {
   }
 
   async function handleChange(e, d, procedureArray) {
-    console.log('d', d)
-    console.log('d.options', d.options)
-    console.log('e.target.value', e.target.value)
+    // console.log('d', d)
+    // console.log('d.options', d.options)
+    // console.log('e.target.value', e.target.value)
     let v =
       d.type === 'A' ? replaceNewLineWithBr(e.target.value) : e.target.value
 
@@ -635,12 +639,12 @@ const Invasive = ({ patient }) => {
       updateDataChange('1')
       if (d.name === 'Procedure') {
         // e.target.value = parseInt(e.target.value)
-        console.log(e.target.value)
+        // console.log(e.target.value)
         pname =
           d.options.find(option => option.opId == e.target.value)?.display || ''
-        console.log(pname)
+        // console.log(pname)
         v = { type: 'S', value: v ? parseInt(v) : '' }
-        console.log(procedureArray)
+        // console.log(procedureArray)
         if (pname && pname !== 'Other') {
           console.log(procedureArray)
           v = procedureArray.map(p => ({ type: 'S', value: p.id }))
@@ -768,7 +772,7 @@ const Invasive = ({ patient }) => {
           },
         }
 
-        console.log(temp)
+        // console.log(temp)
 
         temp = cleanData(temp)
         backupData = temp
@@ -878,18 +882,24 @@ const Invasive = ({ patient }) => {
           },
         }
         // console.log(d.templateId)
+        let procedureStorageName = ''
         if (d.templateId === 42) {
           temp = cleanData2(temp)
+          procedureStorageName = 'Amniocentesis'
         } else if (d.templateId === 43) {
           temp = cleanData3(temp)
+          procedureStorageName = 'CVS'
         } else if (d.templateId === 44) {
           temp = cleanData4(temp)
+          procedureStorageName = 'Cordocentesis'
         } else if (d.templateId === 45) {
           temp = cleanData5(temp)
+          procedureStorageName = 'IntrauterineTransfusion'
         }
 
         backupProcedureData = temp
-        storeBackupData3(temp)
+        // console.log(procedureStorageName)
+        storeBackupData3(temp, procedureStorageName)
         // console.log(temp)
         return temp
       })
@@ -1053,9 +1063,9 @@ const Invasive = ({ patient }) => {
   }
 
   function renderProcedure() {
+    if (!btnActive.showProcedure) return
     // console.log(pname)
-
-    console.log(btnActive.procedure)
+    // console.log(btnActive.procedure)
     // find procedure active true
     let pname = ''
     Object.keys(btnActive.procedure).forEach(key => {
@@ -1064,11 +1074,9 @@ const Invasive = ({ patient }) => {
       }
     })
 
-    if (!btnActive.showProcedure) return
+    // console.log('pname', pname)
 
-    console.log('pname', pname)
-
-    return
+    // return
     if (!pname) return
 
     // if (document.activeElement) {
@@ -1161,6 +1169,10 @@ const Invasive = ({ patient }) => {
                   size='large'
                   color='info'
                   onClick={() => {
+                    window.localStorage.setItem(
+                      STORAGE_NAME.activeProcedure,
+                      ''
+                    )
                     setBtnActive(prev => ({
                       ...prev,
                       prerequisite: { ...prev.prerequisite, active: true },
@@ -1191,10 +1203,13 @@ const Invasive = ({ patient }) => {
                           }
                           size='large'
                           color='secondary'
-                          onClick={() => {
+                          onClick={async () => {
+                            await getProcedureForm(p.name)
+                            await autoSave(backupData)
+
                             setBtnActive(prev => {
                               let temp = { ...prev.procedure }
-                              console.log(prev)
+                              // console.log(prev)
                               // set all procedure to false
                               Object.keys(temp).forEach(key => {
                                 temp[key].active = false
@@ -1380,51 +1395,11 @@ const Invasive = ({ patient }) => {
                       selected={procedureSelected}
                       setSelected={setProcedureSelected}
                       handleChangeFunction={handleChange}
-                      handleChange={async e => {
-                        handleChange(e, dataForm[10])
-
-                        let value = e.target.value
-
-                        let otherId = dataForm[10].options[4].id
-
-                        if (value && value !== otherId) {
-                          let pname = dataForm[10].options.find(
-                            o => o.opId === value
-                          ).name
-                          // console.log(pname)
-                          await getProcedureForm(pname)
-                          await autoSave(backupData)
-                          // updateDataChange('1')
-                        }
-                      }}
                       form={dataForm[10]}
                       width={450}
                     />
                   </Box>
-                  <Box sx={{ m: inputMargin, width: '100%' }}>
-                    {/* <SelectField
-                      value={dataForm[10].contentOption || ''}
-                      handleChange={async e => {
-                        handleChange(e, dataForm[10])
 
-                        let value = e.target.value
-
-                        let otherId = dataForm[10].options[4].id
-
-                        if (value && value !== otherId) {
-                          let pname = dataForm[10].options.find(
-                            o => o.opId === value
-                          ).name
-                          // console.log(pname)
-                          await getProcedureForm(pname)
-                          await autoSave(backupData)
-                          // updateDataChange('1')
-                        }
-                      }}
-                      form={dataForm[10]}
-                      minWidth={418}
-                    /> */}
-                  </Box>
                   {showOtherProcedure && (
                     <Box sx={{ m: inputMargin, width: '100%' }}>
                       <CommentField

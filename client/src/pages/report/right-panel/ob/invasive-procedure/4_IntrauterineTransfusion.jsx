@@ -93,9 +93,8 @@ function IntrauterineTransfusion({
 
   useEffect(() => {
     return () => {
-      autoSave2(
-        JSON.parse(window.localStorage.getItem(STORAGE_NAME.lastActiveTabData3))
-      )
+      let d = window.localStorage.getItem(STORAGE_NAME.IntrauterineTransfusion)
+      if (d) autoSave2(JSON.parse(d))
     }
   }, [])
 
@@ -107,7 +106,7 @@ function IntrauterineTransfusion({
       // console.log(data)
       let newForm = cleanUpForm(data)
       /// SAVE TO STORAGE FOR AUTO SAVE BEFORE PREVIEW
-      storeBackupData3(data)
+      storeBackupData3(data, 'IntrauterineTransfusion')
 
       const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
       let message = 'Save Fail!'
@@ -276,7 +275,7 @@ function IntrauterineTransfusion({
                   type: 'T',
                 },
               }
-              storeBackupData3(temp)
+              storeBackupData3(temp, 'IntrauterineTransfusion')
               // console.log(temp)
               return temp
             })

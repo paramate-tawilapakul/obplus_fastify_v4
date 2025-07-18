@@ -265,14 +265,16 @@ export async function getDocDef(
         )
 
         if (!newForm) return alert('Invalid data')
-
         if (
           window.localStorage.getItem(STORAGE_NAME.isProcedureDataChange) ===
           '1'
         ) {
           let newForm3 = window.localStorage.getItem(
-            STORAGE_NAME.lastActiveTabData3
+            STORAGE_NAME[
+              window.localStorage.getItem(STORAGE_NAME.activeProcedure)
+            ]
           )
+          // console.log(newForm3)
 
           await autoSave2(JSON.parse(newForm3))
         }
@@ -2934,11 +2936,37 @@ export function storeBackupData2(data) {
   )
 }
 
-export function storeBackupData3(data) {
-  window.localStorage.setItem(
-    STORAGE_NAME.lastActiveTabData3,
-    JSON.stringify(data)
-  )
+export function storeBackupData3(data, pname) {
+  if (!pname) {
+    return window.localStorage.setItem(
+      STORAGE_NAME.lastActiveTabData3,
+      JSON.stringify(data)
+    )
+  }
+
+  switch (pname) {
+    case 'Amniocentesis':
+      window.localStorage.setItem(
+        STORAGE_NAME.Amniocentesis,
+        JSON.stringify(data)
+      )
+      break
+    case 'CVS':
+      window.localStorage.setItem(STORAGE_NAME.CVS, JSON.stringify(data))
+      break
+    case 'Cordocentesis':
+      window.localStorage.setItem(
+        STORAGE_NAME.Cordocentesis,
+        JSON.stringify(data)
+      )
+      break
+    case 'IntrauterineTransfusion':
+      window.localStorage.setItem(
+        STORAGE_NAME.IntrauterineTransfusion,
+        JSON.stringify(data)
+      )
+      break
+  }
 }
 
 //for cvl
@@ -3578,6 +3606,10 @@ export async function initFormSend(
         }
       })
     } else {
+      // console.log(formSend)
+      // console.log(data)
+      // console.log(templateId)
+
       Object.keys(formSend).forEach(key => {
         const t = data?.find(d => d.refValueId == key)
         if (t) {
@@ -3587,8 +3619,39 @@ export async function initFormSend(
               : t.contentOption
         }
       })
+
+      if (templateId === 41) {
+        // invasive - prerequisite data
+        let procedures = data
+          .filter(d => d.refValueId === 717)
+          .map(d => ({ type: 'S', value: d.contentOption }))
+          ?.sort((a, b) => a.value - b.value)
+
+        if (procedures[0].contentOptionDisplay !== 'Other') {
+          formSend[717] = procedures
+          // console.log(procedures)
+        }
+      } else if (templateId === 3) {
+        // ob diagnosis
+        let fetusDiagnosis = data
+          .filter(d => d.refValueId === 69)
+          .map(d => ({ type: 'S', value: d.contentOption }))
+          ?.sort((a, b) => a.value - b.value)
+
+        formSend[69] = fetusDiagnosis
+      } else if (templateId === 38) {
+        // gyn diagnosis
+        let fetusDiagnosis = data
+          .filter(d => d.refValueId === 630)
+          .map(d => ({ type: 'S', value: d.contentOption }))
+          ?.sort((a, b) => a.value - b.value)
+
+        formSend[630] = fetusDiagnosis
+      }
     }
   }
+
+  // console.log(formSend)
 
   formSend['reportId'] = reportId
 

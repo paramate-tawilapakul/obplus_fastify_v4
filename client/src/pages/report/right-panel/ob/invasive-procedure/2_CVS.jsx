@@ -136,7 +136,7 @@ function CVS({
                     ),
                   },
                 }
-                storeBackupData3(temp)
+                storeBackupData3(temp, 'CVS')
                 // console.log(temp)
                 return temp
               })
@@ -153,9 +153,8 @@ function CVS({
 
   useEffect(() => {
     return () => {
-      autoSave2(
-        JSON.parse(window.localStorage.getItem(STORAGE_NAME.lastActiveTabData3))
-      )
+      let d = window.localStorage.getItem(STORAGE_NAME.CVS)
+      if (d) autoSave2(JSON.parse(d))
     }
   }, [])
 
@@ -167,7 +166,7 @@ function CVS({
       // console.log(data)
       let newForm = cleanUpForm(data)
       /// SAVE TO STORAGE FOR AUTO SAVE BEFORE PREVIEW
-      storeBackupData3(data)
+      storeBackupData3(data, 'CVS')
 
       const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
       let message = 'Save Fail!'
@@ -308,7 +307,7 @@ function CVS({
                   type: 'T',
                 },
               }
-              storeBackupData3(temp)
+              storeBackupData3(temp, 'CVS')
               // console.log(temp)
               return temp
             })

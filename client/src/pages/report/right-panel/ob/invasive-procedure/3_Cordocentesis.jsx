@@ -154,7 +154,7 @@ function Cordocentesis({
                     ),
                   },
                 }
-                storeBackupData3(temp)
+                storeBackupData3(temp, 'Cordocentesis')
                 // console.log(temp)
                 return temp
               })
@@ -171,9 +171,8 @@ function Cordocentesis({
 
   useEffect(() => {
     return () => {
-      autoSave2(
-        JSON.parse(window.localStorage.getItem(STORAGE_NAME.lastActiveTabData3))
-      )
+      let d = window.localStorage.getItem(STORAGE_NAME.Cordocentesis)
+      if (d) autoSave2(JSON.parse(d))
     }
   }, [])
 
@@ -185,7 +184,7 @@ function Cordocentesis({
       // console.log(data)
       let newForm = cleanUpForm(data)
       /// SAVE TO STORAGE FOR AUTO SAVE BEFORE PREVIEW
-      storeBackupData3(data)
+      storeBackupData3(data, 'Cordocentesis')
 
       const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
       let message = 'Save Fail!'
@@ -326,7 +325,7 @@ function Cordocentesis({
                   type: 'T',
                 },
               }
-              storeBackupData3(temp)
+              storeBackupData3(temp, 'Cordocentesis')
               // console.log(temp)
               return temp
             })

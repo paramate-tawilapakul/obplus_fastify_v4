@@ -42,25 +42,14 @@ function ProcedureAutoCompleteField({
         let selectedValue = filterSelection(newValue)
         setSelected(selectedValue)
 
-        // handleChangeFunction(e, form)
         if (selectedValue?.length === 0) {
-          console.log('if')
-          //   setShowOtherProcedure(false)
           e.target.value = ''
         } else if (selectedValue[0]?.name === 'Other') {
-          console.log('else if')
-          //   setShowOtherProcedure(true)
           e.target.value = selectedValue[0].opId
         } else {
-          console.log('else', selectedValue)
           e.target.value = selectedValue[0].opId
-
-          //   setShowOtherProcedure(false)
         }
         handleChangeFunction(e, form, selectedValue)
-
-        //   await getProcedureForm(pname)
-        //   await autoSave(backupData)
       }}
       value={selected}
       options={options}

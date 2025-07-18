@@ -68,6 +68,7 @@ export async function autoSave2(data) {
     let res
 
     if (data) {
+      // console.log(data)
       res = await axios.post(API.REPORT_CONTENT, {
         reportData: cleanUpForm(data),
       })

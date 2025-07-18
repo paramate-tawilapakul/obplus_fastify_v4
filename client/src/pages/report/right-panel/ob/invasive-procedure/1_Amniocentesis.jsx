@@ -135,7 +135,7 @@ function Amniocentesis({
                     ),
                   },
                 }
-                storeBackupData3(temp)
+                storeBackupData3(temp, 'Amniocentesis')
                 // console.log(temp)
                 return temp
               })
@@ -152,9 +152,8 @@ function Amniocentesis({
 
   useEffect(() => {
     return () => {
-      autoSave2(
-        JSON.parse(window.localStorage.getItem(STORAGE_NAME.lastActiveTabData3))
-      )
+      let d = window.localStorage.getItem(STORAGE_NAME.Amniocentesis)
+      if (d) autoSave2(JSON.parse(d))
     }
   }, [])
 
@@ -166,7 +165,7 @@ function Amniocentesis({
       // console.log(data)
       let newForm = cleanUpForm(data)
       /// SAVE TO STORAGE FOR AUTO SAVE BEFORE PREVIEW
-      storeBackupData3(data)
+      storeBackupData3(data, 'Amniocentesis')
 
       const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
       let message = 'Save Fail!'
@@ -320,7 +319,7 @@ function Amniocentesis({
                   type: 'T',
                 },
               }
-              storeBackupData3(temp)
+              storeBackupData3(temp, 'Amniocentesis')
               // console.log(temp)
               return temp
             })
