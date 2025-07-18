@@ -111,8 +111,8 @@ const Invasive = ({ patient }) => {
   const [dataForm, setDataForm] = useState([])
   const [data1Form, setData1Form] = useState([])
   const [dataFormSend, setDataFormSend] = useState(null)
-  //eslint-disable-next-line
-  const [procedureDataFormSend, setProcedureDataFormSend] = useState(null)
+
+  const [_, setProcedureDataFormSend] = useState(null)
   const [loading, setLoading] = useState(false)
   const [procedure, setProcedure] = useState({
     Amniocentesis: null,
