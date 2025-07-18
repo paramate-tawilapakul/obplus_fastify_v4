@@ -439,6 +439,7 @@ exports.createReportContent = async req => {
           .whereIn('REF_REPORT_ID', reportIdArr)
       }
 
+      console.log('+++DELETE+++')
       await trx('OB_REPORT_CONTENT').del().where('REF_REPORT_ID', reportId)
 
       const valueIdData = Object.keys(reportData)

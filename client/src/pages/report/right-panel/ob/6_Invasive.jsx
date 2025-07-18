@@ -43,6 +43,8 @@ import CVS from './invasive-procedure/2_CVS'
 import Cordocentesis from './invasive-procedure/3_Cordocentesis'
 import IntrauterineTransfusion from './invasive-procedure/4_IntrauterineTransfusion'
 import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
+// import MultipleAutoCompleteField from '../../../../components/page-tools/MultipleAutoCompleteField'
+import ProcedureAutoCompleteField from '../../../../components/page-tools/ProcedureAutoComplete'
 
 const templateId = TEMPLATES.invasivePrerequisite.id
 let backupData = null
@@ -75,9 +77,22 @@ const indsForInvasive = [
   'Other:',
 ]
 
+// const defaultBtn = {
+//   prerequisite: { show: true, active: true },
+//   procedure: { show: false, active: false, name: '' },
+// }
 const defaultBtn = {
   prerequisite: { show: true, active: true },
-  procedure: { show: false, active: false, name: '' },
+  showProcedure: false,
+  procedure: {
+    Amniocentesis: { show: false, active: false },
+    CVS: { show: false, active: false },
+    Cordocentesis: { show: false, active: false },
+    'Intrauterine Transfusion': {
+      show: false,
+      active: false,
+    },
+  },
 }
 
 const sOptions = {
@@ -106,6 +121,8 @@ const Invasive = ({ patient }) => {
     Cordocentesis: null,
     'Intrauterine Transfusion': null,
   })
+
+  const [procedureSelected, setProcedureSelected] = useState([])
 
   useEffect(() => {
     // console.log('clear')
@@ -183,7 +200,7 @@ const Invasive = ({ patient }) => {
             }
             form={{ ...form, name: '' }}
             width={245}
-            sx={{ ml: 1 }}
+            sx={{ ml: -4 }}
             paddingLeft={5}
             handleChange={e => {
               updateDataChange('1')
@@ -368,6 +385,39 @@ const Invasive = ({ patient }) => {
     )
     if (otherProcedure) {
       setShowOtherProcedure(true)
+      // console.log(otherProcedure)
+      setProcedureSelected([
+        {
+          display: otherProcedure.contentOptionDisplay,
+          id: otherProcedure.contentOption,
+          label: otherProcedure.contentOptionDisplay,
+          name: otherProcedure.contentOptionDisplay,
+          opId: otherProcedure.contentOption,
+          opName: otherProcedure.contentValueName,
+          templateId: TEMPLATES.invasivePrerequisite.id,
+          valueId: otherProcedure.refValueId,
+        },
+      ])
+    }
+
+    let procedures = data
+      .filter(
+        d =>
+          d.contentValueName === 'Procedure' &&
+          d.contentOptionDisplay !== 'Other'
+      )
+      .map(d => d.contentOption)
+      .sort()
+
+    if (procedures.length > 0) {
+      // console.log('procedures', procedures)
+      // console.log(tempArr[10].options.filter(o => procedures.includes(o.opId)))
+      let showButton = tempArr[10].options.filter(o =>
+        procedures.includes(o.opId)
+      )
+      setProcedureSelected(showButton)
+
+      handleShowProcedureButton(tempArr[10].options, showButton)
     }
 
     let contraindications = data.find(
@@ -392,7 +442,7 @@ const Invasive = ({ patient }) => {
     if (pname && pname !== 'Other') {
       setBtnActive(prev => ({
         ...prev,
-        procedure: { ...prev.procedure, name: pname, show: true },
+        showProcedure: true,
       }))
     }
 
@@ -538,31 +588,70 @@ const Invasive = ({ patient }) => {
     setProcedure(prev => ({ ...prev, [procedure]: tempArr }))
   }
 
-  function handleChange(e, d) {
-    // console.log(d, d.options, e.target.value)
+  function handleShowProcedureButton(options, procedureArray) {
+    let allPname = procedureArray.map(p => p.name)
+    // console.log(allPname)
+    // console.log(options)
+    setBtnActive(prev => {
+      let temp = { ...prev.procedure }
+      // console.log(temp)
+
+      options
+        .filter(option => option.name !== 'Other')
+        .forEach(option => {
+          // console.log(option.name)
+          if (allPname.includes(option.name)) {
+            temp[option.name].show = true
+            temp[option.name].active = false
+          } else {
+            temp[option.name].show = false
+            temp[option.name].active = false
+          }
+        })
+
+      console.log({
+        prerequisite: { ...prev.prerequisite, active: true },
+        showProcedure: true,
+        procedure: temp,
+      })
+
+      return {
+        prerequisite: { ...prev.prerequisite, active: true },
+        showProcedure: true,
+        procedure: temp,
+      }
+    })
+  }
+
+  async function handleChange(e, d, procedureArray) {
+    console.log('d', d)
+    console.log('d.options', d.options)
+    console.log('e.target.value', e.target.value)
     let v =
       d.type === 'A' ? replaceNewLineWithBr(e.target.value) : e.target.value
 
+    let pname = ''
     if (d.templateId === 41) {
       updateDataChange('1')
       if (d.name === 'Procedure') {
-        let pname =
-          d.options.find(option => option.opId === e.target.value)?.display ||
-          ''
-
+        // e.target.value = parseInt(e.target.value)
+        console.log(e.target.value)
+        pname =
+          d.options.find(option => option.opId == e.target.value)?.display || ''
+        console.log(pname)
+        v = { type: 'S', value: v ? parseInt(v) : '' }
+        console.log(procedureArray)
         if (pname && pname !== 'Other') {
-          setBtnActive(prev => ({
-            prerequisite: { ...prev.prerequisite, active: false },
-            procedure: {
-              ...prev.procedure,
-              name: pname,
-              show: true,
-              active: true,
-            },
-          }))
+          console.log(procedureArray)
+          v = procedureArray.map(p => ({ type: 'S', value: p.id }))
 
-          procedureRef.current.style.display = 'block'
-          prerequisiteRef.current.style.display = 'none'
+          handleShowProcedureButton(d.options, procedureArray)
+
+          // procedureRef.current.style.display = 'block'
+          // prerequisiteRef.current.style.display = 'none'
+
+          // await getProcedureForm(pname)
+          // await autoSave(backupData)
         } else {
           setBtnActive(defaultBtn)
           prerequisiteRef.current.style.display = 'block'
@@ -650,19 +739,25 @@ const Invasive = ({ patient }) => {
       }
 
       if (d.name === 'Procedure') {
-        if (e.target.value === d.options[4].opId) {
+        if (e.target.value == d.options[4].opId) {
           setShowOtherProcedure(true)
         } else {
           setShowOtherProcedure(false)
         }
       }
       setDataFormSend(prev => {
+        // console.log(d.valueId, v)
+        // console.log(pname)
+
         let temp = {
           ...prev,
-          [d.valueId]: {
-            ...prev[d.valueId],
-            value: v,
-          },
+          [d.valueId]:
+            d.valueId === 717
+              ? v
+              : {
+                  ...prev[d.valueId],
+                  value: v,
+                },
           [freetextValueId[0]]: {
             ...prev[freetextValueId[0]],
             value: usRef.current.value.trim(),
@@ -673,7 +768,7 @@ const Invasive = ({ patient }) => {
           },
         }
 
-        // console.log(temp)
+        console.log(temp)
 
         temp = cleanData(temp)
         backupData = temp
@@ -957,9 +1052,28 @@ const Invasive = ({ patient }) => {
     }
   }
 
-  function renderProcedure(pname) {
+  function renderProcedure() {
     // console.log(pname)
+
+    console.log(btnActive.procedure)
+    // find procedure active true
+    let pname = ''
+    Object.keys(btnActive.procedure).forEach(key => {
+      if (btnActive.procedure[key].active) {
+        pname = key
+      }
+    })
+
+    if (!btnActive.showProcedure) return
+
+    console.log('pname', pname)
+
+    return
     if (!pname) return
+
+    // if (document.activeElement) {
+    //   document.activeElement.blur() // เอา focus ออกจาก element เดิมก่อน
+    // }
 
     let component = null
     switch (pname) {
@@ -1036,10 +1150,10 @@ const Invasive = ({ patient }) => {
       <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
 
       <Fade in={!loading ? true : false} timeout={200}>
-        <div style={{ width: 750 }}>
+        <div style={{ width: 790 }}>
           {dataForm.length > 0 && (
             <>
-              <Box sx={{ m: inputMargin, width: '100%' }}>
+              <Box sx={{ m: inputMargin, width: '100%', mb: 2 }}>
                 <Button
                   variant={
                     btnActive.prerequisite.active ? 'contained' : 'outlined'
@@ -1048,11 +1162,8 @@ const Invasive = ({ patient }) => {
                   color='info'
                   onClick={() => {
                     setBtnActive(prev => ({
+                      ...prev,
                       prerequisite: { ...prev.prerequisite, active: true },
-                      procedure: {
-                        ...prev.procedure,
-                        active: false,
-                      },
                     }))
 
                     prerequisiteRef.current.style.display = 'block'
@@ -1065,31 +1176,56 @@ const Invasive = ({ patient }) => {
                 >
                   Prerequisite Data
                 </Button>
-                {btnActive.procedure.show && (
-                  <Button
-                    sx={{ ml: 1 }}
-                    variant={
-                      btnActive.procedure.active ? 'contained' : 'outlined'
-                    }
-                    size='large'
-                    color='info'
-                    onClick={() => {
-                      setBtnActive(prev => ({
-                        prerequisite: { ...prev.prerequisite, active: false },
-                        procedure: {
-                          ...prev.procedure,
-                          active: true,
-                        },
-                      }))
+                {btnActive.showProcedure &&
+                  procedureSelected
+                    .sort((a, b) => a.id - b.id)
+                    .map(p => {
+                      return (
+                        <Button
+                          key={p.id}
+                          sx={{ ml: 1 }}
+                          variant={
+                            btnActive.procedure[p.name].active
+                              ? 'contained'
+                              : 'outlined'
+                          }
+                          size='large'
+                          color='secondary'
+                          onClick={() => {
+                            setBtnActive(prev => {
+                              let temp = { ...prev.procedure }
+                              console.log(prev)
+                              // set all procedure to false
+                              Object.keys(temp).forEach(key => {
+                                temp[key].active = false
+                              })
 
-                      procedureRef.current.style.display = 'block'
-                      prerequisiteRef.current.style.display = 'none'
-                      autoSave(backupData)
-                    }}
-                  >
-                    {btnActive.procedure.name}
-                  </Button>
-                )}
+                              return {
+                                prerequisite: {
+                                  ...prev.prerequisite,
+                                  active: false,
+                                },
+                                showProcedure: true,
+                                procedure: {
+                                  // ...prev.procedure,
+                                  ...temp,
+                                  [p.name]: {
+                                    ...prev.procedure[p.name],
+                                    active: true,
+                                  },
+                                },
+                              }
+                            })
+
+                            procedureRef.current.style.display = 'block'
+                            prerequisiteRef.current.style.display = 'none'
+                            // autoSave(backupData)
+                          }}
+                        >
+                          {p.name}
+                        </Button>
+                      )
+                    })}
               </Box>
 
               <div ref={prerequisiteRef}>
@@ -1230,7 +1366,7 @@ const Invasive = ({ patient }) => {
                         value={dataForm[9].content}
                         handleChange={e => handleChange(e, dataForm[9])}
                         form={{ ...dataForm[9], name: '' }}
-                        width={250}
+                        width={281}
                         sx={{ ml: 1 }}
                       />
                     )}
@@ -1239,7 +1375,34 @@ const Invasive = ({ patient }) => {
                     <Divider />
                   </Box>
                   <Box sx={{ m: inputMargin, width: '100%' }}>
-                    <SelectField
+                    <ProcedureAutoCompleteField
+                      options={dataForm[10].options}
+                      selected={procedureSelected}
+                      setSelected={setProcedureSelected}
+                      handleChangeFunction={handleChange}
+                      handleChange={async e => {
+                        handleChange(e, dataForm[10])
+
+                        let value = e.target.value
+
+                        let otherId = dataForm[10].options[4].id
+
+                        if (value && value !== otherId) {
+                          let pname = dataForm[10].options.find(
+                            o => o.opId === value
+                          ).name
+                          // console.log(pname)
+                          await getProcedureForm(pname)
+                          await autoSave(backupData)
+                          // updateDataChange('1')
+                        }
+                      }}
+                      form={dataForm[10]}
+                      width={450}
+                    />
+                  </Box>
+                  <Box sx={{ m: inputMargin, width: '100%' }}>
+                    {/* <SelectField
                       value={dataForm[10].contentOption || ''}
                       handleChange={async e => {
                         handleChange(e, dataForm[10])
@@ -1260,7 +1423,7 @@ const Invasive = ({ patient }) => {
                       }}
                       form={dataForm[10]}
                       minWidth={418}
-                    />
+                    /> */}
                   </Box>
                   {showOtherProcedure && (
                     <Box sx={{ m: inputMargin, width: '100%' }}>
@@ -1299,9 +1462,10 @@ const Invasive = ({ patient }) => {
                     marginLeft: 10,
                   }}
                 >
-                  {procedure[btnActive.procedure.name] &&
+                  {/* {procedure[btnActive.procedure.name] &&
                     btnActive.procedure.active &&
-                    renderProcedure(btnActive.procedure.name)}
+                    renderProcedure(btnActive.procedure.name)} */}
+                  {renderProcedure()}
                 </div>
               </div>
             </>

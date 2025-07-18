@@ -637,6 +637,7 @@ const AnatomicalScan = ({ patient }) => {
                             </>
                           )}
                         <SelectField
+                          key={i}
                           value={value}
                           handleChange={e => handleChange(e, form)}
                           form={form}
@@ -654,7 +655,7 @@ const AnatomicalScan = ({ patient }) => {
                   if (test && test.content) value = test.content
 
                   return (
-                    <Fade in={!loading ? true : false} timeout={400}>
+                    <Fade key={i} in={!loading ? true : false} timeout={400}>
                       <div key={i}>
                         <Box sx={{ m: inputMargin }}>
                           <CommentField

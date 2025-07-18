@@ -72,7 +72,7 @@ function MultipleAutoCompleteField({
       renderInput={params => (
         <TextField
           {...params}
-          label='Diagnosis'
+          label={form.name}
           InputLabelProps={{
             shrink: true,
             sx: {
