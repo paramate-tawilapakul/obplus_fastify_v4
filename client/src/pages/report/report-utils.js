@@ -523,6 +523,11 @@ function anatomical(r, data, templateId, valueName) {
   return r
 }
 
+function getProcedureName(data, name) {
+  let procedureName = data.find(p => p.contentOptionDisplay === name)
+  return { ...procedureName, displayStyle: 'row', underline: true }
+}
+
 // modify specific value
 function modifyReport(report, templateId, data) {
   let r = report
@@ -730,8 +735,6 @@ function modifyReport(report, templateId, data) {
   }
 
   if (templateId === TEMPLATES['invasivePrerequisite'].id) {
-    // console.log(r)
-
     r = r.map(d => {
       if (d.valueName === 'Indications for invasive procedure') {
         if (
@@ -823,8 +826,27 @@ function modifyReport(report, templateId, data) {
       })
     }
 
-    let procedure = r.find(d => d.valueName === 'Procedure')
-    if (procedure?.contentOptionDisplay === 'Other') {
+    // let procedure = r.find(d => d.valueName === 'Procedure')
+    // if (procedure?.contentOptionDisplay === 'Other') {
+    //   let text = r
+    //     .find(d => d.valueName === 'Other Procedure')
+    //     ?.content.replace(/<br\s*[/]?>/gi, '\n')
+    //   r = r.filter(d => d.valueName !== 'Other Procedure')
+
+    //   r = r.map(d => {
+    //     if (d.valueName === 'Procedure') {
+    //       return { ...d, content: text || '' }
+    //     }
+
+    //     return d
+    //   })
+    // }
+    // console.log(r)
+    let procedureArr = r
+      .filter(d => d.valueName === 'Procedure')
+      .sort((a, b) => a.contentOption - b.contentOption)
+
+    if (procedureArr[0]?.contentOptionDisplay === 'Other') {
       let text = r
         .find(d => d.valueName === 'Other Procedure')
         ?.content.replace(/<br\s*[/]?>/gi, '\n')
@@ -832,352 +854,384 @@ function modifyReport(report, templateId, data) {
 
       r = r.map(d => {
         if (d.valueName === 'Procedure') {
-          return { ...d, content: text || '' }
+          return { ...d, content: text || '', displayStyle: 'row' }
         }
 
         return d
       })
+
+      return r
     }
-    // console.log(r)
 
-    if (
-      [
-        'Amniocentesis',
-        'CVS',
-        'Cordocentesis',
-        'Intrauterine Transfusion',
-      ].includes(procedure?.contentOptionDisplay)
-    ) {
-      const procedureMap = {
-        Amniocentesis: '42',
-        CVS: '43',
-        Cordocentesis: '44',
-        'Intrauterine Transfusion': '45',
-      }
-      let procedureData = data[procedureMap[procedure.contentOptionDisplay]]
-      // console.log('procedureData', procedureData)
-      if (procedureData && procedure.contentOptionDisplay === 'Amniocentesis') {
-        r = [...r, ...procedureData]
+    const prerequistData = [...r]
 
-        let uterusAbnormalDetails = r.find(
-          d => d.valueName === 'Uterus Abnormal Details'
-        )
-        if (uterusAbnormalDetails?.content) {
-          r = r.map(d => {
-            if (d.valueName === 'Uterus') {
-              return {
-                ...d,
-                content: `${d.contentOptionDisplay}, ${uterusAbnormalDetails.content}`,
-              }
-            }
-
-            return d
-          })
-
-          r = r.filter(d => d.valueName !== 'Uterus Abnormal Details')
-        }
-
-        let instrumentText = r.find(d => d.valueName === 'Instrument Text')
-        if (instrumentText?.content) {
-          r = r.map(d => {
-            if (d.valueName === 'Instrument') {
-              return {
-                ...d,
-                content: `${instrumentText.content}`,
-              }
-            }
-
-            return d
-          })
-
-          r = r.filter(d => d.valueName !== 'Instrument Text')
-        }
-
-        let complication = r.find(d => d.valueName === 'Complication')
-        if (complication?.contentOptionDisplay === 'Define') {
-          r = r.map(d => {
-            if (d.valueName === 'Complication') {
-              return {
-                ...d,
-                content: `${
-                  r.find(d => d.valueName === 'Complication Define')?.content ||
-                  ''
-                }`,
-              }
-            }
-
-            return d
-          })
-        }
-
-        r = r.filter(d => d.valueName !== 'Complication Define')
-
-        r = r.map(d => {
-          if (d.valueName === 'Amniotic fluid test for') {
-            let content = d.content
-            let displayStyle = 'col'
-            if (content.length > 20) displayStyle = 'row'
-
-            return {
-              ...d,
-              displayStyle,
-            }
-          } else if (d.valueName === 'Post procedure instructions') {
-            let content = d.content
-            let displayStyle = 'col'
-            if (content.length > 18) displayStyle = 'row'
-
-            return {
-              ...d,
-              displayStyle,
-            }
-          }
-
-          return d
-        })
-      } else if (procedureData && procedure.contentOptionDisplay === 'CVS') {
-        r = [...r, ...procedureData]
-
-        let uterusAbnormalDetails = r.find(
-          d => d.valueName === 'Uterus Abnormal Details'
-        )
-        if (uterusAbnormalDetails?.content) {
-          r = r.map(d => {
-            if (d.valueName === 'Uterus') {
-              return {
-                ...d,
-                content: `${d.contentOptionDisplay}, ${uterusAbnormalDetails.content}`,
-              }
-            }
-
-            return d
-          })
-
-          r = r.filter(d => d.valueName !== 'Uterus Abnormal Details')
-        }
-
-        let instrumentText = r.find(d => d.valueName === 'Instrument Text')
-        if (instrumentText?.content) {
-          r = r.map(d => {
-            if (d.valueName === 'Instrument') {
-              return {
-                ...d,
-                content: `${instrumentText.content}`,
-              }
-            }
-
-            return d
-          })
-
-          r = r.filter(d => d.valueName !== 'Instrument Text')
-        }
-
-        let complication = r.find(d => d.valueName === 'Complication')
-        if (complication?.contentOptionDisplay === 'Define') {
-          r = r.map(d => {
-            if (d.valueName === 'Complication') {
-              return {
-                ...d,
-                content: `${
-                  r.find(d => d.valueName === 'Complication Define')?.content ||
-                  ''
-                }`,
-              }
-            }
-
-            return d
-          })
-        }
-
-        r = r.filter(d => d.valueName !== 'Complication Define')
-
-        r = r.map(d => {
-          if (d.valueName === 'CVS sampling tissue test for') {
-            let content = d.content
-            let displayStyle = 'col'
-            if (content.length > 20) displayStyle = 'row'
-
-            return {
-              ...d,
-              displayStyle,
-            }
-          } else if (d.valueName === 'Post procedure instructions') {
-            let content = d.content
-            let displayStyle = 'col'
-            if (content.length > 18) displayStyle = 'row'
-
-            return {
-              ...d,
-              displayStyle,
-            }
-          } else if (d.valueName === 'Entries uterus') {
-            return {
-              ...d,
-              display: 'No. of uterine entry',
-            }
-          }
-
-          return d
-        })
-      } else if (
-        procedureData &&
-        procedure.contentOptionDisplay === 'Cordocentesis'
+    //remove Procedure from prerequistData
+    r = r.filter(d => d.valueName !== 'Procedure')
+    let procedureName
+    for (let i = 0; i < procedureArr.length; i++) {
+      let procedure = procedureArr[i]
+      if (
+        [
+          'Amniocentesis',
+          'CVS',
+          'Cordocentesis',
+          'Intrauterine Transfusion',
+        ].includes(procedure?.contentOptionDisplay)
       ) {
-        r = [...r, ...procedureData]
-
-        let instrumentText = r.find(d => d.valueName === 'Instrument Text')
-        if (instrumentText?.content) {
-          r = r.map(d => {
-            if (d.valueName === 'Instrument') {
-              return {
-                ...d,
-                content: `${instrumentText.content}`,
-              }
-            }
-
-            return d
-          })
-
-          r = r.filter(d => d.valueName !== 'Instrument Text')
+        const procedureMap = {
+          Amniocentesis: '42',
+          CVS: '43',
+          Cordocentesis: '44',
+          'Intrauterine Transfusion': '45',
         }
+        let procedureData = data[procedureMap[procedure.contentOptionDisplay]]
 
-        let complication = r.find(d => d.valueName === 'Complication')
-        if (complication?.contentOptionDisplay === 'Define') {
-          r = r.map(d => {
-            if (d.valueName === 'Complication') {
-              return {
-                ...d,
-                content: `${
-                  r.find(d => d.valueName === 'Complication Define')?.content ||
-                  ''
-                }`,
+        if (
+          procedureData &&
+          procedure.contentOptionDisplay === 'Amniocentesis'
+        ) {
+          procedureName = getProcedureName(
+            prerequistData,
+            procedure.contentOptionDisplay
+          )
+
+          r = [...r, procedureName, ...procedureData]
+
+          let uterusAbnormalDetails = r.find(
+            d => d.valueName === 'Uterus Abnormal Details'
+          )
+          if (uterusAbnormalDetails?.content) {
+            r = r.map(d => {
+              if (d.valueName === 'Uterus') {
+                return {
+                  ...d,
+                  content: `${d.contentOptionDisplay}, ${uterusAbnormalDetails.content}`,
+                }
               }
-            }
 
-            return d
-          })
-        }
+              return d
+            })
 
-        r = r.filter(d => d.valueName !== 'Complication Define')
-
-        r = r.map(d => {
-          if (d.valueName === 'Cordocentesis test for') {
-            let content = d.content
-            let displayStyle = 'col'
-            if (content.length > 20) displayStyle = 'row'
-
-            return {
-              ...d,
-              displayStyle,
-            }
-          } else if (d.valueName === 'Post procedure instructions') {
-            let content = d.content
-            let displayStyle = 'col'
-            if (content.length > 18) displayStyle = 'row'
-
-            return {
-              ...d,
-              displayStyle,
-            }
-          } else if (d.valueName === 'Entries uterus') {
-            return {
-              ...d,
-              display: 'No. of uterine entry',
-            }
-          } else if (d.valueName === 'Sampling Site') {
-            let content = d.content
-            let displayStyle = 'col'
-            if (content.length > 25) displayStyle = 'row'
-
-            return {
-              ...d,
-              displayStyle,
-            }
+            r = r.filter(d => d.valueName !== 'Uterus Abnormal Details')
           }
 
-          return d
-        })
-      } else if (
-        procedureData &&
-        procedure.contentOptionDisplay === 'Intrauterine Transfusion'
-      ) {
-        r = [...r, ...procedureData]
-
-        let instrumentText = r.find(d => d.valueName === 'Instrument Text')
-        if (instrumentText?.content) {
-          r = r.map(d => {
-            if (d.valueName === 'Instrument') {
-              return {
-                ...d,
-                content: `${instrumentText.content}`,
+          let instrumentText = r.find(d => d.valueName === 'Instrument Text')
+          if (instrumentText?.content) {
+            r = r.map(d => {
+              if (d.valueName === 'Instrument') {
+                return {
+                  ...d,
+                  content: `${instrumentText.content}`,
+                }
               }
-            }
 
-            return d
-          })
+              return d
+            })
 
-          r = r.filter(d => d.valueName !== 'Instrument Text')
-        }
-
-        let complication = r.find(d => d.valueName === 'Complication')
-        if (complication?.contentOptionDisplay === 'Define') {
-          r = r.map(d => {
-            if (d.valueName === 'Complication') {
-              return {
-                ...d,
-                content: `${
-                  r.find(d => d.valueName === 'Complication Define')?.content ||
-                  ''
-                }`,
-              }
-            }
-
-            return d
-          })
-        }
-
-        r = r.filter(d => d.valueName !== 'Complication Define')
-
-        r = r.map(d => {
-          if (d.valueName === 'Transfusion') {
-            let content = d.content
-            let displayStyle = 'col'
-
-            if (content.length > 27) displayStyle = 'row'
-
-            return {
-              ...d,
-              displayStyle,
-            }
-          } else if (d.valueName === 'Post procedure instructions') {
-            let content = d.content
-            let displayStyle = 'col'
-            if (content.length > 18) displayStyle = 'row'
-
-            return {
-              ...d,
-              displayStyle,
-            }
-          } else if (d.valueName === 'Entries uterus') {
-            return {
-              ...d,
-              display: 'No. of uterine entry',
-            }
-          } else if (d.valueName === 'Sampling Site') {
-            let content = d.content
-            let displayStyle = 'col'
-            if (content.length > 25) displayStyle = 'row'
-
-            return {
-              ...d,
-              displayStyle,
-            }
+            r = r.filter(d => d.valueName !== 'Instrument Text')
           }
 
-          return d
-        })
+          let complication = r.find(d => d.valueName === 'Complication')
+          if (complication?.contentOptionDisplay === 'Define') {
+            r = r.map(d => {
+              if (d.valueName === 'Complication') {
+                return {
+                  ...d,
+                  content: `${
+                    r.find(d => d.valueName === 'Complication Define')
+                      ?.content || ''
+                  }`,
+                }
+              }
+
+              return d
+            })
+          }
+
+          r = r.filter(d => d.valueName !== 'Complication Define')
+
+          r = r.map(d => {
+            if (d.valueName === 'Amniotic fluid test for') {
+              let content = d.content
+              let displayStyle = 'col'
+              if (content.length > 20) displayStyle = 'row'
+
+              return {
+                ...d,
+                displayStyle,
+              }
+            } else if (d.valueName === 'Post procedure instructions') {
+              let content = d.content
+              let displayStyle = 'col'
+              if (content.length > 18) displayStyle = 'row'
+
+              return {
+                ...d,
+                displayStyle,
+              }
+            }
+
+            return d
+          })
+        } else if (procedureData && procedure.contentOptionDisplay === 'CVS') {
+          procedureName = getProcedureName(
+            prerequistData,
+            procedure.contentOptionDisplay
+          )
+
+          r = [...r, procedureName, ...procedureData]
+
+          let uterusAbnormalDetails = r.find(
+            d => d.valueName === 'Uterus Abnormal Details'
+          )
+          if (uterusAbnormalDetails?.content) {
+            r = r.map(d => {
+              if (d.valueName === 'Uterus') {
+                return {
+                  ...d,
+                  content: `${d.contentOptionDisplay}, ${uterusAbnormalDetails.content}`,
+                }
+              }
+
+              return d
+            })
+
+            r = r.filter(d => d.valueName !== 'Uterus Abnormal Details')
+          }
+
+          let instrumentText = r.find(d => d.valueName === 'Instrument Text')
+          if (instrumentText?.content) {
+            r = r.map(d => {
+              if (d.valueName === 'Instrument') {
+                return {
+                  ...d,
+                  content: `${instrumentText.content}`,
+                }
+              }
+
+              return d
+            })
+
+            r = r.filter(d => d.valueName !== 'Instrument Text')
+          }
+
+          let complication = r.find(d => d.valueName === 'Complication')
+          if (complication?.contentOptionDisplay === 'Define') {
+            r = r.map(d => {
+              if (d.valueName === 'Complication') {
+                return {
+                  ...d,
+                  content: `${
+                    r.find(d => d.valueName === 'Complication Define')
+                      ?.content || ''
+                  }`,
+                }
+              }
+
+              return d
+            })
+          }
+
+          r = r.filter(d => d.valueName !== 'Complication Define')
+
+          r = r.map(d => {
+            if (d.valueName === 'CVS sampling tissue test for') {
+              let content = d.content
+              let displayStyle = 'col'
+              if (content.length > 20) displayStyle = 'row'
+
+              return {
+                ...d,
+                displayStyle,
+              }
+            } else if (d.valueName === 'Post procedure instructions') {
+              let content = d.content
+              let displayStyle = 'col'
+              if (content.length > 18) displayStyle = 'row'
+
+              return {
+                ...d,
+                displayStyle,
+              }
+            } else if (d.valueName === 'Entries uterus') {
+              return {
+                ...d,
+                display: 'No. of uterine entry',
+              }
+            }
+
+            return d
+          })
+        } else if (
+          procedureData &&
+          procedure.contentOptionDisplay === 'Cordocentesis'
+        ) {
+          procedureName = getProcedureName(
+            prerequistData,
+            procedure.contentOptionDisplay
+          )
+          r = [...r, procedureName, ...procedureData]
+
+          let instrumentText = r.find(d => d.valueName === 'Instrument Text')
+          if (instrumentText?.content) {
+            r = r.map(d => {
+              if (d.valueName === 'Instrument') {
+                return {
+                  ...d,
+                  content: `${instrumentText.content}`,
+                }
+              }
+
+              return d
+            })
+
+            r = r.filter(d => d.valueName !== 'Instrument Text')
+          }
+
+          let complication = r.find(d => d.valueName === 'Complication')
+          if (complication?.contentOptionDisplay === 'Define') {
+            r = r.map(d => {
+              if (d.valueName === 'Complication') {
+                return {
+                  ...d,
+                  content: `${
+                    r.find(d => d.valueName === 'Complication Define')
+                      ?.content || ''
+                  }`,
+                }
+              }
+
+              return d
+            })
+          }
+
+          r = r.filter(d => d.valueName !== 'Complication Define')
+
+          r = r.map(d => {
+            if (d.valueName === 'Cordocentesis test for') {
+              let content = d.content
+              let displayStyle = 'col'
+              if (content.length > 20) displayStyle = 'row'
+
+              return {
+                ...d,
+                displayStyle,
+              }
+            } else if (d.valueName === 'Post procedure instructions') {
+              let content = d.content
+              let displayStyle = 'col'
+              if (content.length > 18) displayStyle = 'row'
+
+              return {
+                ...d,
+                displayStyle,
+              }
+            } else if (d.valueName === 'Entries uterus') {
+              return {
+                ...d,
+                display: 'No. of uterine entry',
+              }
+            } else if (d.valueName === 'Sampling Site') {
+              let content = d.content
+              let displayStyle = 'col'
+              if (content.length > 25) displayStyle = 'row'
+
+              return {
+                ...d,
+                displayStyle,
+              }
+            }
+
+            return d
+          })
+        } else if (
+          procedureData &&
+          procedure.contentOptionDisplay === 'Intrauterine Transfusion'
+        ) {
+          procedureName = getProcedureName(
+            prerequistData,
+            procedure.contentOptionDisplay
+          )
+          r = [...r, procedureName, ...procedureData]
+
+          let instrumentText = r.find(d => d.valueName === 'Instrument Text')
+          if (instrumentText?.content) {
+            r = r.map(d => {
+              if (d.valueName === 'Instrument') {
+                return {
+                  ...d,
+                  content: `${instrumentText.content}`,
+                }
+              }
+
+              return d
+            })
+
+            r = r.filter(d => d.valueName !== 'Instrument Text')
+          }
+
+          let complication = r.find(d => d.valueName === 'Complication')
+          if (complication?.contentOptionDisplay === 'Define') {
+            r = r.map(d => {
+              if (d.valueName === 'Complication') {
+                return {
+                  ...d,
+                  content: `${
+                    r.find(d => d.valueName === 'Complication Define')
+                      ?.content || ''
+                  }`,
+                }
+              }
+
+              return d
+            })
+          }
+
+          r = r.filter(d => d.valueName !== 'Complication Define')
+
+          r = r.map(d => {
+            if (d.valueName === 'Transfusion') {
+              let content = d.content
+              let displayStyle = 'col'
+
+              if (content.length > 27) displayStyle = 'row'
+
+              return {
+                ...d,
+                displayStyle,
+              }
+            } else if (d.valueName === 'Post procedure instructions') {
+              let content = d.content
+              let displayStyle = 'col'
+              if (content.length > 18) displayStyle = 'row'
+
+              return {
+                ...d,
+                displayStyle,
+              }
+            } else if (d.valueName === 'Entries uterus') {
+              return {
+                ...d,
+                display: 'No. of uterine entry',
+              }
+            } else if (d.valueName === 'Sampling Site') {
+              let content = d.content
+              let displayStyle = 'col'
+              if (content.length > 25) displayStyle = 'row'
+
+              return {
+                ...d,
+                displayStyle,
+              }
+            }
+
+            return d
+          })
+        }
       }
     }
+
+    // console.log('final', r)
   }
 
   if (templateId === TEMPLATES['fetalEcho'].id) {
@@ -1768,6 +1822,7 @@ export function findingsTemplate2pdfmake(data = [], tname, fetus = 1) {
               columns: [
                 {
                   width: '*',
+                  // decoration: data?.underline ? 'underline' : undefined,
                   text: [
                     {
                       text: `${display} `,
@@ -1775,7 +1830,11 @@ export function findingsTemplate2pdfmake(data = [], tname, fetus = 1) {
                       style: 'defaultSmallFont',
                       color: data?.color || undefined,
                     },
-                    { text: content, style: 'defaultFont' },
+                    {
+                      text: content,
+                      style: 'defaultFont',
+                      decoration: data?.underline ? 'underline' : undefined,
+                    },
                   ],
                 },
               ],
