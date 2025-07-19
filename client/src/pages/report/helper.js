@@ -33,8 +33,9 @@ export async function getReportId(accession, currentFetus, templateId) {
   }
 }
 
-export async function autoSave(data, diagReport) {
+export async function autoSave(data, diagReport, options = {}) {
   if (window.localStorage.getItem(STORAGE_NAME.isDataChange) === '1') {
+    // console.log('options', options)
     let res
     if (
       diagReport
@@ -55,6 +56,7 @@ export async function autoSave(data, diagReport) {
     if (data) {
       res = await axios.post(API.REPORT_CONTENT, {
         reportData: cleanUpForm(data),
+        ...options,
       })
       // console.log('save 1')
       updateDataChange('0')

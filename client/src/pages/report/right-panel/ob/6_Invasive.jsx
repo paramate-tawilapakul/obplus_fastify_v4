@@ -47,7 +47,7 @@ import ProcedureAutoCompleteField from '../../../../components/page-tools/Proced
 
 const templateId = TEMPLATES.invasivePrerequisite.id
 let backupData = null
-let backupProcedureData = null
+// let backupProcedureData = null
 
 const procedureMap = {
   Amniocentesis: TEMPLATES.invasiveAmniocentesis,
@@ -262,12 +262,21 @@ const Invasive = ({ patient }) => {
     initData()
     updateDataChange('0')
     updateProcedureDataChange('0')
+    setProcedureSelected([])
 
     return () => {
-      autoSave(backupData)
-      autoSave2(backupProcedureData)
+      autoSave(backupData, null, {
+        accession: patient.accession,
+        currentFetus: patient.currentFetus,
+        isInvasive: true,
+      })
+      let d = window.localStorage.getItem(
+        STORAGE_NAME[window.localStorage.getItem(STORAGE_NAME.activeProcedure)]
+      )
+      if (d) autoSave2(JSON.parse(d))
+      // autoSave2(backupProcedureData)
       backupData = null
-      backupProcedureData = null
+      // backupProcedureData = null
     }
 
     // eslint-disable-next-line
@@ -584,7 +593,7 @@ const Invasive = ({ patient }) => {
       STORAGE_NAME.activeProcedure,
       procedure.replace(' ', '')
     )
-    backupProcedureData = formSend
+    // backupProcedureData = formSend
     setProcedureDataFormSend(formSend)
     // storeBackupData3(formSend)
     // console.log(tempArr)
@@ -646,7 +655,7 @@ const Invasive = ({ patient }) => {
         v = { type: 'S', value: v ? parseInt(v) : '' }
         // console.log(procedureArray)
         if (pname && pname !== 'Other') {
-          console.log(procedureArray)
+          // console.log(procedureArray)
           v = procedureArray.map(p => ({ type: 'S', value: p.id }))
 
           handleShowProcedureButton(d.options, procedureArray)
@@ -897,7 +906,7 @@ const Invasive = ({ patient }) => {
           procedureStorageName = 'IntrauterineTransfusion'
         }
 
-        backupProcedureData = temp
+        // backupProcedureData = temp
         // console.log(procedureStorageName)
         storeBackupData3(temp, procedureStorageName)
         // console.log(temp)
@@ -1041,7 +1050,12 @@ const Invasive = ({ patient }) => {
       /// SAVE TO STORAGE FOR AUTO SAVE BEFORE PREVIEW
       storeBackupData(tempD)
 
-      const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
+      const res = await axios.post(API.REPORT_CONTENT, {
+        reportData: newForm,
+        accession: patient.accession,
+        currentFetus: patient.currentFetus,
+        isInvasive: true,
+      })
       let message = 'Save Fail!'
       let severity = 'error'
 
@@ -1190,6 +1204,7 @@ const Invasive = ({ patient }) => {
                 </Button>
                 {btnActive.showProcedure &&
                   procedureSelected
+                    .filter(p => p.name !== 'Other')
                     .sort((a, b) => a.id - b.id)
                     .map(p => {
                       return (
@@ -1197,7 +1212,7 @@ const Invasive = ({ patient }) => {
                           key={p.id}
                           sx={{ ml: 1 }}
                           variant={
-                            btnActive.procedure[p.name].active
+                            btnActive?.procedure[p.name]?.active
                               ? 'contained'
                               : 'outlined'
                           }
@@ -1205,7 +1220,11 @@ const Invasive = ({ patient }) => {
                           color='secondary'
                           onClick={async () => {
                             await getProcedureForm(p.name)
-                            await autoSave(backupData)
+                            await autoSave(backupData, null, {
+                              accession: patient.accession,
+                              currentFetus: patient.currentFetus,
+                              isInvasive: true,
+                            })
 
                             setBtnActive(prev => {
                               let temp = { ...prev.procedure }

@@ -23,6 +23,13 @@ const obTemplateId = [
   23, 24, 25, 26, 27, 28, 29, 30, 41, 42, 43, 44, 45, 46,
 ]
 
+const invasiveProcedure = [
+  { templateId: 42, valueId: 682 },
+  { templateId: 43, valueId: 683 },
+  { templateId: 44, valueId: 684 },
+  { templateId: 45, valueId: 685 },
+]
+
 const EFW_CHARTS = {
   HL: 29,
   SP: 30,
@@ -261,6 +268,22 @@ async function getReportId(req) {
   }
 }
 
+async function getReportIdWithOutCreated(currentFetus, accession, templateId) {
+  try {
+    // console.log(currentFetus, accession, templateId)
+    const [data] = await db('OB_REPORT')
+      .select()
+      .column([{ reportId: 'REPORT_ID' }])
+      .where('ACCESSION', accession)
+      .andWhere('REF_TEMPLATE_ID', templateId)
+      .andWhere('REPORT_FETUS_NO', currentFetus)
+
+    return data?.reportId || null
+  } catch (error) {
+    handleErrorLog(`${fileModule} getReportIdWithOutCreated(): ${error}`)
+  }
+}
+
 exports.getReportId = getReportId
 
 async function getDiagReport(req) {
@@ -412,10 +435,33 @@ function cleanUpContent(content) {
   return content.replace(/&lt;/g, '<')
 }
 
+async function deletePreviousProcedure(
+  trx,
+  templateId,
+  currentFetus,
+  accession
+) {
+  let reportId
+  let length = templateId.length
+  for (let i = 0; i < length; i++) {
+    reportId = await getReportIdWithOutCreated(
+      currentFetus,
+      accession,
+      templateId[i]
+    )
+    // console.log('templageId:', templateId[i], 'reportId:', reportId)
+    if (reportId) {
+      // console.log('delete reportId:', reportId)
+      await trx('OB_REPORT_CONTENT').del().where('REF_REPORT_ID', reportId)
+    }
+  }
+}
+
 exports.createReportContent = async req => {
   try {
     const timestamp = dayjs().format('YYYYMMDDHHmmss')
-    let { reportData, isAllNormal, accession, currentFetus } = req.body
+    let { reportData, isAllNormal, accession, currentFetus, isInvasive } =
+      req.body
     // console.log('reportData', reportData)
     const reportId = reportData.reportId
     delete reportData.reportId
@@ -439,7 +485,51 @@ exports.createReportContent = async req => {
           .whereIn('REF_REPORT_ID', reportIdArr)
       }
 
-      console.log('+++DELETE+++')
+      // console.log('+++DELETE+++')
+      if (isInvasive) {
+        // console.log('Invasive')
+        if (!reportData[717]) {
+          // select empty
+          // console.log('deleteAllProcdure')
+          let templateId = invasiveProcedure.map(p => p.templateId)
+          await deletePreviousProcedure(
+            trx,
+            templateId,
+            currentFetus,
+            accession
+          )
+        } else if (reportData[717]) {
+          if (Array.isArray(reportData[717])) {
+            // select procedure
+            let deleteId = reportData[717].map(d => d.value)
+            let deleteProcdure = invasiveProcedure.filter(
+              p => !deleteId.includes(p.valueId)
+            )
+            // console.log('deleteProcdure', deleteProcdure)
+
+            let templateId = deleteProcdure?.map(d => d.templateId)
+            if (templateId?.length > 0) {
+              await deletePreviousProcedure(
+                trx,
+                templateId,
+                currentFetus,
+                accession
+              )
+            }
+          } else {
+            // select other
+            // console.log('deleteAllProcdure')
+            let templateId = invasiveProcedure.map(p => p.templateId)
+            await deletePreviousProcedure(
+              trx,
+              templateId,
+              currentFetus,
+              accession
+            )
+          }
+        }
+      }
+
       await trx('OB_REPORT_CONTENT').del().where('REF_REPORT_ID', reportId)
 
       const valueIdData = Object.keys(reportData)

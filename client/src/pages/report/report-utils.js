@@ -250,6 +250,7 @@ export async function getDocDef(
   try {
     // type = preview,prelim,verify,worklist
     // console.log(type)
+    // console.log(data)
     let res
     let isSaveSuccess = true
 
@@ -280,7 +281,14 @@ export async function getDocDef(
         }
 
         if (window.localStorage.getItem(STORAGE_NAME.isDataChange) === '1') {
-          res = await autoSave(JSON.parse(newForm))
+          res = await autoSave(JSON.parse(newForm), null, {
+            accession: data.accession,
+            currentFetus: data.currentFetus,
+            isInvasive:
+              window.localStorage.getItem(STORAGE_NAME.lastActiveTab) === '8'
+                ? true
+                : undefined,
+          })
           if (!res) isSaveSuccess = false
 
           let newForm2 = window.localStorage.getItem(
@@ -289,7 +297,10 @@ export async function getDocDef(
           // console.log(newForm2)
           if (newForm2) {
             updateDataChange('1')
-            res = await autoSave(JSON.parse(newForm2))
+            res = await autoSave(JSON.parse(newForm2), null, {
+              accession: data.accession,
+              currentFetus: data.currentFetus,
+            })
           }
         }
 
@@ -3627,7 +3638,7 @@ export async function initFormSend(
           .map(d => ({ type: 'S', value: d.contentOption }))
           ?.sort((a, b) => a.value - b.value)
 
-        if (procedures[0].contentOptionDisplay !== 'Other') {
+        if (procedures[0]?.contentOptionDisplay !== 'Other') {
           formSend[717] = procedures
           // console.log(procedures)
         }

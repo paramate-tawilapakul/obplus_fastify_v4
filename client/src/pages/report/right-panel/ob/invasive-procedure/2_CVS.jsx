@@ -74,6 +74,8 @@ const option2 = [
   },
 ]
 
+const procedureName = 'CVS'
+
 function CVS({
   form,
   handleChange,
@@ -136,7 +138,7 @@ function CVS({
                     ),
                   },
                 }
-                storeBackupData3(temp, 'CVS')
+                storeBackupData3(temp, procedureName)
                 // console.log(temp)
                 return temp
               })
@@ -166,7 +168,7 @@ function CVS({
       // console.log(data)
       let newForm = cleanUpForm(data)
       /// SAVE TO STORAGE FOR AUTO SAVE BEFORE PREVIEW
-      storeBackupData3(data, 'CVS')
+      storeBackupData3(data, procedureName)
 
       const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
       let message = 'Save Fail!'
@@ -307,7 +309,7 @@ function CVS({
                   type: 'T',
                 },
               }
-              storeBackupData3(temp, 'CVS')
+              storeBackupData3(temp, procedureName)
               // console.log(temp)
               return temp
             })

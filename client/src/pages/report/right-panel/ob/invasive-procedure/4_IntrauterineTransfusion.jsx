@@ -56,6 +56,8 @@ const option4 = [
   },
 ]
 
+const procedureName = 'IntrauterineTransfusion'
+
 function IntrauterineTransfusion({
   form,
   handleChange,
@@ -106,7 +108,7 @@ function IntrauterineTransfusion({
       // console.log(data)
       let newForm = cleanUpForm(data)
       /// SAVE TO STORAGE FOR AUTO SAVE BEFORE PREVIEW
-      storeBackupData3(data, 'IntrauterineTransfusion')
+      storeBackupData3(data, procedureName)
 
       const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
       let message = 'Save Fail!'
@@ -275,7 +277,7 @@ function IntrauterineTransfusion({
                   type: 'T',
                 },
               }
-              storeBackupData3(temp, 'IntrauterineTransfusion')
+              storeBackupData3(temp, procedureName)
               // console.log(temp)
               return temp
             })

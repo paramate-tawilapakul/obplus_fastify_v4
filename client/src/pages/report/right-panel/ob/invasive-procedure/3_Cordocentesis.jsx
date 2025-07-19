@@ -93,6 +93,8 @@ const option4 = [
   { name: 'Cord artery', width: 120 },
 ]
 
+const procedureName = 'Cordocentesis'
+
 function Cordocentesis({
   form,
   handleChange,
@@ -154,7 +156,7 @@ function Cordocentesis({
                     ),
                   },
                 }
-                storeBackupData3(temp, 'Cordocentesis')
+                storeBackupData3(temp, procedureName)
                 // console.log(temp)
                 return temp
               })
@@ -184,7 +186,7 @@ function Cordocentesis({
       // console.log(data)
       let newForm = cleanUpForm(data)
       /// SAVE TO STORAGE FOR AUTO SAVE BEFORE PREVIEW
-      storeBackupData3(data, 'Cordocentesis')
+      storeBackupData3(data, procedureName)
 
       const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
       let message = 'Save Fail!'
@@ -325,7 +327,7 @@ function Cordocentesis({
                   type: 'T',
                 },
               }
-              storeBackupData3(temp, 'Cordocentesis')
+              storeBackupData3(temp, procedureName)
               // console.log(temp)
               return temp
             })
