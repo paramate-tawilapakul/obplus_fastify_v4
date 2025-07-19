@@ -32,7 +32,6 @@ function ProcedureAutoCompleteField({
   width = 330,
   form,
 }) {
-  //   console.log(options)
   return (
     <Autocomplete
       size='small'

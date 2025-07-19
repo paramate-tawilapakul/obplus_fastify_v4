@@ -76,10 +76,6 @@ const indsForInvasive = [
   'Other:',
 ]
 
-// const defaultBtn = {
-//   prerequisite: { show: true, active: true },
-//   procedure: { show: false, active: false, name: '' },
-// }
 const defaultBtn = {
   prerequisite: { show: true, active: true },
   showProcedure: false,
@@ -124,7 +120,6 @@ const Invasive = ({ patient }) => {
   const [procedureSelected, setProcedureSelected] = useState([])
 
   useEffect(() => {
-    // console.log('clear')
     setIndsForInv = []
     setAmnioticFluidTest = []
     setPostProcedure = []
@@ -136,7 +131,6 @@ const Invasive = ({ patient }) => {
   const [showContrainText, setShowContrainText] = useState(false)
   const [showUterusText, setShowUterusText] = useState(false)
   const [showInstrumentText, setShowInstrumentText] = useState(false)
-  // const [indsForInv, setIndsForInv] = useState([])
 
   const prerequisiteRef = useRef(null)
   const procedureRef = useRef(null)
@@ -274,9 +268,8 @@ const Invasive = ({ patient }) => {
         STORAGE_NAME[window.localStorage.getItem(STORAGE_NAME.activeProcedure)]
       )
       if (d) autoSave2(JSON.parse(d))
-      // autoSave2(backupProcedureData)
+
       backupData = null
-      // backupProcedureData = null
     }
 
     // eslint-disable-next-line
@@ -335,8 +328,6 @@ const Invasive = ({ patient }) => {
       getRiD(TEMPLATES.invasivePrerequisite.name, patient.currentFetus),
       templateId
     )
-    // console.log('data', data)
-    // console.log('form', form)
 
     let tempArr = form.map(f => {
       let t = data.find(d => d.refValueId === f.valueId)
@@ -418,8 +409,6 @@ const Invasive = ({ patient }) => {
       .sort()
 
     if (procedures.length > 0) {
-      // console.log('procedures', procedures)
-      // console.log(tempArr[10].options.filter(o => procedures.includes(o.opId)))
       let showButton = tempArr[10].options.filter(o =>
         procedures.includes(o.opId)
       )
@@ -454,14 +443,9 @@ const Invasive = ({ patient }) => {
       }))
     }
 
-    // setTimeout(() => {
-    // await getProcedureForm(pname)
-    // }, 500)
-    // console.log(formSend)
     setDataFormSend(formSend)
     backupData = formSend
     storeBackupData(formSend)
-    // console.log(tempArr)
     setDataForm(tempArr)
     setLoading(false)
   }
@@ -494,8 +478,7 @@ const Invasive = ({ patient }) => {
       REPORT_ID[procedureMap[procedure].name][patient.currentFetus],
       procedureMap[procedure].id
     )
-    // console.log(formSend)
-    // console.log(form)
+
     let tempArr = form.map(f => {
       let form = f
       let name = f.name
@@ -515,9 +498,6 @@ const Invasive = ({ patient }) => {
       return { ...form, content: '' }
     })
 
-    // console.log(tempArr)
-    // console.log(form)
-    // console.log(data)
     if (procedure === 'Amniocentesis') {
       setAmnioticFluidTest = tempArr[11].content.split(', ')
       setPostProcedure = tempArr[14].content.split(', ')
@@ -587,24 +567,20 @@ const Invasive = ({ patient }) => {
       }
     }
 
-    // console.log(formSend)
-    // console.log(procedure)
     window.localStorage.setItem(
       STORAGE_NAME.activeProcedure,
       procedure.replace(' ', '')
     )
-    // backupProcedureData = formSend
+
     setProcedureDataFormSend(formSend)
-    // storeBackupData3(formSend)
-    // console.log(tempArr)
+
     setData1Form(tempArr)
     setProcedure(prev => ({ ...prev, [procedure]: tempArr }))
   }
 
   function handleShowProcedureButton(options, procedureArray) {
     let allPname = procedureArray.map(p => p.name)
-    // console.log(allPname)
-    // console.log(options)
+
     setBtnActive(prev => {
       let temp = { ...prev.procedure }
       // console.log(temp)
@@ -622,12 +598,6 @@ const Invasive = ({ patient }) => {
           }
         })
 
-      // console.log({
-      //   prerequisite: { ...prev.prerequisite, active: true },
-      //   showProcedure: true,
-      //   procedure: temp,
-      // })
-
       return {
         prerequisite: { ...prev.prerequisite, active: true },
         showProcedure: true,
@@ -637,9 +607,6 @@ const Invasive = ({ patient }) => {
   }
 
   async function handleChange(e, d, procedureArray) {
-    // console.log('d', d)
-    // console.log('d.options', d.options)
-    // console.log('e.target.value', e.target.value)
     let v =
       d.type === 'A' ? replaceNewLineWithBr(e.target.value) : e.target.value
 
@@ -647,8 +614,6 @@ const Invasive = ({ patient }) => {
     if (d.templateId === 41) {
       updateDataChange('1')
       if (d.name === 'Procedure') {
-        // e.target.value = parseInt(e.target.value)
-        // console.log(e.target.value)
         pname =
           d.options.find(option => option.opId == e.target.value)?.display || ''
         // console.log(pname)
@@ -659,12 +624,6 @@ const Invasive = ({ patient }) => {
           v = procedureArray.map(p => ({ type: 'S', value: p.id }))
 
           handleShowProcedureButton(d.options, procedureArray)
-
-          // procedureRef.current.style.display = 'block'
-          // prerequisiteRef.current.style.display = 'none'
-
-          // await getProcedureForm(pname)
-          // await autoSave(backupData)
         } else {
           setBtnActive(defaultBtn)
           prerequisiteRef.current.style.display = 'block'
@@ -759,9 +718,6 @@ const Invasive = ({ patient }) => {
         }
       }
       setDataFormSend(prev => {
-        // console.log(d.valueId, v)
-        // console.log(pname)
-
         let temp = {
           ...prev,
           [d.valueId]:
@@ -890,7 +846,7 @@ const Invasive = ({ patient }) => {
             value: v,
           },
         }
-        // console.log(d.templateId)
+
         let procedureStorageName = ''
         if (d.templateId === 42) {
           temp = cleanData2(temp)
@@ -906,10 +862,8 @@ const Invasive = ({ patient }) => {
           procedureStorageName = 'IntrauterineTransfusion'
         }
 
-        // backupProcedureData = temp
-        // console.log(procedureStorageName)
         storeBackupData3(temp, procedureStorageName)
-        // console.log(temp)
+
         return temp
       })
     }
@@ -1078,9 +1032,7 @@ const Invasive = ({ patient }) => {
 
   function renderProcedure() {
     if (!btnActive.showProcedure) return
-    // console.log(pname)
-    // console.log(btnActive.procedure)
-    // find procedure active true
+
     let pname = ''
     Object.keys(btnActive.procedure).forEach(key => {
       if (btnActive.procedure[key].active) {
@@ -1088,14 +1040,7 @@ const Invasive = ({ patient }) => {
       }
     })
 
-    // console.log('pname', pname)
-
-    // return
     if (!pname) return
-
-    // if (document.activeElement) {
-    //   document.activeElement.blur() // เอา focus ออกจาก element เดิมก่อน
-    // }
 
     let component = null
     switch (pname) {
@@ -1196,8 +1141,6 @@ const Invasive = ({ patient }) => {
                     procedureRef.current.style.display = 'none'
                     resetData()
                     initData()
-                    // updateDataChange('0')
-                    // updateProcedureDataChange('0')
                   }}
                 >
                   Prerequisite Data
@@ -1228,7 +1171,7 @@ const Invasive = ({ patient }) => {
 
                             setBtnActive(prev => {
                               let temp = { ...prev.procedure }
-                              // console.log(prev)
+
                               // set all procedure to false
                               Object.keys(temp).forEach(key => {
                                 temp[key].active = false
@@ -1241,7 +1184,6 @@ const Invasive = ({ patient }) => {
                                 },
                                 showProcedure: true,
                                 procedure: {
-                                  // ...prev.procedure,
                                   ...temp,
                                   [p.name]: {
                                     ...prev.procedure[p.name],
@@ -1253,7 +1195,6 @@ const Invasive = ({ patient }) => {
 
                             procedureRef.current.style.display = 'block'
                             prerequisiteRef.current.style.display = 'none'
-                            // autoSave(backupData)
                           }}
                         >
                           {p.name}
@@ -1456,9 +1397,6 @@ const Invasive = ({ patient }) => {
                     marginLeft: 10,
                   }}
                 >
-                  {/* {procedure[btnActive.procedure.name] &&
-                    btnActive.procedure.active &&
-                    renderProcedure(btnActive.procedure.name)} */}
                   {renderProcedure()}
                 </div>
               </div>
