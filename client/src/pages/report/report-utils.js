@@ -523,9 +523,9 @@ function anatomical(r, data, templateId, valueName) {
   return r
 }
 
-function getProcedureName(data, name) {
+function getProcedureName(data, name, isOneProcedure) {
   let procedureName = data.find(p => p.contentOptionDisplay === name)
-  return { ...procedureName, displayStyle: 'row', underline: true }
+  return { ...procedureName, displayStyle: 'row', underline: !isOneProcedure }
 }
 
 // modify specific value
@@ -892,7 +892,8 @@ function modifyReport(report, templateId, data) {
         ) {
           procedureName = getProcedureName(
             prerequistData,
-            procedure.contentOptionDisplay
+            procedure.contentOptionDisplay,
+            procedureArr.length === 1
           )
 
           r = [...r, procedureName, ...procedureData]
@@ -976,7 +977,8 @@ function modifyReport(report, templateId, data) {
         } else if (procedureData && procedure.contentOptionDisplay === 'CVS') {
           procedureName = getProcedureName(
             prerequistData,
-            procedure.contentOptionDisplay
+            procedure.contentOptionDisplay,
+            procedureArr.length === 1
           )
 
           r = [...r, procedureName, ...procedureData]
@@ -1068,7 +1070,8 @@ function modifyReport(report, templateId, data) {
         ) {
           procedureName = getProcedureName(
             prerequistData,
-            procedure.contentOptionDisplay
+            procedure.contentOptionDisplay,
+            procedureArr.length === 1
           )
           r = [...r, procedureName, ...procedureData]
 
@@ -1150,7 +1153,8 @@ function modifyReport(report, templateId, data) {
         ) {
           procedureName = getProcedureName(
             prerequistData,
-            procedure.contentOptionDisplay
+            procedure.contentOptionDisplay,
+            procedureArr.length === 1
           )
           r = [...r, procedureName, ...procedureData]
 
