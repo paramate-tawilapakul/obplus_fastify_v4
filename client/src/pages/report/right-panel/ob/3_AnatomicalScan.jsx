@@ -655,7 +655,7 @@ const AnatomicalScan = ({ patient }) => {
                   if (test && test.content) value = test.content
 
                   return (
-                    <Fade key={i} in={!loading ? true : false} timeout={400}>
+                    <Fade key={i} in={!loading ? true : false} timeout={200}>
                       <div key={i}>
                         <Box sx={{ m: inputMargin }}>
                           <CommentField
@@ -674,7 +674,7 @@ const AnatomicalScan = ({ patient }) => {
             </>
           )}
 
-          <Fade in={!loading ? true : false} timeout={400}>
+          <Fade in={!loading ? true : false} timeout={200}>
             <Button
               sx={{ ...btStyle, m: 1.3, display: loading && 'none' }}
               variant='contained'

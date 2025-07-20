@@ -90,7 +90,7 @@ function DataGridTemplate({
         }}
       >
         {dataList?.data && (
-          <Fade in={dataList?.data ? true : false} timeout={400}>
+          <Fade in={dataList?.data ? true : false} timeout={200}>
             <div>
               <DataGrid
                 initialState={{

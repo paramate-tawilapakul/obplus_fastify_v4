@@ -22,7 +22,7 @@ const History = ({ patient, systemProperties, user, doctor, historyData }) => {
   return (
     <>
       {historyData && patient && (
-        <Fade in={true} timeout={400}>
+        <Fade in={true} timeout={200}>
           <Box
             sx={{
               display: 'flex',
