@@ -20,6 +20,7 @@ import SnackBarWarning from '../../../../components/page-tools/SnackBarWarning'
 import { getReportId, getRiD, randomMs } from '../../helper'
 import { formDataToObject, reFormatNumber, sleep } from '../../../../utils'
 import { qs, qsa } from '../../../../utils/domUtils'
+import { blue } from '@mui/material/colors'
 
 const templateId = TEMPLATES.fibroids.id
 
@@ -27,7 +28,7 @@ const unit = u => (
   <Box
     sx={{
       display: 'inline',
-      color: theme => (theme.palette.mode === 'dark' ? 'lightblue' : 'blue'),
+      color: theme => (theme.palette.mode === 'dark' ? blue[300] : 'blue'),
     }}
   >
     {u}
@@ -94,14 +95,46 @@ const Fibroids = ({ patient, open, setOpen, callback }) => {
 
   async function fetchData() {
     try {
+      const reportId = getRiD(TEMPLATES.fibroids.name, patient.currentFetus)
       const res = await axios.get(API.REPORT_CONTENT, {
         params: {
-          reportId: getRiD(TEMPLATES.fibroids.name, patient.currentFetus),
+          reportId,
         },
       })
-      //   console.log(res.data.data)
-      setData(res.data.data)
-      getReportForm(res.data.data)
+      let reportData = [...res.data.data]
+
+      if (reportData.length === 0) {
+        // console.log('get fibroid data')
+        const fibroidData = await axios.get(API.FIBROID_DATA, {
+          params: {
+            accession: patient.accession,
+          },
+        })
+
+        if (fibroidData.data.data.length > 0) {
+          // console.log('has fibroid data')
+          reportData = fibroidData.data.data.map((f, index) => {
+            return {
+              reportId,
+              refValueId: f.refValueId,
+              content: `${f.d1 || ''}-${f.d2 || ''}-${f.d3 || ''}-${
+                f.volumn || ''
+              }---`,
+              contentOption: 0,
+              contentOptionDisplay: null,
+              contentValueName: `Fibroids ${index + 1}`,
+              contentUnit: ' ',
+              contentFreeValueName: '',
+              contentFreeValueUnit: ' ',
+              contentOptionFreeText: '',
+              contentOptionCheckBox: '',
+            }
+          })
+        }
+      }
+      // console.log(reportData)
+      setData(reportData)
+      getReportForm(reportData)
     } catch (error) {
       console.log(error)
     }
@@ -246,7 +279,7 @@ const Fibroids = ({ patient, open, setOpen, callback }) => {
         parseFloat(d3.value),
       ].reduce((a, b) => a * b, 1)
 
-      volumn.value = reFormatNumber(multipy)
+      volumn.value = reFormatNumber(multipy * 0.523, 3)
     } else {
       volumn.value = ''
     }
@@ -293,7 +326,13 @@ const Fibroids = ({ patient, open, setOpen, callback }) => {
                       D3({unit('cm')})
                     </td>
                     <td style={{ width: 95, whiteSpace: 'nowrap' }}>
-                      Volume({unit('ml')})
+                      Volume(
+                      {unit(
+                        <span>
+                          cm<sup>3</sup>
+                        </span>
+                      )}
+                      )
                     </td>
                     <td style={{ width: 180 }}>Type</td>
                     <td style={{ width: 200 }}>Position</td>

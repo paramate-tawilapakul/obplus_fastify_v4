@@ -83,6 +83,11 @@ module.exports = function (fastify, opts, done) {
     { onRequest: [fastify.authenticate] },
     reportController.updateReportContentValue
   )
+  fastify.get(
+    '/fibroid-data',
+    { onRequest: [fastify.authenticate] },
+    reportController.getFibroidData
+  )
 
   done()
 }

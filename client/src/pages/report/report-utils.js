@@ -1570,7 +1570,7 @@ export function findingsTemplate2pdfmake(data = [], tname, fetus = 1) {
               // layout: 'noBorders', // optional
               // layout: 'lightHorizontalLines', // optional
               table: {
-                widths: [14, 34, 34, 34, 34, 100, 120, '*'],
+                widths: [14, 34, 34, 34, 40, 100, 120, '*'],
                 body: [
                   [
                     {
@@ -1600,7 +1600,12 @@ export function findingsTemplate2pdfmake(data = [], tname, fetus = 1) {
                       style: 'defaultSmallFontHeader',
                     },
                     {
-                      text: 'Vol(ml)',
+                      text: 'Vol(cm\u00B3)',
+                      // text: [
+                      //   'Vol(cm',
+                      //   { text: '3', fontSize: 8, baseline: 'superscript' },
+                      //   ')',
+                      // ],
                       borderColor,
                       bold: true,
                       style: 'defaultSmallFontHeader',

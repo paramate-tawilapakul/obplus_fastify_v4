@@ -676,10 +676,10 @@ exports.getReportOptions = getReportOptions
 
 async function prelimReport(req) {
   try {
-    const { accession, hn } = req.body.bodyData
+    const { accession } = req.body.bodyData
     const code = req.user.radName
     const timestamp = dayjs().format('YYYYMMDDHHmmss')
-    console.log('prelimReport', accession, hn, code)
+    // console.log('prelimReport', accession, hn, code)
 
     const sql = `
     BEGIN TRANSACTION [P_${accession}]
@@ -785,12 +785,12 @@ exports.prelimReport = prelimReport
 
 async function verifyReport(req) {
   try {
-    const { accession, hn } = req.body.bodyData
+    const { accession } = req.body.bodyData
 
     const code = req.user.radName
     const timestamp = dayjs().format('YYYYMMDDHHmmss')
 
-    console.log('verifyReport', accession, hn, code, timestamp)
+    // console.log('verifyReport', accession, hn, code, timestamp)
 
     const sql = `
     BEGIN TRANSACTION [R_${accession}]
@@ -1085,3 +1085,33 @@ exports.getEfwByHN = async req => {
     handleErrorLog(`${fileModule} getEfwByHN(): ${error}`)
   }
 }
+
+async function getFibroidData(req) {
+  //   console.log('getFibroidData()')
+  try {
+    const { accession } = req.query
+    let data = await db('OB_FIBROIDS_CONTENT')
+      .select(
+        db.raw('CAST(CAST(D1 AS VARCHAR(50)) AS FLOAT)/10 AS d1'),
+        db.raw('CAST(CAST(D2 AS VARCHAR(50)) AS FLOAT)/10 AS d2'),
+        db.raw('CAST(CAST(D3 AS VARCHAR(50)) AS FLOAT)/10 AS d3'),
+        db.raw('VOLUME AS volumn')
+      )
+      .where('ACCESSION', accession)
+      .orderBy('FIBROID_NUM', 'asc')
+
+    if (data.length === 0) return []
+
+    let fibroidValueId = await getMasterValueFromCache()
+    fibroidValueId = fibroidValueId.filter(f => f.templateId === 40)[0].valueId
+
+    data = data.map(d => ({ ...d, refValueId: fibroidValueId++ }))
+    // console.log(data)
+
+    return data
+  } catch (error) {
+    handleErrorLog(`${fileModule} getFibroidData(): ${error}`)
+  }
+}
+
+exports.getFibroidData = getFibroidData

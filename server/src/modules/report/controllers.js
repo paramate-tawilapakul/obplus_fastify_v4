@@ -122,3 +122,8 @@ exports.getEfwByHN = async (req, res) => {
   const data = await reportService.getEfwByHN(req)
   return responseData(res, data)
 }
+
+exports.getFibroidData = async (req, res) => {
+  const data = await reportService.getFibroidData(req)
+  return responseData(res, data)
+}

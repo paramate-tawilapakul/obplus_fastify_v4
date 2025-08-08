@@ -303,6 +303,7 @@ export const API = {
   OLD_REPORT: `/api/v1/report/old-report`,
   SERVER_TIME: `/api/v1/report/server-time`,
   EFW: `/api/v1/report/efw`,
+  FIBROID_DATA: `/api/v1/report/fibroid-data`,
 
   SYS_PROPERTIES: `/api/v1/system-data/sys-properties`,
   SYSTEM_PROPERTIES: `/api/v1/system-data/system-properties`,
