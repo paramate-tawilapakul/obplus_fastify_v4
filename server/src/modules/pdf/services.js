@@ -68,6 +68,7 @@ exports.createPdf = async req => {
     }
 
     // Logger().info(logFormat(req, message))
+    return true
   } catch (error) {
     handleErrorLog(`pdf > services > createPdf(): ${error}`)
   }

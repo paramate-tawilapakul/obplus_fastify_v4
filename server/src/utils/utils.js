@@ -30,7 +30,7 @@ exports.responseError = (res, status, message) =>
   res.code(status).send({ message })
 
 exports.responseWorklistResult = (res, total, data) => {
-  res.send({
+  return res.send({
     total,
     currentResultTotal: data.length,
     data,
@@ -39,14 +39,14 @@ exports.responseWorklistResult = (res, total, data) => {
 }
 
 exports.responseDataWithTotal = (res, total = 0, data) => {
-  res.send({
+  return res.send({
     total,
     data,
   })
 }
 
 exports.responseData = (res, data) => {
-  res.send({
+  return res.send({
     data,
   })
 }

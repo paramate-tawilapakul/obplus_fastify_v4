@@ -109,6 +109,13 @@ fastify.register(require('@fastify/cors'), {
   origin: process.env.NODE_ENV === 'production' ? process.env.SERVER_IP : '*',
 })
 
+fastify.register(require('@fastify/compress'), {
+  global: true,
+  threshold: 2048,
+  encodings: ['br', 'gzip'],
+  inflateIfDeflated: true,
+})
+
 fastify.register(require('@fastify/multipart'), {
   // throwFileSizeLimit: true,
   limits: {

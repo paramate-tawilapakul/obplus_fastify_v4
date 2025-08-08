@@ -12,7 +12,7 @@ h or hr: Hours such as (1h = 3600000)
 d: Days such as (1d = 86400000)
 */
 
-const ttl = 86400000 * 7 // 7 days
+const ttl = 86400000 * 1 // 7 days
 // const ttl = 10000 // 10 sec
 
 const cacheable = new Cacheable()

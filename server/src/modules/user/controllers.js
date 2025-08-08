@@ -52,7 +52,7 @@ exports.license = async (req, res) => {
     })
   } catch (error) {
     console.error(error)
-    res.send({
+    return res.send({
       status: 401,
       message: 'License expired',
     })
@@ -110,7 +110,7 @@ exports.login = async (req, res) => {
     //     httpOnly: true,
     //     sameSite: true, // alternative CSRF protection
     //   })
-    res.code(200).send({
+    return res.code(200).send({
       user: { ...data[0], token },
     })
   } catch (error) {
@@ -125,7 +125,7 @@ exports.getUserData = async (req, res) => {
   const data = await userService.getUserData(code)
   if (data.length === 0) return responseError(res, 404, 'User not found!')
 
-  res.send({
+  return res.send({
     ...data[0],
     clientIP: req.ip,
   })
@@ -133,7 +133,7 @@ exports.getUserData = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
   const result = await userService.resetPassword(req)
-  responseData(res, { result })
+  return responseData(res, { result })
 }
 
 exports.changePassword = async (req, res) => {
@@ -171,7 +171,7 @@ exports.changePassword = async (req, res) => {
       activity: 'Change password',
     })
 
-    res.send({
+    return res.send({
       status: result,
       msg: result ? 'Change password completed!' : 'Change password fail!',
     })
@@ -182,28 +182,28 @@ exports.changePassword = async (req, res) => {
 
 exports.getReportTemplate = async (req, res) => {
   const data = await userService.getReportTemplate(req)
-  res.send({
+  return res.send({
     data,
   })
 }
 
 exports.updateReportTemplate = async (req, res) => {
   const data = await userService.updateReportTemplate(req)
-  res.send({
+  return res.send({
     data,
   })
 }
 
 exports.deleteReportTemplate = async (req, res) => {
   const data = await userService.deleteReportTemplate(req)
-  res.send({
+  return res.send({
     data,
   })
 }
 
 exports.cleanUpAllReportTemplate = async (req, res) => {
   const data = await userService.cleanUpAllReportTemplate(req)
-  res.send({
+  return res.send({
     data,
   })
 }

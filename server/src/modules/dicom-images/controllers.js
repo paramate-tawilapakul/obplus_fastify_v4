@@ -11,7 +11,7 @@ const fileModule = 'dicom-images > controllers >'
 exports.getDicomImage = async (req, res) => {
   const data = await imageService.getDicomImage(req)
 
-  responseData(res, data)
+  return responseData(res, data)
 }
 
 exports.getAttachFile = async (req, res) => {

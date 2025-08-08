@@ -26,7 +26,7 @@ exports.updateColumn = async (req, res) => {
 
     // /api/files/view?name=&accession
 
-    responseData(res, {
+    return responseData(res, {
       result: 'success',
     })
   } catch (error) {
@@ -39,7 +39,7 @@ exports.getImages = async (req, res) => {
 
   // /api/files/view?name=&accession
 
-  responseData(res, {
+  return responseData(res, {
     imgs: genImageArr(
       response.map(r => ({ name: r.name, cols: r.cols })),
       req.query.accession
@@ -58,7 +58,7 @@ exports.deleteImage = async (req, res) => {
     }
 
     const response = await getImages(accession)
-    responseData(res, {
+    return responseData(res, {
       imgs: genImageArr(
         response.map(r => ({ name: r.name, cols: r.cols })),
         req.query.accession
@@ -163,7 +163,7 @@ exports.uploadDicom = async (req, res) => {
       imgsReturn.push({ name, cols })
     }
 
-    responseData(res, { imgs: genImageArr(imgsReturn, accession) })
+    return responseData(res, { imgs: genImageArr(imgsReturn, accession) })
   } catch (error) {
     handleErrorLog(`${fileModule} uploadDicom(): ${error}`)
   }
@@ -203,7 +203,7 @@ exports.upload = async (req, res) => {
     })
     imgsReturn.push({ name, cols })
 
-    responseData(res, { imgs: genImageArr(imgsReturn, accession) })
+    return responseData(res, { imgs: genImageArr(imgsReturn, accession) })
   } catch (error) {
     handleErrorLog(`${fileModule} upload(): ${error}`)
   }
@@ -229,7 +229,7 @@ exports.uploadEFW = async (req, res) => {
         if (err) return console.log(err)
       })
 
-    responseData(res, {
+    return responseData(res, {
       src: `/api/v1/files/efw?accession=${accession}&fetusNo=${fetusNo}&r=${Math.random()}`,
     })
   } catch (error) {
@@ -249,10 +249,10 @@ exports.deleteEFW = async (req, res) => {
       await unlink(removePath)
     }
 
-    responseData(res, { success: true })
+    return responseData(res, { success: true })
   } catch (error) {
     handleErrorLog(`${fileModule} deleteEfw(): ${error}`)
-    responseData(res, { success: false, msg: error.message })
+    return responseData(res, { success: false, msg: error.message })
   }
 }
 
