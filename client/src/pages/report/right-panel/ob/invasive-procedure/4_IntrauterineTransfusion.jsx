@@ -53,7 +53,6 @@ function IntrauterineTransfusion({
   form,
   handleChange,
   showInstrumentText,
-  setSnackWarning,
   complicationRef,
   setDataFormSend,
 }) {
