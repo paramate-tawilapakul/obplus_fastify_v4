@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import TextField from '@mui/material/TextField'
 import makeStyles from '@mui/styles/makeStyles'
 import { inputStyle } from './form-style'
@@ -46,6 +47,8 @@ const CommentField = ({
   let rStyle = {}
   if (isRedStyle) rStyle = { ...redStyle }
 
+  const [data, setData] = useState(value?.replace(/<br>/g, '\n') || '')
+
   return (
     <TextField
       autoComplete='off'
@@ -61,8 +64,13 @@ const CommentField = ({
       variant='outlined'
       multiline
       rows={row}
-      defaultValue={value?.replace(/<br>/g, '\n')}
-      onChange={handleChange}
+      // defaultValue={value?.replace(/<br>/g, '\n')}
+      value={data}
+      onChange={e => {
+        // console.log('setData', e.target.value)
+        setData(e.target.value)
+        handleChange(e, form)
+      }}
       placeholder={placeholder}
       inputProps={{
         className: classes.textarea,
