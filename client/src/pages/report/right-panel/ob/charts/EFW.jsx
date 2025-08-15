@@ -207,8 +207,10 @@ const EFW = ({ patient }) => {
   const efw2Ref = useRef(null)
   const [efw, setEfw] = useState(null)
   const [checked, setChecked] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   async function getEfw() {
+    setLoading(true)
     // console.log('getEfw', patient.currentFetus)
     setChecked(false)
     try {
@@ -255,6 +257,7 @@ const EFW = ({ patient }) => {
       console.log(error)
     } finally {
       //  setIsFwhlChanged(false)
+      setLoading(false)
     }
   }
 
@@ -406,7 +409,7 @@ const EFW = ({ patient }) => {
 
   return (
     <>
-      <SkeletonLoading loading={efw == null} style={{ mt: 0.5 }} />
+      <SkeletonLoading loading={loading} style={{ mt: 0.5 }} />
       {efw && (
         <div style={{ display: 'flex' }}>
           <div
