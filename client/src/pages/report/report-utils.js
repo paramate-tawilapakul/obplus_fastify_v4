@@ -3701,14 +3701,20 @@ export async function initFormSend(
 
       if (templateId === 41) {
         // invasive - prerequisite data
-        let procedures = data
-          .filter(d => d.refValueId === 717)
+        // console.log(data)
+        let onlyProcedure = data.filter(d => d.contentValueName === 'Procedure')
+        let procedures = onlyProcedure
           .map(d => ({ type: 'S', value: d.contentOption }))
           ?.sort((a, b) => a.value - b.value)
+        // console.log(procedures)
+        // console.log(onlyProcedure)
 
-        if (procedures[0]?.contentOptionDisplay !== 'Other') {
-          formSend[717] = procedures
-          // console.log(procedures)
+        if (
+          procedures.length > 0 &&
+          procedures[0]?.contentOptionDisplay !== 'Other'
+        ) {
+          formSend[onlyProcedure[0].refValueId] = procedures
+          // formSend[procedures[0].refValueId] = procedures
         }
       } else if (templateId === 3) {
         // ob diagnosis

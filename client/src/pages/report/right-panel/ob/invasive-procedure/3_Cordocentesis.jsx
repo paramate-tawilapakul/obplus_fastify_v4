@@ -1,8 +1,5 @@
 import { useEffect } from 'react'
-import axios from 'axios'
-import CheckIcon from '@mui/icons-material/Check'
 import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
 import InputAdornment from '@mui/material/InputAdornment'
 import Checkbox from '@mui/material/Checkbox'
 import FormControlLabel from '@mui/material/FormControlLabel'
@@ -12,17 +9,10 @@ import SelectField from '../../../../../components/page-tools/SelectField'
 import InputTextField from '../../../../../components/page-tools/InputTextField'
 import CommentField from '../../../../../components/page-tools/CommentField'
 
-import {
-  btStyle,
-  inputMargin,
-} from '../../../../../components/page-tools/form-style'
-import {
-  autoSave2,
-  cleanUpForm,
-  updateProcedureDataChange,
-} from '../../../helper'
+import { inputMargin } from '../../../../../components/page-tools/form-style'
+import { autoSave2, updateProcedureDataChange } from '../../../helper'
 import { storeBackupData3 } from '../../../report-utils'
-import { API, STORAGE_NAME } from '../../../../../config'
+import { STORAGE_NAME } from '../../../../../config'
 
 const option1 = [
   {
@@ -99,7 +89,6 @@ function Cordocentesis({
   form,
   handleChange,
   showInstrumentText,
-  setSnackWarning,
   amnioticRef,
   complicationRef,
   setDataFormSend,
@@ -177,37 +166,6 @@ function Cordocentesis({
       if (d) autoSave2(JSON.parse(d))
     }
   }, [])
-
-  async function saveData() {
-    try {
-      let data = JSON.parse(
-        window.localStorage.getItem(STORAGE_NAME.lastActiveTabData3)
-      )
-      // console.log(data)
-      let newForm = cleanUpForm(data)
-      /// SAVE TO STORAGE FOR AUTO SAVE BEFORE PREVIEW
-      storeBackupData3(data, procedureName)
-
-      const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
-      let message = 'Save Fail!'
-      let severity = 'error'
-
-      if (res.data.data) {
-        message = 'Save Completed'
-        severity = 'success'
-        updateProcedureDataChange('0')
-      }
-
-      setSnackWarning(prev => ({
-        ...prev,
-        show: true,
-        message,
-        severity,
-      }))
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   return (
     <>
@@ -357,15 +315,6 @@ function Cordocentesis({
           //  handleChange={e => handleChange(e, form)}
         />
       </Box>
-
-      <Button
-        sx={{ ...btStyle, m: inputMargin }}
-        variant='contained'
-        startIcon={<CheckIcon />}
-        onClick={() => saveData()}
-      >
-        Save
-      </Button>
     </>
   )
 }

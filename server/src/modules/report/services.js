@@ -23,12 +23,20 @@ const obTemplateId = [
   23, 24, 25, 26, 27, 28, 29, 30, 41, 42, 43, 44, 45, 46,
 ]
 
-const invasiveProcedure = [
-  { templateId: 42, valueId: 682 },
-  { templateId: 43, valueId: 683 },
-  { templateId: 44, valueId: 684 },
-  { templateId: 45, valueId: 685 },
-]
+const procedureArr = [42, 43, 44, 45]
+
+let invasiveProcedure = null
+
+async function initMapInvasiveProcedure() {
+  let procedureData = await getMasterOptionFromCache()
+  procedureData = procedureData.filter(
+    d => d.templateId === 41 && d.opName === 'Procedure' && d.name !== 'Other'
+  )
+  invasiveProcedure = procedureData.map((d, index) => ({
+    templateId: procedureArr[index],
+    valueId: d.opId,
+  }))
+}
 
 const EFW_CHARTS = {
   HL: 29,
@@ -449,7 +457,6 @@ async function deletePreviousProcedure(
       accession,
       templateId[i]
     )
-    // console.log('templageId:', templateId[i], 'reportId:', reportId)
     if (reportId) {
       // console.log('delete reportId:', reportId)
       await trx('OB_REPORT_CONTENT').del().where('REF_REPORT_ID', reportId)
@@ -484,13 +491,18 @@ exports.createReportContent = async req => {
           .del()
           .whereIn('REF_REPORT_ID', reportIdArr)
       }
-
       // console.log('+++DELETE+++')
       if (isInvasive) {
-        // console.log('Invasive')
-        if (!reportData[717]) {
+        if (!invasiveProcedure) await initMapInvasiveProcedure()
+
+        // console.log('reportData', reportData)
+        let procedureData = await getMasterValueFromCache()
+        procedureData = procedureData.find(
+          d => d.templateId === 41 && d.name === 'Procedure'
+        )
+
+        if (!reportData[procedureData.valueId]) {
           // select empty
-          // console.log('deleteAllProcdure')
           let templateId = invasiveProcedure.map(p => p.templateId)
           await deletePreviousProcedure(
             trx,
@@ -498,14 +510,13 @@ exports.createReportContent = async req => {
             currentFetus,
             accession
           )
-        } else if (reportData[717]) {
-          if (Array.isArray(reportData[717])) {
+        } else if (reportData[procedureData.valueId]) {
+          if (Array.isArray(reportData[procedureData.valueId])) {
             // select procedure
-            let deleteId = reportData[717].map(d => d.value)
+            let deleteId = reportData[procedureData.valueId].map(d => d.value)
             let deleteProcdure = invasiveProcedure.filter(
               p => !deleteId.includes(p.valueId)
             )
-            // console.log('deleteProcdure', deleteProcdure)
 
             let templateId = deleteProcdure?.map(d => d.templateId)
             if (templateId?.length > 0) {
@@ -518,7 +529,6 @@ exports.createReportContent = async req => {
             }
           } else {
             // select other
-            // console.log('deleteAllProcdure')
             let templateId = invasiveProcedure.map(p => p.templateId)
             await deletePreviousProcedure(
               trx,
@@ -577,7 +587,7 @@ exports.createReportContent = async req => {
           if ((freetext || checkbox) && modifyContent) {
             content = modifyContent
           }
-
+          // console.log('insert')
           await trx('OB_REPORT_CONTENT').insert({
             REF_REPORT_ID: reportId,
             REF_VALUE_ID: valueIdData[i],

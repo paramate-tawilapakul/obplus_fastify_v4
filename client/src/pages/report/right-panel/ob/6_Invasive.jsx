@@ -717,11 +717,13 @@ const Invasive = ({ patient }) => {
           setShowOtherProcedure(false)
         }
       }
+
       setDataFormSend(prev => {
         let temp = {
           ...prev,
           [d.valueId]:
-            d.valueId === 717
+            // d.valueId === 717
+            d.name === 'Procedure'
               ? v
               : {
                   ...prev[d.valueId],
@@ -1051,7 +1053,6 @@ const Invasive = ({ patient }) => {
             handleChange={handleChange}
             showUterusText={showUterusText}
             showInstrumentText={showInstrumentText}
-            setSnackWarning={setSnackWarning}
             amnioticRef={amnioticRef}
             complicationRef={complicationRef}
             setDataFormSend={setProcedureDataFormSend}
@@ -1067,7 +1068,6 @@ const Invasive = ({ patient }) => {
             handleChange={handleChange}
             showUterusText={showUterusText}
             showInstrumentText={showInstrumentText}
-            setSnackWarning={setSnackWarning}
             amnioticRef={amnioticRef}
             complicationRef={complicationRef}
             setDataFormSend={setProcedureDataFormSend}
@@ -1081,7 +1081,6 @@ const Invasive = ({ patient }) => {
             form={procedure[pname]}
             handleChange={handleChange}
             showInstrumentText={showInstrumentText}
-            setSnackWarning={setSnackWarning}
             amnioticRef={amnioticRef}
             complicationRef={complicationRef}
             setDataFormSend={setProcedureDataFormSend}
@@ -1095,7 +1094,6 @@ const Invasive = ({ patient }) => {
             form={procedure[pname]}
             handleChange={handleChange}
             showInstrumentText={showInstrumentText}
-            setSnackWarning={setSnackWarning}
             amnioticRef={amnioticRef}
             complicationRef={complicationRef}
             setDataFormSend={setProcedureDataFormSend}
