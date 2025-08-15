@@ -1115,7 +1115,13 @@ async function getFibroidData(req) {
     let fibroidValueId = await getMasterValueFromCache()
     fibroidValueId = fibroidValueId.filter(f => f.templateId === 40)[0].valueId
 
-    data = data.map(d => ({ ...d, refValueId: fibroidValueId++ }))
+    data = data.map(d => ({
+      ...d,
+      d1: Math.round(d.d1 * 100) / 100,
+      d2: Math.round(d.d2 * 100) / 100,
+      d3: Math.round(d.d3 * 100) / 100,
+      refValueId: fibroidValueId++,
+    }))
     // console.log(data)
 
     return data
