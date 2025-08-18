@@ -478,6 +478,7 @@ exports.cleanUpContent = cleanUpContent
 
 function genImageArr(arr, accession) {
   return arr.map(n => ({
+    id: n.id,
     name: n.name,
     src: `/api/v1/files/view?name=${
       n.name

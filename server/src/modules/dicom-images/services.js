@@ -19,8 +19,14 @@ const fileModule = 'dicom-images > services >'
 exports.getImages = async accession => {
   try {
     return await dbRis('RIS_IMAGE_REPORT')
-      .columns({ name: 'IM_URL_PATH', cols: 'NO_OF_COLUMN' })
+      .columns({
+        id: 'IMG_SYS_ID',
+        name: 'IM_URL_PATH',
+        cols: 'NO_OF_COLUMN',
+        // sortOrdering: 'SORT_ORDERING',
+      })
       .where('IM_ACC', accession)
+      .orderBy('SORT_ORDERING')
       .orderBy('IMG_SYS_ID')
   } catch (error) {
     handleErrorLog(`${fileModule} getImages(): ${error}`)

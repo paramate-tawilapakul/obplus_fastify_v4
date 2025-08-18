@@ -16,6 +16,28 @@ const copyFile = fs.promises.copyFile
 
 const fileModule = 'files > controllers >'
 
+exports.sortImages = async req => {
+  try {
+    const trx = await db.transaction()
+
+    // console.log(req.body)
+    // console.log(req.query.accession)
+
+    for (const item of req.body) {
+      await trx('RIS_IMAGE_REPORT')
+        .where('IMG_SYS_ID', item.id)
+        .andWhere('IM_ACC', req.query.accession)
+        .update({ SORT_ORDERING: item.sortOrdering })
+    }
+
+    await trx.commit()
+
+    return true
+  } catch (error) {
+    handleErrorLog(`${fileModule} sortImages(): ${error}`, req)
+  }
+}
+
 exports.updateColumn = async (req, res) => {
   try {
     const { accession, cols } = req.body
@@ -41,7 +63,7 @@ exports.getImages = async (req, res) => {
 
   return responseData(res, {
     imgs: genImageArr(
-      response.map(r => ({ name: r.name, cols: r.cols })),
+      response.map(r => ({ id: r.id, name: r.name, cols: r.cols })),
       req.query.accession
     ),
   })
@@ -60,7 +82,7 @@ exports.deleteImage = async (req, res) => {
     const response = await getImages(accession)
     return responseData(res, {
       imgs: genImageArr(
-        response.map(r => ({ name: r.name, cols: r.cols })),
+        response.map(r => ({ id: r.id, name: r.name, cols: r.cols })),
         req.query.accession
       ),
     })
@@ -145,6 +167,17 @@ exports.uploadDicom = async (req, res) => {
     const uploadPath = `${process.env.IMAGES_PATH}/${accession}/`
     const dicomPath = `${process.env.IMAGES_PATH}/${accession}/dicom/`
 
+    let [maxOrdering] = await db('RIS_IMAGE_REPORT')
+      .select()
+      .column({
+        sortOrdering: 'SORT_ORDERING',
+      })
+      .where('IM_ACC', accession)
+      .orderBy('sort_ordering', 'desc')
+
+    if (!maxOrdering) maxOrdering = 1
+    else maxOrdering = maxOrdering.sortOrdering + 1
+
     let name
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
@@ -158,6 +191,7 @@ exports.uploadDicom = async (req, res) => {
         IM_HN: hn,
         IM_URL_PATH: name,
         NO_OF_COLUMN: cols || '2',
+        SORT_ORDERING: maxOrdering++,
       })
 
       imgsReturn.push({ name, cols })
@@ -183,7 +217,9 @@ exports.upload = async (req, res) => {
 
     let imgsReturn = []
     let previousImages = await getImages(accession)
-    previousImages.forEach(image => imgsReturn.push({ name: image.name, cols }))
+    previousImages.forEach(image =>
+      imgsReturn.push({ id: image.id, name: image.name, cols })
+    )
 
     await mkImagePath(accession)
     // const uploadPath = `${process.env.IMAGES_PATH}/${year}/${month}/${day}/`
@@ -195,13 +231,28 @@ exports.upload = async (req, res) => {
       fs.createWriteStream(`${process.env.IMAGES_PATH}/${accession}/${name}`)
     )
 
-    await db('RIS_IMAGE_REPORT').insert({
-      IM_ACC: accession,
-      IM_HN: hn,
-      IM_URL_PATH: name,
-      NO_OF_COLUMN: cols || '2',
-    })
-    imgsReturn.push({ name, cols })
+    let [maxOrdering] = await db('RIS_IMAGE_REPORT')
+      .select()
+      .column({
+        sortOrdering: 'SORT_ORDERING',
+      })
+      .where('IM_ACC', accession)
+      .orderBy('sort_ordering', 'desc')
+
+    if (!maxOrdering) maxOrdering = 1
+    else maxOrdering = maxOrdering.sortOrdering + 1
+
+    const [result] = await db('RIS_IMAGE_REPORT')
+      .insert({
+        IM_ACC: accession,
+        IM_HN: hn,
+        IM_URL_PATH: name,
+        NO_OF_COLUMN: cols || '2',
+        SORT_ORDERING: maxOrdering++,
+      })
+      .returning('IMG_SYS_ID')
+
+    imgsReturn.push({ id: result.IMG_SYS_ID, name, cols })
 
     return responseData(res, { imgs: genImageArr(imgsReturn, accession) })
   } catch (error) {

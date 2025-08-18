@@ -15,11 +15,20 @@ import DialogActions from '@mui/material/DialogActions'
 import Divider from '@mui/material/Divider'
 import CloseIcon from '@mui/icons-material/Close'
 import Button from '@mui/material/Button'
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle'
 import ButtonGroup from '@mui/material/ButtonGroup'
 import LoadingButton from '@mui/lab/LoadingButton'
 import ChecklistIcon from '@mui/icons-material/Checklist'
 import CheckIcon from '@mui/icons-material/Check'
+
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import { arrayMove, SortableContext } from '@dnd-kit/sortable'
 
 import { API } from '../../../config'
 import {
@@ -28,8 +37,9 @@ import {
 } from '../../../components/page-tools/form-style'
 import { getHost } from '../../../utils'
 import DataContext from '../../../context/data/dataContext'
-import { red, cyan } from '@mui/material/colors'
+import { cyan } from '@mui/material/colors'
 import SkeletonLoading from '../../../components/page-tools/SkeletonLoading'
+import ImageCard from './ImageCard'
 
 const imageBorderColor = theme => {
   if (theme === 'dark') return { default: cyan[400], selected: cyan[800] }
@@ -57,6 +67,44 @@ const Image = ({ patient }) => {
   const [dicomImageSelected, setDicomImageSelected] = useState([])
   // const [files, setFiles] = useState(null)
   const [imageColumn, setImageColumn] = useState('2')
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    })
+  )
+
+  async function handleImageDragEnd(event) {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = images.findIndex(c => c.id === active.id)
+    const newIndex = images.findIndex(c => c.id === over.id)
+
+    const newOrder = arrayMove(images, oldIndex, newIndex)
+    setImages(newOrder)
+
+    try {
+      await axios.post(
+        API.IMAGES + '/sort',
+        newOrder.map((item, index) => ({
+          id: item.id,
+          sortOrdering: index + 1,
+        })),
+        {
+          params: {
+            accession: patient.accession,
+          },
+        }
+      )
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const host = getHost(systemProperties)
 
@@ -326,30 +374,6 @@ const Image = ({ patient }) => {
             <div>Column{imageColumn === '2' && 's'}</div>
           </Box>
         )}
-        {/* <FormControl>
-          <RadioGroup row>
-            <FormControlLabel
-              value='1'
-              control={
-                <Radio
-                  checked={imageColumn === '1'}
-                  onChange={handleImageColumnChange}
-                />
-              }
-              label='1 Column'
-            />
-            <FormControlLabel
-              value='2'
-              control={
-                <Radio
-                  checked={imageColumn === '2'}
-                  onChange={handleImageColumnChange}
-                />
-              }
-              label='2 Columns'
-            />
-          </RadioGroup>
-        </FormControl> */}
       </div>
 
       <Lightbox
@@ -369,51 +393,29 @@ const Image = ({ patient }) => {
           marginTop: 8,
         }}
       >
-        {images.map((img, i) => {
-          return (
-            <Box
-              key={i}
-              sx={{
-                border: `2px solid`,
-                borderColor: theme =>
-                  img.selected
-                    ? imageBorderColor(theme.palette.mode).selected
-                    : imageBorderColor(theme.palette.mode).default,
-
-                borderRadius: 1.5,
-                p: 0.5,
-                display: 'flex',
-                flexDirection: 'column',
-                // alignItems: 'flex-end',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <div style={{ marginTop: '-3px' }}>{i + 1}</div>
-                <RemoveCircleIcon
-                  onClick={() => handleRemoveImage(img.name)}
-                  titleAccess='Remove'
-                  sx={{
-                    cursor: 'pointer',
-                    mt: -0.4,
-                    color: theme =>
-                      theme.palette.mode === 'dark' ? red[200] : red[700],
-                  }}
+        <DndContext
+          modifiers={[]}
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleImageDragEnd}
+        >
+          <SortableContext items={images.map(c => c.id)}>
+            {images.map((img, i) => {
+              return (
+                <ImageCard
+                  key={img.id}
+                  data={img}
+                  index={i}
+                  handleRemoveImage={handleRemoveImage}
+                  host={host}
+                  imageColumn={imageColumn}
+                  setPhotoIndex={setPhotoIndex}
+                  setIsOpenLightBox={setIsOpenLightBox}
                 />
-              </div>
-              <img
-                alt='img_dicom'
-                src={`${host}${img.src}`}
-                width={imageColumn === '2' ? 390 : 600}
-                style={{ borderRadius: 4, cursor: 'pointer' }}
-                title='Click to view'
-                onClick={() => {
-                  setPhotoIndex(i)
-                  setIsOpenLightBox(true)
-                }}
-              />
-            </Box>
-          )
-        })}
+              )
+            })}
+          </SortableContext>
+        </DndContext>
       </div>
       <Dialog
         open={openDicomImage}
@@ -428,9 +430,6 @@ const Image = ({ patient }) => {
               <IconButton
                 title='Reload'
                 onClick={() => getDicomImage(true)}
-                // sx={{
-                //   color: theme => MODE[theme.palette.mode].buttonReload,
-                // }}
                 aria-label='reload'
                 component='span'
               >
@@ -444,11 +443,7 @@ const Image = ({ patient }) => {
           </div>
         </DialogTitle>
         <Divider />
-        {/* {loading && (
-          <div style={{ position: 'absolute', width: '96%' }}>
-            <LinearProgress sx={{ mt: 8, mx: 1, width: '100%' }} />
-          </div>
-        )} */}
+
         <div style={{ position: 'absolute', width: '96%' }}>
           <SkeletonLoading
             loading={loading}
@@ -476,7 +471,6 @@ const Image = ({ patient }) => {
                 gap: 8,
                 flexWrap: 'wrap',
                 width,
-                // justifyContent: 'center',
               }}
             >
               {dicomImages.length > 0 &&
@@ -535,24 +529,6 @@ const Image = ({ patient }) => {
                             <CheckIcon />
                           </div>
                         )}
-                        {/* <div style={{ marginTop: 5 }}>
-                          {i !== 0 && (
-                            <ArrowBackIosNewIcon
-                              sx={{ cursor: 'pointer' }}
-                              onClick={() => {
-                                handleReOrder(dicomImages, '-', i)
-                              }}
-                            />
-                          )}
-                          {i !== dicomImages.length - 1 && (
-                            <ArrowForwardIosIcon
-                              sx={{ cursor: 'pointer' }}
-                              onClick={() => {
-                                handleReOrder(dicomImages, '+', i)
-                              }}
-                            />
-                          )}
-                        </div> */}
                       </div>
                       <img
                         alt='img_dicom'

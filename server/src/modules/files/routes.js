@@ -30,6 +30,11 @@ module.exports = function (fastify, opts, done) {
     { onRequest: [fastify.authenticate] },
     filesUploadController.deleteImage
   )
+  fastify.post(
+    '/images/sort',
+    { onRequest: [fastify.authenticate] },
+    filesUploadController.sortImages
+  )
   fastify.delete(
     '/efw',
     { onRequest: [fastify.authenticate] },
