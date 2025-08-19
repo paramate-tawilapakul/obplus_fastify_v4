@@ -511,10 +511,11 @@ const AbnormalMass = ({ patient }) => {
                 return (
                   <Box key={i} sx={{ m: inputMargin }}>
                     <CommentField
-                      minWidth={420}
+                      minWidth={580}
                       form={form}
                       value={value}
                       handleChange={e => handleChange(e, form)}
+                      row={5}
                     />
                   </Box>
                 )

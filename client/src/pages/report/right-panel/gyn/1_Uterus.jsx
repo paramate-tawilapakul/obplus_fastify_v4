@@ -646,6 +646,7 @@ const Uterus = ({ patient }) => {
                         form={form}
                         value={value}
                         handleChange={e => handleChange(e, form)}
+                        row={5}
                       />
                     </Box>
                   )
