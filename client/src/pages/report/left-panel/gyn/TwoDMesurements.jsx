@@ -36,7 +36,7 @@ const mrUterus = {
 }
 
 const templateId = TEMPLATES.gynMeasurement.id
-let checkTyping = false
+// let checkTyping = false
 
 const TwoDMesurements = ({ patient }) => {
   const [showEditForm, setShowEditForm] = useState(false)
@@ -63,7 +63,7 @@ const TwoDMesurements = ({ patient }) => {
     initData()
 
     return async () => {
-      checkTyping = false
+      // checkTyping = false
     }
     // eslint-disable-next-line
   }, [patient])
@@ -1024,7 +1024,7 @@ const TwoDMesurements = ({ patient }) => {
                                             sx={{ ...inputStyle }}
                                             value={dataValue}
                                             onChange={e => {
-                                              checkTyping = true
+                                              // checkTyping = true
                                               setDataFormSend(prev => ({
                                                 ...prev,
                                                 [form.valueId]: {
@@ -1088,7 +1088,7 @@ const TwoDMesurements = ({ patient }) => {
                                             sx={{ ...inputStyle }}
                                             value={dataValue}
                                             onChange={e => {
-                                              checkTyping = true
+                                              // checkTyping = true
                                               setDataFormSend(prev => ({
                                                 ...prev,
                                                 [form.valueId]: {
@@ -1152,7 +1152,7 @@ const TwoDMesurements = ({ patient }) => {
                                             sx={{ ...inputStyle }}
                                             value={dataValue}
                                             onChange={e => {
-                                              checkTyping = true
+                                              // checkTyping = true
                                               setDataFormSend(prev => ({
                                                 ...prev,
                                                 [form.valueId]: {
@@ -1216,7 +1216,7 @@ const TwoDMesurements = ({ patient }) => {
                                             sx={{ ...inputStyle }}
                                             value={dataValue}
                                             onChange={e => {
-                                              checkTyping = true
+                                              // checkTyping = true
                                               setDataFormSend(prev => ({
                                                 ...prev,
                                                 [form.valueId]: {
@@ -1277,7 +1277,7 @@ const TwoDMesurements = ({ patient }) => {
                                     // margin='dense'
                                     value={dataValue}
                                     onChange={e => {
-                                      checkTyping = true
+                                      // checkTyping = true
                                       setDataFormSend(prev => ({
                                         ...prev,
                                         [form.valueId]: {
