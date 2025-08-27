@@ -111,6 +111,7 @@ const PatientInfo = () => {
     window.localStorage.setItem(STORAGE_NAME.lastActiveTabData2, '')
     window.localStorage.setItem(STORAGE_NAME.lastActiveTabData3, '')
     window.localStorage.setItem(STORAGE_NAME.lastActiveTabData4, '')
+    window.localStorage.setItem(STORAGE_NAME.mesurementData, '')
     window.localStorage.setItem(STORAGE_NAME.Amniocentesis, '')
     window.localStorage.setItem(STORAGE_NAME.CVS, '')
     window.localStorage.setItem(STORAGE_NAME.Cordocentesis, '')

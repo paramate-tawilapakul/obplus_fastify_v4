@@ -1,6 +1,6 @@
 export const APP_CONFIG = {
   APP_NAME: 'OBPLUS',
-  VERSION: 'v3.3.0',
+  VERSION: 'v3.4.0',
 }
 
 export const APP_ROUTES = {
@@ -258,6 +258,8 @@ export const STORAGE_NAME = {
   isDataChange: `${APP_CONFIG.APP_NAME}_isDataChange`,
   isCvlDataChange: `${APP_CONFIG.APP_NAME}_isCvlDataChange`,
   isProcedureDataChange: `${APP_CONFIG.APP_NAME}_isProcedureDataChange`,
+  isMesurementDataChange: `${APP_CONFIG.APP_NAME}_isMesurementDataChange`,
+  mesurementData: `${APP_CONFIG.APP_NAME}_mesurementData`,
   diagReport: `${APP_CONFIG.APP_NAME}_diagReport`,
   activeFetus: `${APP_CONFIG.APP_NAME}_activeFetus`,
   efwCharts: `${APP_CONFIG.APP_NAME}_efwCharts`,

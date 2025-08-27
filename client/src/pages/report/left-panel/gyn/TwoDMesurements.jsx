@@ -19,9 +19,16 @@ import {
   inputStyle,
 } from '../../../../components/page-tools/form-style'
 import { sleep } from '../../../../utils'
-import { cleanUpForm, getReportId, getRiD, randomMs } from '../../helper'
+import {
+  autoSave4,
+  cleanUpForm,
+  getReportId,
+  getRiD,
+  randomMs,
+  updateMesurementDataChange,
+} from '../../helper'
 import SnackBarWarning from '../../../../components/page-tools/SnackBarWarning'
-import { initFormSend } from '../../report-utils'
+import { initFormSend, storeBackupData5 } from '../../report-utils'
 import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const boxStyle = {
@@ -37,6 +44,8 @@ const mrUterus = {
 
 const templateId = TEMPLATES.gynMeasurement.id
 // let checkTyping = false
+
+let backupData = null
 
 const TwoDMesurements = ({ patient }) => {
   const [showEditForm, setShowEditForm] = useState(false)
@@ -62,8 +71,9 @@ const TwoDMesurements = ({ patient }) => {
     resetData()
     initData()
 
-    return async () => {
-      // checkTyping = false
+    return () => {
+      autoSave4(backupData)
+      backupData = null
     }
     // eslint-disable-next-line
   }, [patient])
@@ -129,6 +139,8 @@ const TwoDMesurements = ({ patient }) => {
     setDefaultDataFormSend(formSend)
     // console.log('DATA SEND:', formSend)
     // console.log('FORM:', form)
+    backupData = formSend
+    storeBackupData5(formSend)
     setDataForm(form)
     fillMeasurements(data)
     setLoading(false)
@@ -146,6 +158,7 @@ const TwoDMesurements = ({ patient }) => {
 
       const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
       if (res.data.data) {
+        updateMesurementDataChange('0')
         setSnackWarning(prev => ({
           ...prev,
           show: true,
@@ -161,6 +174,9 @@ const TwoDMesurements = ({ patient }) => {
   }
 
   function resetForm() {
+    updateMesurementDataChange('0')
+    backupData = defaultDataFormSend
+    storeBackupData5(defaultDataFormSend)
     setDataFormSend(defaultDataFormSend)
     setShowEditForm(false)
   }
@@ -240,6 +256,25 @@ const TwoDMesurements = ({ patient }) => {
   //     console.log(error)
   //   }
   // }
+
+  function handleChange(e, form) {
+    updateMesurementDataChange('1')
+
+    setDataFormSend(prev => {
+      let temp = {
+        ...prev,
+        [form.valueId]: {
+          ...prev[form.valueId],
+          value: e.target.value,
+        },
+      }
+
+      backupData = temp
+      storeBackupData5(temp)
+
+      return temp
+    })
+  }
 
   return (
     <>
@@ -1023,16 +1058,18 @@ const TwoDMesurements = ({ patient }) => {
                                             size='small'
                                             sx={{ ...inputStyle }}
                                             value={dataValue}
-                                            onChange={e => {
-                                              // checkTyping = true
-                                              setDataFormSend(prev => ({
-                                                ...prev,
-                                                [form.valueId]: {
-                                                  ...prev[form.valueId],
-                                                  value: e.target.value,
-                                                },
-                                              }))
-                                            }}
+                                            onChange={e =>
+                                              handleChange(e, form)
+                                            }
+                                            // onChange={e => {
+                                            //   setDataFormSend(prev => ({
+                                            //     ...prev,
+                                            //     [form.valueId]: {
+                                            //       ...prev[form.valueId],
+                                            //       value: e.target.value,
+                                            //     },
+                                            //   }))
+                                            // }}
                                             inputProps={{
                                               style: {
                                                 // height: 30,
@@ -1087,16 +1124,19 @@ const TwoDMesurements = ({ patient }) => {
                                             size='small'
                                             sx={{ ...inputStyle }}
                                             value={dataValue}
-                                            onChange={e => {
-                                              // checkTyping = true
-                                              setDataFormSend(prev => ({
-                                                ...prev,
-                                                [form.valueId]: {
-                                                  ...prev[form.valueId],
-                                                  value: e.target.value,
-                                                },
-                                              }))
-                                            }}
+                                            onChange={e =>
+                                              handleChange(e, form)
+                                            }
+                                            // onChange={e => {
+                                            //   // checkTyping = true
+                                            //   setDataFormSend(prev => ({
+                                            //     ...prev,
+                                            //     [form.valueId]: {
+                                            //       ...prev[form.valueId],
+                                            //       value: e.target.value,
+                                            //     },
+                                            //   }))
+                                            // }}
                                             inputProps={{
                                               style: {
                                                 // height: 30,
@@ -1151,16 +1191,19 @@ const TwoDMesurements = ({ patient }) => {
                                             size='small'
                                             sx={{ ...inputStyle }}
                                             value={dataValue}
-                                            onChange={e => {
-                                              // checkTyping = true
-                                              setDataFormSend(prev => ({
-                                                ...prev,
-                                                [form.valueId]: {
-                                                  ...prev[form.valueId],
-                                                  value: e.target.value,
-                                                },
-                                              }))
-                                            }}
+                                            onChange={e =>
+                                              handleChange(e, form)
+                                            }
+                                            // onChange={e => {
+                                            //   // checkTyping = true
+                                            //   setDataFormSend(prev => ({
+                                            //     ...prev,
+                                            //     [form.valueId]: {
+                                            //       ...prev[form.valueId],
+                                            //       value: e.target.value,
+                                            //     },
+                                            //   }))
+                                            // }}
                                             inputProps={{
                                               style: {
                                                 // height: 30,
@@ -1215,16 +1258,19 @@ const TwoDMesurements = ({ patient }) => {
                                             size='small'
                                             sx={{ ...inputStyle }}
                                             value={dataValue}
-                                            onChange={e => {
-                                              // checkTyping = true
-                                              setDataFormSend(prev => ({
-                                                ...prev,
-                                                [form.valueId]: {
-                                                  ...prev[form.valueId],
-                                                  value: e.target.value,
-                                                },
-                                              }))
-                                            }}
+                                            onChange={e =>
+                                              handleChange(e, form)
+                                            }
+                                            // onChange={e => {
+                                            //   // checkTyping = true
+                                            //   setDataFormSend(prev => ({
+                                            //     ...prev,
+                                            //     [form.valueId]: {
+                                            //       ...prev[form.valueId],
+                                            //       value: e.target.value,
+                                            //     },
+                                            //   }))
+                                            // }}
                                             inputProps={{
                                               style: {
                                                 // height: 30,
@@ -1276,16 +1322,17 @@ const TwoDMesurements = ({ patient }) => {
                                     sx={{ ...inputStyle }}
                                     // margin='dense'
                                     value={dataValue}
-                                    onChange={e => {
-                                      // checkTyping = true
-                                      setDataFormSend(prev => ({
-                                        ...prev,
-                                        [form.valueId]: {
-                                          ...prev[form.valueId],
-                                          value: e.target.value,
-                                        },
-                                      }))
-                                    }}
+                                    onChange={e => handleChange(e, form)}
+                                    // onChange={e => {
+                                    //   // checkTyping = true
+                                    //   setDataFormSend(prev => ({
+                                    //     ...prev,
+                                    //     [form.valueId]: {
+                                    //       ...prev[form.valueId],
+                                    //       value: e.target.value,
+                                    //     },
+                                    //   }))
+                                    // }}
                                     inputProps={{
                                       style: {
                                         // height: 30,

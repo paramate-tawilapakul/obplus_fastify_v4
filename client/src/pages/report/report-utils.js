@@ -14,7 +14,13 @@ import {
   capitalizeSentence,
   sleep,
 } from '../../utils'
-import { autoSave, autoSave2, autoSave3, updateDataChange } from './helper'
+import {
+  autoSave,
+  autoSave2,
+  autoSave3,
+  autoSave4,
+  updateDataChange,
+} from './helper'
 import { isEmpty } from 'lodash'
 import doppler_uma_pi_95p from '../../data/doppler_uma_pi_95p'
 
@@ -310,6 +316,15 @@ export async function getDocDef(
           )
 
           await autoSave3(JSON.parse(newForm))
+        }
+
+        if (
+          window.localStorage.getItem(STORAGE_NAME.isMesurementDataChange) ===
+          '1'
+        ) {
+          let newForm = window.localStorage.getItem(STORAGE_NAME.mesurementData)
+
+          await autoSave4(JSON.parse(newForm))
         }
       }
     }
@@ -3054,6 +3069,10 @@ export function storeBackupData4(data) {
     STORAGE_NAME.lastActiveTabData4,
     JSON.stringify(data)
   )
+}
+// for measurement, doppler
+export function storeBackupData5(data) {
+  window.localStorage.setItem(STORAGE_NAME.mesurementData, JSON.stringify(data))
 }
 
 export function cleanUpContent(content, from = null) {

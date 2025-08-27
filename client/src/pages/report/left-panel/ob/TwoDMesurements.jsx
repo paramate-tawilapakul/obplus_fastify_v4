@@ -32,16 +32,18 @@ import {
 } from '../../../../components/page-tools/form-style'
 import { reFormatDate, sleep } from '../../../../utils'
 import {
+  autoSave4,
   checkNumber,
   cleanUpForm,
   getReportId,
   getRiD,
   newGa,
   randomMs,
+  updateMesurementDataChange,
 } from '../../helper'
 import SnackBarWarning from '../../../../components/page-tools/SnackBarWarning'
 import DataContext from '../../../../context/data/dataContext'
-import { initFormSend } from '../../report-utils'
+import { initFormSend, storeBackupData5 } from '../../report-utils'
 import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
 const chipStyle = {
@@ -57,6 +59,8 @@ const boxStyle = {
 }
 
 const templateId = TEMPLATES.obMeasurement.id
+
+let backupData = null
 
 const TwoDMesurements = ({ patient }) => {
   const { setShortestCvl, setIsFwhlChanged, systemProperties } =
@@ -84,7 +88,10 @@ const TwoDMesurements = ({ patient }) => {
     resetData()
     initData()
 
-    return () => {}
+    return () => {
+      autoSave4(backupData)
+      backupData = null
+    }
     // eslint-disable-next-line
   }, [patient])
 
@@ -206,6 +213,8 @@ const TwoDMesurements = ({ patient }) => {
 
     setDataFormSend(formSend)
     setDefaultDataFormSend(formSend)
+    backupData = formSend
+    storeBackupData5(formSend)
 
     setDataForm(form)
     setLoadingMes(false)
@@ -250,6 +259,7 @@ const TwoDMesurements = ({ patient }) => {
         reqHeader
       )
       if (res.data.data) {
+        updateMesurementDataChange('0')
         setSnackWarning(prev => ({
           ...prev,
           show: true,
@@ -338,8 +348,30 @@ const TwoDMesurements = ({ patient }) => {
   }
 
   function resetForm() {
+    updateMesurementDataChange('0')
+    backupData = defaultDataFormSend
+    storeBackupData5(defaultDataFormSend)
     setDataFormSend(defaultDataFormSend)
     setShowEditForm(false)
+  }
+
+  function handleChange(e, form) {
+    updateMesurementDataChange('1')
+
+    setDataFormSend(prev => {
+      let temp = {
+        ...prev,
+        [form.valueId]: {
+          ...prev[form.valueId],
+          freeUnit: e.target.value,
+        },
+      }
+
+      backupData = temp
+      storeBackupData5(temp)
+
+      return temp
+    })
   }
 
   return (
@@ -654,13 +686,21 @@ const TwoDMesurements = ({ patient }) => {
                       sx={{ ...inputStyle, width: 50 }}
                       value={dataFormSend[form.valueId].freeUnit}
                       onChange={e => {
-                        setDataFormSend(prev => ({
-                          ...prev,
-                          [form.valueId]: {
-                            ...prev[form.valueId],
-                            freeUnit: e.target.value,
-                          },
-                        }))
+                        updateMesurementDataChange('1')
+                        setDataFormSend(prev => {
+                          let temp = {
+                            ...prev,
+                            [form.valueId]: {
+                              ...prev[form.valueId],
+                              freeUnit: e.target.value,
+                            },
+                          }
+
+                          backupData = temp
+                          storeBackupData5(temp)
+
+                          return temp
+                        })
                       }}
                       inputProps={{
                         style: {
@@ -681,13 +721,21 @@ const TwoDMesurements = ({ patient }) => {
                       sx={{ ...inputStyle, width: 105, ml: -1 }}
                       value={dataFormSend[form.valueId].freeName}
                       onChange={e => {
-                        setDataFormSend(prev => ({
-                          ...prev,
-                          [form.valueId]: {
-                            ...prev[form.valueId],
-                            freeName: e.target.value,
-                          },
-                        }))
+                        updateMesurementDataChange('1')
+                        setDataFormSend(prev => {
+                          let temp = {
+                            ...prev,
+                            [form.valueId]: {
+                              ...prev[form.valueId],
+                              freeName: e.target.value,
+                            },
+                          }
+
+                          backupData = temp
+                          storeBackupData5(temp)
+
+                          return temp
+                        })
                       }}
                       inputProps={{
                         style: {
@@ -777,8 +825,9 @@ const TwoDMesurements = ({ patient }) => {
                               // console.log('afi', afi)
                             }
 
+                            updateMesurementDataChange('1')
                             setDataFormSend(prev => {
-                              return {
+                              let temp = {
                                 ...prev,
                                 [form.valueId]: {
                                   ...prev[form.valueId],
@@ -789,6 +838,9 @@ const TwoDMesurements = ({ patient }) => {
                                   value: !afi ? '' : afi + '',
                                 },
                               }
+                              backupData = temp
+                              storeBackupData5(temp)
+                              return temp
                             })
                           }}
                           inputProps={{

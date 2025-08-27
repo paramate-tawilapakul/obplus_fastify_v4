@@ -102,6 +102,23 @@ export async function autoSave3(data) {
   }
 }
 
+export async function autoSave4(data) {
+  if (
+    window.localStorage.getItem(STORAGE_NAME.isMesurementDataChange) === '1'
+  ) {
+    // let conf = window.confirm('Confirm to save?')
+
+    if (data) {
+      let res = await axios.post(API.REPORT_CONTENT, {
+        reportData: cleanUpForm(data),
+      })
+      // console.log('save 1')
+      updateMesurementDataChange('0')
+      return res.data.data
+    }
+  }
+}
+
 export function cleanUpForm(dataFormSend) {
   let cleanUpForm = {}
 
@@ -259,6 +276,10 @@ export function updateCvlDataChange(val) {
 
 export function updateProcedureDataChange(val) {
   window.localStorage.setItem(STORAGE_NAME.isProcedureDataChange, val)
+}
+
+export function updateMesurementDataChange(val) {
+  window.localStorage.setItem(STORAGE_NAME.isMesurementDataChange, val)
 }
 
 export function appendTemplate(editor, template, reportFrom = 'OB') {

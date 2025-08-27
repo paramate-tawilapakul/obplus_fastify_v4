@@ -21,9 +21,21 @@ import {
   inputStyle,
 } from '../../../../components/page-tools/form-style'
 import { sleep } from '../../../../utils'
-import { cleanUpForm, getReportId, getRiD, randomMs } from '../../helper'
+import {
+  autoSave4,
+  cleanUpForm,
+  getReportId,
+  getRiD,
+  randomMs,
+  updateMesurementDataChange,
+} from '../../helper'
 import SnackBarWarning from '../../../../components/page-tools/SnackBarWarning'
-import { computeMOM, computeUaPi95, initFormSend } from '../../report-utils'
+import {
+  computeMOM,
+  computeUaPi95,
+  initFormSend,
+  storeBackupData5,
+} from '../../report-utils'
 import { blue, red } from '@mui/material/colors'
 import SkeletonLoading from '../../../../components/page-tools/SkeletonLoading'
 
@@ -53,6 +65,8 @@ const mrArteries = {
 
 const templateId = TEMPLATES.obDoppler.id
 
+let backupData = null
+
 const Doppler = ({ patient }) => {
   const theme = useTheme()
   const [showEditForm, setShowEditForm] = useState(false)
@@ -77,7 +91,10 @@ const Doppler = ({ patient }) => {
     resetData()
     initData()
 
-    return () => {}
+    return () => {
+      autoSave4(backupData)
+      backupData = null
+    }
     // eslint-disable-next-line
   }, [patient])
 
@@ -137,6 +154,8 @@ const Doppler = ({ patient }) => {
 
     setDataFormSend(formSend)
     setDefaultDataFormSend(formSend)
+    backupData = formSend
+    storeBackupData5(formSend)
     // console.log('DATA SEND:', formSend)
     // console.log('FORM:', form)
     setDataForm(form)
@@ -156,6 +175,7 @@ const Doppler = ({ patient }) => {
 
       const res = await axios.post(API.REPORT_CONTENT, { reportData: newForm })
       if (res.data.data) {
+        updateMesurementDataChange('0')
         setSnackWarning(prev => ({
           ...prev,
           show: true,
@@ -171,6 +191,9 @@ const Doppler = ({ patient }) => {
   }
 
   function resetForm() {
+    updateMesurementDataChange('0')
+    backupData = defaultDataFormSend
+    storeBackupData5(defaultDataFormSend)
     setDataFormSend(defaultDataFormSend)
     setShowEditForm(false)
   }
@@ -220,6 +243,25 @@ const Doppler = ({ patient }) => {
     setDuctusVenosus(dv)
     const uv = doppler.filter(d => d.refValueId >= 65 && d.refValueId <= 68)
     setUmbilicalVein(uv)
+  }
+
+  function handleChange(e, form) {
+    updateMesurementDataChange('1')
+
+    setDataFormSend(prev => {
+      let temp = {
+        ...prev,
+        [form.valueId]: {
+          ...prev[form.valueId],
+          value: e.target.value,
+        },
+      }
+
+      backupData = temp
+      storeBackupData5(temp)
+
+      return temp
+    })
   }
 
   return (
@@ -868,15 +910,18 @@ const Doppler = ({ patient }) => {
                                               size='small'
                                               sx={{ ...inputStyle }}
                                               value={dataValue}
-                                              onChange={e => {
-                                                setDataFormSend(prev => ({
-                                                  ...prev,
-                                                  [form.valueId]: {
-                                                    ...prev[form.valueId],
-                                                    value: e.target.value,
-                                                  },
-                                                }))
-                                              }}
+                                              onChange={e =>
+                                                handleChange(e, form)
+                                              }
+                                              // onChange={e => {
+                                              //   setDataFormSend(prev => ({
+                                              //     ...prev,
+                                              //     [form.valueId]: {
+                                              //       ...prev[form.valueId],
+                                              //       value: e.target.value,
+                                              //     },
+                                              //   }))
+                                              // }}
                                               inputProps={{
                                                 style: {
                                                   // height: 30,
@@ -889,19 +934,28 @@ const Doppler = ({ patient }) => {
                                             <select
                                               value={dataValue}
                                               onChange={e => {
-                                                setDataFormSend(prev => ({
-                                                  ...prev,
-                                                  [form.valueId]: {
-                                                    ...prev[form.valueId],
-                                                    type: 'S',
-                                                    value:
-                                                      e.target.value !== ''
-                                                        ? parseInt(
-                                                            e.target.value
-                                                          )
-                                                        : '',
-                                                  },
-                                                }))
+                                                updateMesurementDataChange('1')
+
+                                                setDataFormSend(prev => {
+                                                  let temp = {
+                                                    ...prev,
+                                                    [form.valueId]: {
+                                                      ...prev[form.valueId],
+                                                      type: 'S',
+                                                      value:
+                                                        e.target.value !== ''
+                                                          ? parseInt(
+                                                              e.target.value
+                                                            )
+                                                          : '',
+                                                    },
+                                                  }
+
+                                                  backupData = temp
+                                                  storeBackupData5(temp)
+
+                                                  return temp
+                                                })
                                               }}
                                               style={{
                                                 width: '98%',
@@ -979,15 +1033,7 @@ const Doppler = ({ patient }) => {
                                     sx={{ ...inputStyle }}
                                     // margin='dense'
                                     value={dataValue}
-                                    onChange={e => {
-                                      setDataFormSend(prev => ({
-                                        ...prev,
-                                        [form.valueId]: {
-                                          ...prev[form.valueId],
-                                          value: e.target.value,
-                                        },
-                                      }))
-                                    }}
+                                    onChange={e => handleChange(e, form)}
                                     inputProps={{
                                       style: {
                                         // height: 30,
@@ -1044,15 +1090,7 @@ const Doppler = ({ patient }) => {
                                     size='small'
                                     sx={{ ...inputStyle }}
                                     value={dataValue}
-                                    onChange={e => {
-                                      setDataFormSend(prev => ({
-                                        ...prev,
-                                        [form.valueId]: {
-                                          ...prev[form.valueId],
-                                          value: e.target.value,
-                                        },
-                                      }))
-                                    }}
+                                    onChange={e => handleChange(e, form)}
                                     inputProps={{
                                       style: {
                                         // height: 30,
