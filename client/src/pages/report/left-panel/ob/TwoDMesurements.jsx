@@ -355,25 +355,6 @@ const TwoDMesurements = ({ patient }) => {
     setShowEditForm(false)
   }
 
-  function handleChange(e, form) {
-    updateMesurementDataChange('1')
-
-    setDataFormSend(prev => {
-      let temp = {
-        ...prev,
-        [form.valueId]: {
-          ...prev[form.valueId],
-          freeUnit: e.target.value,
-        },
-      }
-
-      backupData = temp
-      storeBackupData5(temp)
-
-      return temp
-    })
-  }
-
   return (
     <>
       {patient && (
