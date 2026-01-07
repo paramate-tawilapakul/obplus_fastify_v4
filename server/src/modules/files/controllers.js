@@ -162,7 +162,9 @@ exports.uploadDicom = async (req, res) => {
 
     let imgsReturn = []
     let previousImages = await getImages(accession)
-    previousImages.forEach(image => imgsReturn.push({ name: image.name, cols }))
+    previousImages.forEach(image =>
+      imgsReturn.push({ name: image.name, cols, id: image.id })
+    )
     await mkImagePath(accession)
     const uploadPath = `${process.env.IMAGES_PATH}/${accession}/`
     const dicomPath = `${process.env.IMAGES_PATH}/${accession}/dicom/`
@@ -186,15 +188,19 @@ exports.uploadDicom = async (req, res) => {
 
       await copyFile(`${dicomPath}${file}`, `${uploadPath}${name}`)
 
-      await db('RIS_IMAGE_REPORT').insert({
-        IM_ACC: accession,
-        IM_HN: hn,
-        IM_URL_PATH: name,
-        NO_OF_COLUMN: cols || '2',
-        SORT_ORDERING: maxOrdering++,
-      })
+      let [result] = await db('RIS_IMAGE_REPORT')
+        .insert({
+          IM_ACC: accession,
+          IM_HN: hn,
+          IM_URL_PATH: name,
+          NO_OF_COLUMN: cols || '2',
+          SORT_ORDERING: maxOrdering++,
+        })
+        .returning('IMG_SYS_ID')
 
-      imgsReturn.push({ name, cols })
+      // console.log('result', result)
+
+      imgsReturn.push({ name, cols, id: result.IMG_SYS_ID })
     }
 
     return responseData(res, { imgs: genImageArr(imgsReturn, accession) })
