@@ -51,6 +51,7 @@ function TabIndex({ tabName }) {
   useEffect(() => {
     checkLogin()
     if (user) {
+      window.OPEN_IMAGE_VIEWER?.close()
       setPatient(null)
     }
 

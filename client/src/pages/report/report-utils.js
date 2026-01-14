@@ -3332,6 +3332,7 @@ export async function printPdf(
   setOpenBackDrop = null
 ) {
   try {
+    window.OPEN_IMAGE_VIEWER?.close()
     if (allowBackup) {
       const res = await axios.get(`${API.BACKUP_PDF}`, {
         params: {
@@ -3371,6 +3372,7 @@ export async function printPdf(
       const base64 = dataUrl.replace('data:', '').replace(/^.+,/, '')
       printJS({ printable: base64, type: 'pdf', base64: true })
     })
+
     // }, 2000)
   } catch (error) {
     if (setOpenBackDrop && systemProperties?.backdropLoading === 'YES')
