@@ -75,7 +75,7 @@ exports.getDicomImage = async req => {
         dicomDir.forEach(f => {
           ++no
           // console.log(`${dicomPath}/${f}`)
-          name = f
+          name = `${no}_dicom.jpg`
           url = `/api/v1/dicom-image/view?fileName=${no}.jpg`
           newData.push({
             no,
@@ -130,8 +130,7 @@ exports.getDicomImage = async req => {
           dicomDir.forEach((f, i) => {
             ++no
             // console.log(`${dicomPath}/${f}`)
-            name = f
-            // const name = `${no}_dicom.jpg`
+            name = `${no}_dicom.jpg`
             url = `${uniwebAddress}${dicomWeb}${data[i].instance_uid}&contentType=image/jpeg&columns=${imgSize[0]}&rows=${imgSize[1]}&imageQuality=75&objectSessionKey=`
 
             newData.push({
