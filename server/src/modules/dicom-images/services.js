@@ -72,7 +72,7 @@ exports.getDicomImage = async req => {
         console.log('GET IMAGES FROM EXISTING DIR')
         let name, url
         let dicomDir = await readdir(dicomPath)
-        dicomDir.forEach(f => {
+        dicomDir.forEach(() => {
           ++no
           // console.log(`${dicomPath}/${f}`)
           name = `${no}_dicom.jpg`
