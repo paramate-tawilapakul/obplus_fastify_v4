@@ -20,7 +20,7 @@ const db = require('knex')({
   },
   pool: {
     min: 5,
-    max: 50,
+    max: 30,
     idleTimeoutMillis: 30000, // cleans idle connections after 30 seconds
     acquireTimeoutMillis: 30000, // If a connection is not available within 30 seconds, Knex.js will throw an error. This prevents your application from waiting indefinitely for a connection
     createTimeoutMillis: 30000, // Limits the amount of time a connection can take to be created before timing out.

@@ -159,6 +159,9 @@ fastify.register(require('@fastify/jwt'), {
 // fastify.addHook('onRequest', async req => {
 //   req.db = db
 // })
+fastify.addHook('onClose', async () => {
+  await db.destroy()
+})
 
 fastify.decorate('authenticate', async function (req, res) {
   try {
@@ -180,7 +183,7 @@ fastify.addContentTypeParser(
       err.statusCode = 400
       done(err, undefined)
     }
-  }
+  },
 )
 
 const prefixV1 = '/api/v1'
@@ -243,13 +246,13 @@ fastify.listen(
     console.log(
       `${process.env.APP_NAME} ${
         process.env.NODE_ENV === 'production' ? '' : 'development'
-      } server start on port ${port}`
+      } server start on port ${port}`,
     )
     if (err) {
       fastify.log.error(err)
       process.exit(1)
     }
-  }
+  },
 )
 
 process.title = `${process.env.APP_NAME}`
@@ -341,7 +344,7 @@ async function deletePdfBackup() {
     }
 
     console.log(
-      `schedule job every midnight > delete pdf backup older than ${duration} days`
+      `schedule job every midnight > delete pdf backup older than ${duration} days`,
     )
   } catch (error) {
     handleErrorLog(`${fileModule} deletePdfBackup(): ${error}`)
@@ -356,7 +359,7 @@ async function deleteLogs() {
     await db('OB_LOGGER').del().where('timestamp', '<', deleteDate)
 
     console.log(
-      `schedule job every midnight > delete logs older than ${logsOlderThan} days `
+      `schedule job every midnight > delete logs older than ${logsOlderThan} days `,
     )
   } catch (error) {
     handleErrorLog(`${fileModule} deleteLogs(): ${error}`)
