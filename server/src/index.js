@@ -38,7 +38,7 @@ const fastify = require('fastify')({
   logger: envToLogger[process.env.NODE_ENV || 'development'],
 })
 
-process.env.JWT_SECRET = 'be^9a@26e3e57c$478f&*88a4be7556ae#@!+^86e8'
+process.env.JWT_SECRET = 'be^9a@26e3e57c_478f&*88a4be7556ae#@!+^86e8'
 process.env.ltk = 'T1fG$^7[esX@94T&YO0lvaC1SOBbqzC{E'
 
 // fastify.register(require('@fastify/swagger'), {
