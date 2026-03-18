@@ -30,7 +30,7 @@ let invasiveProcedure = null
 async function initMapInvasiveProcedure() {
   let procedureData = await getMasterOptionFromCache()
   procedureData = procedureData.filter(
-    d => d.templateId === 41 && d.opName === 'Procedure' && d.name !== 'Other'
+    d => d.templateId === 41 && d.opName === 'Procedure' && d.name !== 'Other',
   )
   invasiveProcedure = procedureData.map((d, index) => ({
     templateId: procedureArr[index],
@@ -135,12 +135,12 @@ async function getReportData(req) {
               .leftJoin(
                 'OB_MASTER_VALUE',
                 'OB_MASTER_VALUE.VALUE_ID',
-                'OB_REPORT_CONTENT.REF_VALUE_ID'
+                'OB_REPORT_CONTENT.REF_VALUE_ID',
               )
               .leftJoin(
                 'OB_MASTER_OPTIONS',
                 'OB_MASTER_OPTIONS.OP_ID',
-                'OB_REPORT_CONTENT.CONTENT_OPTION'
+                'OB_REPORT_CONTENT.CONTENT_OPTION',
               )
               .column([
                 { valueId: 'OB_REPORT_CONTENT.REF_VALUE_ID' },
@@ -188,9 +188,8 @@ async function getReportData(req) {
         let efwPath = `${process.env.IMAGES_PATH}/efw/${accession}/${fetus}/efw.jpg`
         let isExist = await exists(efwPath)
         if (isExist) {
-          newData.efwCharts[
-            fetus
-          ] = `/api/v1/files/efw?accession=${accession}&fetusNo=${fetus}&r=${Math.random()}`
+          newData.efwCharts[fetus] =
+            `/api/v1/files/efw?accession=${accession}&fetusNo=${fetus}&r=${Math.random()}`
         }
       }
     }
@@ -215,7 +214,7 @@ exports.getReportHistory = async req => {
       .leftJoin(
         'OB_STUDY',
         'OB_STUDY.OB_ACCESSION',
-        'PACS_STUDY.ACCESSION_NUMBER'
+        'PACS_STUDY.ACCESSION_NUMBER',
       )
       .column({
         accession: 'PACS_STUDY.ACCESSION_NUMBER',
@@ -321,7 +320,7 @@ exports.updateDiagReport = async req => {
     let data = await db('RIS_DIAGNOSTIC_REPORT').where(
       'REF_ITEM_ID',
       '=',
-      accession
+      accession,
     )
     const columns = {
       REPORT_MANUAL_CONTENT: content,
@@ -405,12 +404,12 @@ async function getReportContent(req) {
         .leftJoin(
           'OB_MASTER_VALUE',
           'OB_MASTER_VALUE.VALUE_ID',
-          'OB_REPORT_CONTENT.REF_VALUE_ID'
+          'OB_REPORT_CONTENT.REF_VALUE_ID',
         )
         .leftJoin(
           'OB_MASTER_OPTIONS',
           'OB_MASTER_OPTIONS.OP_ID',
-          'OB_REPORT_CONTENT.CONTENT_OPTION'
+          'OB_REPORT_CONTENT.CONTENT_OPTION',
         )
         .column([
           { reportId: 'REF_REPORT_ID' },
@@ -447,7 +446,7 @@ async function deletePreviousProcedure(
   trx,
   templateId,
   currentFetus,
-  accession
+  accession,
 ) {
   let reportId
   let length = templateId.length
@@ -455,7 +454,7 @@ async function deletePreviousProcedure(
     reportId = await getReportIdWithOutCreated(
       currentFetus,
       accession,
-      templateId[i]
+      templateId[i],
     )
     if (reportId) {
       // console.log('delete reportId:', reportId)
@@ -481,7 +480,7 @@ exports.createReportContent = async req => {
           .column([{ reportId: 'REPORT_ID' }])
           .whereIn(
             'REF_TEMPLATE_ID',
-            [17, 18, 19, 25, 28, 30, 23, 20, 27, 21, 26, 22, 24]
+            [17, 18, 19, 25, 28, 30, 23, 20, 27, 21, 26, 22, 24],
           )
           .andWhere('ACCESSION', accession)
           .andWhere('REPORT_FETUS_NO', currentFetus)
@@ -498,7 +497,7 @@ exports.createReportContent = async req => {
         // console.log('reportData', reportData)
         let procedureData = await getMasterValueFromCache()
         procedureData = procedureData.find(
-          d => d.templateId === 41 && d.name === 'Procedure'
+          d => d.templateId === 41 && d.name === 'Procedure',
         )
 
         if (!reportData[procedureData.valueId]) {
@@ -508,14 +507,14 @@ exports.createReportContent = async req => {
             trx,
             templateId,
             currentFetus,
-            accession
+            accession,
           )
         } else if (reportData[procedureData.valueId]) {
           if (Array.isArray(reportData[procedureData.valueId])) {
             // select procedure
             let deleteId = reportData[procedureData.valueId].map(d => d.value)
             let deleteProcdure = invasiveProcedure.filter(
-              p => !deleteId.includes(p.valueId)
+              p => !deleteId.includes(p.valueId),
             )
 
             let templateId = deleteProcdure?.map(d => d.templateId)
@@ -524,7 +523,7 @@ exports.createReportContent = async req => {
                 trx,
                 templateId,
                 currentFetus,
-                accession
+                accession,
               )
             }
           } else {
@@ -534,7 +533,7 @@ exports.createReportContent = async req => {
               trx,
               templateId,
               currentFetus,
-              accession
+              accession,
             )
           }
         }
@@ -568,7 +567,7 @@ exports.createReportContent = async req => {
           let content = cleanUpContent(reportData[valueIdData[i]].value)
 
           let freetext = cleanUpContent(
-            reportData[valueIdData[i]]?.freetext || ''
+            reportData[valueIdData[i]]?.freetext || '',
           )
           let checkbox = reportData[valueIdData[i]]?.checkbox || ''
           let modifyContent = reportData[valueIdData[i]]?.content || ''
@@ -686,10 +685,27 @@ exports.getReportOptions = getReportOptions
 
 async function prelimReport(req) {
   try {
-    const { accession } = req.body.bodyData
+    const data = await req.file()
+    if (!data) throw new Error('No file uploaded')
+
+    if (!data.fields.bodyData) {
+      throw new Error('bodyData is missing in FormData')
+    }
+
+    const bodyData = JSON.parse(data.fields.bodyData.value)
+    const pdfStream = data.file
+    const { accession } = bodyData
     const code = req.user.radName
     const timestamp = dayjs().format('YYYYMMDDHHmmss')
     // console.log('prelimReport', accession, hn, code)
+
+    bodyData['timestamp'] = timestamp
+    bodyData['unofficial'] = 'yes'
+    // await createPdf(req)
+    const pdfSaved = await createPdf(pdfStream, bodyData)
+    if (!pdfSaved) {
+      throw new Error('Failed to save PDF')
+    }
 
     const sql = `
     BEGIN TRANSACTION [P_${accession}]
@@ -728,10 +744,6 @@ async function prelimReport(req) {
     const result = await db.raw(sql)
 
     if (!result) return false
-
-    req.body.bodyData['timestamp'] = timestamp
-    req.body.bodyData['unofficial'] = 'yes'
-    await createPdf(req)
 
     addLogs(req, {
       module: MODULE.REPORT,
@@ -795,10 +807,28 @@ exports.prelimReport = prelimReport
 
 async function verifyReport(req) {
   try {
-    const { accession } = req.body.bodyData
+    // const { accession } = req.body.bodyData
+    const data = await req.file()
+    if (!data) throw new Error('No file uploaded')
+
+    if (!data.fields.bodyData) {
+      throw new Error('bodyData is missing in FormData')
+    }
+
+    const bodyData = JSON.parse(data.fields.bodyData.value)
+    const pdfStream = data.file
+    const { accession } = bodyData
 
     const code = req.user.radName
     const timestamp = dayjs().format('YYYYMMDDHHmmss')
+
+    bodyData['timestamp'] = timestamp
+    bodyData['unofficial'] = 'no'
+    // await createPdf(req)
+    const pdfSaved = await createPdf(pdfStream, bodyData)
+    if (!pdfSaved) {
+      throw new Error('Failed to save PDF')
+    }
 
     // console.log('verifyReport', accession, hn, code, timestamp)
 
@@ -839,11 +869,6 @@ async function verifyReport(req) {
     const result = await db.raw(sql)
 
     if (!result) return false
-
-    req.body.bodyData['timestamp'] = timestamp
-    req.body.bodyData['unofficial'] = 'no'
-
-    await createPdf(req)
 
     addLogs(req, {
       module: MODULE.REPORT,
@@ -911,7 +936,7 @@ async function getPacsDataByAcc(accession) {
     const data = await db('PACS_STUDY').where(
       'ACCESSION_NUMBER',
       '=',
-      accession
+      accession,
     )
 
     return data
@@ -1019,7 +1044,7 @@ exports.getEfwByHN = async req => {
       .leftJoin(
         'OB_STUDY',
         'OB_STUDY.OB_ACCESSION',
-        'PACS_STUDY.ACCESSION_NUMBER'
+        'PACS_STUDY.ACCESSION_NUMBER',
       )
       .leftJoin('OB_REPORT', 'OB_STUDY.OB_ACCESSION', 'OB_REPORT.ACCESSION')
       // .whereNotNull('OB_EDC')
@@ -1086,7 +1111,7 @@ exports.getEfwByHN = async req => {
     return {
       data: fw,
       efwPath: await exists(
-        `${process.env.IMAGES_PATH}/efw/${accession}/${fetusNo}/efw.jpg`
+        `${process.env.IMAGES_PATH}/efw/${accession}/${fetusNo}/efw.jpg`,
       ),
       // ? `/api/v1/files/efw?accession=${accession}&fetusNo=${fetusNo}&r=${Math.random()}`
       // : false,
@@ -1105,7 +1130,7 @@ async function getFibroidData(req) {
         db.raw('CAST(CAST(D1 AS VARCHAR(50)) AS FLOAT)/10 AS d1'),
         db.raw('CAST(CAST(D2 AS VARCHAR(50)) AS FLOAT)/10 AS d2'),
         db.raw('CAST(CAST(D3 AS VARCHAR(50)) AS FLOAT)/10 AS d3'),
-        db.raw('VOLUME AS volumn')
+        db.raw('VOLUME AS volumn'),
       )
       .where('ACCESSION', accession)
       .orderBy('FIBROID_NUM', 'asc')

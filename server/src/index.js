@@ -104,9 +104,36 @@ process.env.ltk = 'T1fG$^7[esX@94T&YO0lvaC1SOBbqzC{E'
 //   transformSpecificationClone: true,
 // })
 
+// fastify.register(require('@fastify/cors'), {
+//   // put your options here
+//   origin: process.env.NODE_ENV === 'production' ? process.env.SERVER_IP : '*',
+// })
+
+let allowUrl = '*'
+
+if (process.env.NODE_ENV === 'production') {
+  allowUrl = [
+    `${process.env.SERVER_IP}:${process.env.SERVER_PORT}`,
+    `http://localhost:${process.env.SERVER_PORT}`,
+    `http://127.0.0.1:${process.env.SERVER_PORT}`,
+  ]
+}
+
+console.log('allowUrl', allowUrl)
+
 fastify.register(require('@fastify/cors'), {
-  // put your options here
-  origin: process.env.NODE_ENV === 'production' ? process.env.SERVER_IP : '*',
+  // origin ต้องเป็น URL ของฝั่ง Frontend ที่เรียกมา
+  origin: allowUrl,
+
+  // ระบุ Header ที่อนุญาตให้ส่งมาให้ชัดเจน
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization', // ต้องมีตัวนี้!
+  ],
+  methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'],
 })
 
 fastify.register(require('@fastify/compress'), {
@@ -122,7 +149,7 @@ fastify.register(require('@fastify/multipart'), {
     // fieldNameSize: 100, // Max field name size in bytes
     // fieldSize: 100,     // Max field value size in bytes
     // fields: 10,         // Max number of non-file fields
-    fileSize: 1024 * 1024 * 10, //10mb // For multipart forms, the max file size in bytes
+    fileSize: 1024 * 1024 * 100, //100mb // For multipart forms, the max file size in bytes
     // files: 1,           // Max number of file fields
     // headerPairs: 2000,  // Max number of header key=>value pairs
     // parts: 1000         // For multipart forms, the max number of parts (fields + files)
@@ -163,12 +190,23 @@ fastify.addHook('onClose', async () => {
   await db.destroy()
 })
 
+// fastify.decorate('authenticate', async function (req, res) {
+//   try {
+//     // await req.jwtVerify({ onlyCookie: true })
+//     await req.jwtVerify() //header and cookie if cookie plugin is active
+//   } catch (err) {
+//     res.send(err)
+//   }
+// })
+
 fastify.decorate('authenticate', async function (req, res) {
+  if (req.method === 'OPTIONS') return
+
   try {
-    // await req.jwtVerify({ onlyCookie: true })
-    await req.jwtVerify() //header and cookie if cookie plugin is active
+    await req.jwtVerify()
   } catch (err) {
-    res.send(err)
+    // 2. ใช้ throw แทน res.send เพื่อไม่ให้ lifecycle ของ Fastify ค้าง
+    throw err
   }
 })
 

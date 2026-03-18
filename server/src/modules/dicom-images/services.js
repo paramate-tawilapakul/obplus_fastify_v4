@@ -94,7 +94,7 @@ exports.getDicomImage = async req => {
         for (let i = 0; i < 4; i++) {
           ++no
           name = `${no}_dicom.jpg`
-          // let url = `http://localhost:${process.env.SERVER_PORT}/api/v1/dicom-image/view?fileName=${no}.jpg`
+          // let url = `${process.env.SERVER_IP}:${process.env.SERVER_PORT}/api/v1/dicom-image/view?fileName=${no}.jpg`
           url = `/api/v1/dicom-image/view?fileName=${no}.jpg`
           newData.push({
             no,
@@ -104,8 +104,8 @@ exports.getDicomImage = async req => {
           })
           // console.log(newData)
           await downloadFiles(
-            `http://localhost:${process.env.SERVER_PORT}${url}`,
-            `${process.env.IMAGES_PATH}/${accession}/dicom/${name}`
+            `${process.env.SERVER_IP}:${process.env.SERVER_PORT}${url}`,
+            `${process.env.IMAGES_PATH}/${accession}/dicom/${name}`,
           )
         }
       }
@@ -169,7 +169,7 @@ exports.getDicomImage = async req => {
 
             await downloadFiles(
               url,
-              `${process.env.IMAGES_PATH}/${accession}/dicom/${name}`
+              `${process.env.IMAGES_PATH}/${accession}/dicom/${name}`,
             )
           }
         }

@@ -141,7 +141,7 @@ const ReportNavBar = () => {
       systemProperties,
       doctor,
       user,
-      setTemplateNotification
+      setTemplateNotification,
     )
 
     const pdfDocGenerator = pdfMake.createPdf(docDef)
@@ -159,7 +159,7 @@ const ReportNavBar = () => {
       systemProperties,
       doctor,
       user,
-      setTemplateNotification
+      setTemplateNotification,
     )
     const pdfDocGenerator = pdfMake.createPdf(docDef)
 
@@ -182,14 +182,37 @@ const ReportNavBar = () => {
     pdfDocGenerator.getBuffer(async buffer => {
       // pdfDocGenerator.getDataUrl(async dataUrl => {
       // console.log(buffer)
-      try {
-        const response = await axios.post(
-          api,
-          { pdfBuffer: buffer, bodyData },
-          // { bodyData },
 
-          reqHeader
-        )
+      // const formData = new FormData()
+      // formData.append('pdfFile', new Blob([buffer])) // ส่งเป็น Binary จริงๆ
+      // formData.append('bodyData', JSON.stringify(bodyData))
+
+      // const response = await axios.post('/prelim', formData, {
+      //   headers: {
+      //     ...reqHeader.headers,
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // })
+
+      try {
+        // const response = await axios.post(
+        //   api,
+        //   { pdfBuffer: buffer, bodyData },
+        //   // { bodyData },
+
+        //   reqHeader,
+        // )
+
+        const formData = new FormData()
+        formData.append('bodyData', JSON.stringify(bodyData))
+        formData.append('pdfFile', new Blob([buffer])) // ส่งเป็น Binary จริงๆ
+
+        const response = await axios.post(api, formData, {
+          headers: {
+            ...reqHeader.headers,
+            'Content-Type': 'multipart/form-data',
+          },
+        })
 
         if (response.data.data.timestamp) {
           // SEND DATA TO REPORT SEARCH API
@@ -200,7 +223,7 @@ const ReportNavBar = () => {
             systemProperties,
             response.data.data.timestamp,
             docDef.indication,
-            signer
+            signer,
           )
 
           setSnackWarning(prev => ({
@@ -300,7 +323,7 @@ const ReportNavBar = () => {
                   }}
                   onClick={() =>
                     history.push(
-                      `${APP_ROUTES.patientInfo}?accession=${patient.accession}`
+                      `${APP_ROUTES.patientInfo}?accession=${patient.accession}`,
                     )
                   }
                 >
@@ -365,11 +388,11 @@ const ReportNavBar = () => {
                     theme.palette.mode === 'dark'
                       ? orange[400]
                       : ['N', 'D'].includes(patientStatus) &&
-                        theme.palette.mode === 'light'
-                      ? orange[800]
-                      : patientStatus === 'R' && theme.palette.mode === 'dark'
-                      ? green[300]
-                      : green[600],
+                          theme.palette.mode === 'light'
+                        ? orange[800]
+                        : patientStatus === 'R' && theme.palette.mode === 'dark'
+                          ? green[300]
+                          : green[600],
                 }}
               >
                 <strong>{convertStatus(patientStatus)}</strong>
@@ -405,7 +428,7 @@ const ReportNavBar = () => {
                     doctor,
                     user,
                     true,
-                    setOpenBackDrop
+                    setOpenBackDrop,
                   )
 
                   if (systemProperties.appMode === 'production')

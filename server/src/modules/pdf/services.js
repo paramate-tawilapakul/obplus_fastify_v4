@@ -1,5 +1,5 @@
 const fs = require('graceful-fs')
-const { Readable } = require('node:stream')
+// const { Readable } = require('node:stream')
 const { pipeline } = require('node:stream/promises')
 const { promisify } = require('node:util')
 
@@ -14,9 +14,11 @@ const exists = promisify(fs.exists)
 // const writeFile = fs.promises.writeFile
 const mkdir = fs.promises.mkdir
 
-exports.createPdf = async req => {
+exports.createPdf = async (pdfStream, bodyData) => {
   try {
-    const { pdfBuffer, bodyData } = req.body
+    // const { pdfBuffer, bodyData } = req.body
+    // const { bodyData } = req.body
+
     // let message = ''
     const { hn, accession, timestamp, unofficial } = bodyData
 
@@ -33,10 +35,12 @@ exports.createPdf = async req => {
     // await writeFile(backupPdf, Buffer.from(pdfBuffer, 'utf-8'))
 
     // memory optimization
-    const writeStream = fs.createWriteStream(backupPdf, { encoding: 'utf-8' })
-    // const nodeReadStream = Readable.from(Buffer.from(pdfBuffer, 'utf-8'))
-    await pipeline(Readable.from(Buffer.from(pdfBuffer, 'utf-8')), writeStream)
+    // const writeStream = fs.createWriteStream(backupPdf, { encoding: 'utf-8' })
+    // await pipeline(Readable.from(Buffer.from(pdfBuffer, 'utf-8')), writeStream)
 
+    await pipeline(pdfStream, fs.createWriteStream(backupPdf))
+
+    console.log('backupPdf', backupPdf)
     console.log('create PDF backup succesfully')
 
     if ((await getSyspropsValue('storePdfService')) === 'enable') {
@@ -56,11 +60,12 @@ exports.createPdf = async req => {
         if (!isExist) await mkdir(pdfPath, { recursive: true })
 
         const pacsPdf = `${pdfPath}/${timestamp}$${hn}$${accession}.pdf`
-        const writeStream = fs.createWriteStream(pacsPdf, { encoding: 'utf-8' })
-        await pipeline(
-          Readable.from(Buffer.from(pdfBuffer, 'utf-8')),
-          writeStream
-        )
+        // const writeStream = fs.createWriteStream(pacsPdf, { encoding: 'utf-8' })
+        // await pipeline(
+        //   Readable.from(Buffer.from(pdfBuffer, 'utf-8')),
+        //   writeStream,
+        // )
+        await fs.promises.copyFile(backupPdf, pacsPdf)
 
         console.log('pdfPath', pdfPath)
         console.log('create PDF succesfully')
@@ -71,5 +76,6 @@ exports.createPdf = async req => {
     return true
   } catch (error) {
     handleErrorLog(`pdf > services > createPdf(): ${error}`)
+    return false
   }
 }
