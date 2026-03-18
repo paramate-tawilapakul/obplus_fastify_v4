@@ -75,7 +75,7 @@ const Image = ({ patient }) => {
         delay: 250,
         tolerance: 5,
       },
-    })
+    }),
   )
 
   async function handleImageDragEnd(event) {
@@ -99,7 +99,7 @@ const Image = ({ patient }) => {
           params: {
             accession: patient.accession,
           },
-        }
+        },
       )
     } catch (error) {
       console.log(error)
@@ -484,8 +484,8 @@ const Image = ({ patient }) => {
                           dicomNo.includes(img.no)
                             ? 'transparent'
                             : img.selected
-                            ? imageBorderColor(theme.palette.mode).selected
-                            : imageBorderColor(theme.palette.mode).default,
+                              ? imageBorderColor(theme.palette.mode).selected
+                              : imageBorderColor(theme.palette.mode).default,
                         bgcolor: theme =>
                           img.selected || dicomNo.includes(img.no)
                             ? imageBorderColor(theme.palette.mode).selected
@@ -550,7 +550,7 @@ const Image = ({ patient }) => {
                                   temp[i].selected = !temp[i].selected
 
                                   let onlySelected = temp.filter(
-                                    t => t.selected
+                                    t => t.selected,
                                   )
                                   // console.log(onlySelected)
 

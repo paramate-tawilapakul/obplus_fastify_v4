@@ -49,7 +49,7 @@ function DataGridTemplate({
     // reportStatus: systemProperties?.hspId !== 'KB',
   }
   const columnModel = JSON.parse(
-    window.localStorage.getItem(STORAGE_NAME.columnModel)
+    window.localStorage.getItem(STORAGE_NAME.columnModel),
   )
 
   // if (dataList?.data && !columnModel[module].hasOwnProperty(tab)) {
@@ -58,12 +58,12 @@ function DataGridTemplate({
 
     window.localStorage.setItem(
       STORAGE_NAME.columnModel,
-      JSON.stringify(columnModel)
+      JSON.stringify(columnModel),
     )
   }
 
   const [columnVisibilityModel, setColumnVisibilityModel] = useState(
-    columnModel[module][tab]
+    columnModel[module][tab],
   )
 
   const rowStyle = {
@@ -103,7 +103,7 @@ function DataGridTemplate({
                   columnModel[module][tab] = newModel
                   window.localStorage.setItem(
                     STORAGE_NAME.columnModel,
-                    JSON.stringify(columnModel)
+                    JSON.stringify(columnModel),
                   )
 
                   setColumnVisibilityModel(newModel)
