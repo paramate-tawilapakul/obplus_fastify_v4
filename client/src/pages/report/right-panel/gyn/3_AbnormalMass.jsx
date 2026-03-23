@@ -90,7 +90,7 @@ const AbnormalMass = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateId
+          templateId,
         )
 
         REPORT_ID[TEMPLATES.abnormalMass.name][patient.currentFetus] = id
@@ -119,7 +119,7 @@ const AbnormalMass = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.abnormalMass.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     // sizeArr
@@ -185,7 +185,7 @@ const AbnormalMass = ({ patient }) => {
         }
 
         setData(prev =>
-          prev.filter(p => !(p.refValueId >= 515 && p.refValueId <= 520))
+          prev.filter(p => !(p.refValueId >= 515 && p.refValueId <= 520)),
         )
       }
 
@@ -270,15 +270,14 @@ const AbnormalMass = ({ patient }) => {
                   </Box>
                 )
               } else if (form.type === 'A') {
-                const test = data.find(data => data.refValueId === form.valueId)
-                if (test && test.content) value = test.content
+                const currentValue = dataFormSend[form.valueId]?.value || ''
 
                 return (
                   <Box key={i} sx={{ m: inputMargin }}>
                     <CommentField
                       minWidth={420}
                       form={form}
-                      value={value}
+                      value={currentValue}
                       handleChange={e => handleChange(e, form)}
                     />
                   </Box>
@@ -368,7 +367,7 @@ const AbnormalMass = ({ patient }) => {
                   if (form.type === 'S') {
                     form.options.forEach(op => {
                       const test = data.find(
-                        data => data.contentOption === op.opId
+                        data => data.contentOption === op.opId,
                       )
                       if (test) value = test.contentOption
                     })
@@ -385,7 +384,7 @@ const AbnormalMass = ({ patient }) => {
                     )
                   } else {
                     const test = data.find(
-                      data => data.refValueId === form.valueId
+                      data => data.refValueId === form.valueId,
                     )
                     if (test && test.content) value = test.content
 
@@ -396,15 +395,15 @@ const AbnormalMass = ({ patient }) => {
                             <Checkbox
                               defaultChecked={
                                 data.find(
-                                  data => data.refValueId === form.valueId
+                                  data => data.refValueId === form.valueId,
                                 )?.content === value
                               }
                               onChange={e =>
                                 handleChange(
                                   e,
                                   dataForm.find(
-                                    f => f.valueId === form.valueId
-                                  ) || null
+                                    f => f.valueId === form.valueId,
+                                  ) || null,
                                 )
                               }
                             />
@@ -445,7 +444,7 @@ const AbnormalMass = ({ patient }) => {
                     let value = ''
 
                     const test = data.find(
-                      data => data.refValueId === form.valueId
+                      data => data.refValueId === form.valueId,
                     )
                     if (test && test.content) value = test.content
 
@@ -464,15 +463,15 @@ const AbnormalMass = ({ patient }) => {
                             <Checkbox
                               defaultChecked={
                                 data.find(
-                                  data => data.refValueId === form.valueId
+                                  data => data.refValueId === form.valueId,
                                 )?.content === value
                               }
                               onChange={e =>
                                 handleChange(
                                   e,
                                   dataForm.find(
-                                    f => f.valueId === form.valueId
-                                  ) || null
+                                    f => f.valueId === form.valueId,
+                                  ) || null,
                                 )
                               }
                             />
@@ -505,15 +504,14 @@ const AbnormalMass = ({ patient }) => {
                   </Box>
                 )
               } else if (form.type === 'A') {
-                const test = data.find(data => data.refValueId === form.valueId)
-                if (test && test.content) value = test.content
+                const currentValue = dataFormSend[form.valueId]?.value || ''
 
                 return (
                   <Box key={i} sx={{ m: inputMargin }}>
                     <CommentField
                       minWidth={580}
                       form={form}
-                      value={value}
+                      value={currentValue}
                       handleChange={e => handleChange(e, form)}
                       row={5}
                     />

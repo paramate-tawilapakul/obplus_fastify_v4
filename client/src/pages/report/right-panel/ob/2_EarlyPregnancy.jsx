@@ -88,7 +88,7 @@ const EarlyPregnancy = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateId
+          templateId,
         )
 
         REPORT_ID[TEMPLATES.earlyPregnancy.name][patient.currentFetus] = id
@@ -117,7 +117,7 @@ const EarlyPregnancy = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.earlyPregnancy.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     let hasPlacentaLocation = false
@@ -238,8 +238,8 @@ const EarlyPregnancy = ({ patient }) => {
             value === notVisibleOpId[0]
               ? 'Not Visible'
               : value === abnormalOrDetailsOpId[0]
-              ? 'Abnormal'
-              : 'Details',
+                ? 'Abnormal'
+                : 'Details',
         }))
 
         setShowInfo(prev => ({
@@ -360,7 +360,7 @@ const EarlyPregnancy = ({ patient }) => {
                 if (form.type === 'S') {
                   form.options.forEach(op => {
                     const test = data.find(
-                      data => data.contentOption === op.opId
+                      data => data.contentOption === op.opId,
                     )
                     if (test) value = test.contentOption
 
@@ -409,10 +409,7 @@ const EarlyPregnancy = ({ patient }) => {
                     </div>
                   )
                 } else {
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
+                  const currentValue = dataFormSend[form.valueId]?.value || ''
 
                   return (
                     <div key={i}>
@@ -421,7 +418,7 @@ const EarlyPregnancy = ({ patient }) => {
                           <CommentField
                             minWidth={673}
                             form={form}
-                            value={value}
+                            value={currentValue}
                             handleChange={e => handleChange(e, form)}
                           />
                         </Box>
@@ -429,7 +426,7 @@ const EarlyPregnancy = ({ patient }) => {
                         <Box sx={{ m: inputMargin }}>
                           <InputTextField
                             form={form}
-                            value={value}
+                            value={currentValue}
                             handleChange={e => handleChange(e, form)}
                           />
                         </Box>

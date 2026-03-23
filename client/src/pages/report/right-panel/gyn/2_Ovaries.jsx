@@ -73,7 +73,7 @@ const Ovaries = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateId
+          templateId,
         )
 
         REPORT_ID[TEMPLATES.ovaries.name][patient.currentFetus] = id
@@ -102,7 +102,7 @@ const Ovaries = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.ovaries.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     let abObj = { ...defaultShowAbnormal }
@@ -211,7 +211,7 @@ const Ovaries = ({ patient }) => {
                   if (form.type === 'S') {
                     form.options.forEach(op => {
                       const test = data.find(
-                        data => data.contentOption === op.opId
+                        data => data.contentOption === op.opId,
                       )
                       if (test) value = test.contentOption
                     })
@@ -233,10 +233,7 @@ const Ovaries = ({ patient }) => {
                       </div>
                     )
                   } else {
-                    const test = data.find(
-                      data => data.refValueId === form.valueId
-                    )
-                    if (test && test.content) value = test.content
+                    const currentValue = dataFormSend[form.valueId]?.value || ''
 
                     if (form.valueId === 511) form.name = 'Comments Right ovary'
                     else form.name = 'Right Morphology Abnormal'
@@ -248,7 +245,7 @@ const Ovaries = ({ patient }) => {
                             <CommentField
                               minWidth={350}
                               form={form}
-                              value={value}
+                              value={currentValue}
                               handleChange={e => handleChange(e, form)}
                               isRedStyle={true}
                               row={5}
@@ -259,7 +256,7 @@ const Ovaries = ({ patient }) => {
                             <CommentField
                               minWidth={350}
                               form={form}
-                              value={value}
+                              value={currentValue}
                               handleChange={e => handleChange(e, form)}
                               row={5}
                             />
@@ -279,7 +276,7 @@ const Ovaries = ({ patient }) => {
                   if (form.type === 'S') {
                     form.options.forEach(op => {
                       const test = data.find(
-                        data => data.contentOption === op.opId
+                        data => data.contentOption === op.opId,
                       )
                       if (test) value = test.contentOption
                     })
@@ -300,10 +297,7 @@ const Ovaries = ({ patient }) => {
                       </div>
                     )
                   } else {
-                    const test = data.find(
-                      data => data.refValueId === form.valueId
-                    )
-                    if (test && test.content) value = test.content
+                    const currentValue = dataFormSend[form.valueId]?.value || ''
 
                     if (form.valueId === 507) form.name = 'Comments left ovary'
                     else form.name = 'Left Morphology Abnormal'
@@ -315,7 +309,7 @@ const Ovaries = ({ patient }) => {
                             <CommentField
                               minWidth={350}
                               form={form}
-                              value={value}
+                              value={currentValue}
                               handleChange={e => handleChange(e, form)}
                               isRedStyle={true}
                               row={5}
@@ -326,7 +320,7 @@ const Ovaries = ({ patient }) => {
                             <CommentField
                               minWidth={350}
                               form={form}
-                              value={value}
+                              value={currentValue}
                               handleChange={e => handleChange(e, form)}
                               row={5}
                             />

@@ -78,7 +78,7 @@ const Diagnosis = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateId
+          templateId,
         )
 
         REPORT_ID[TEMPLATES.gynDiagnosis.name][patient.currentFetus] = id
@@ -107,13 +107,13 @@ const Diagnosis = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.gynDiagnosis.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     setDiagnosisList(
       form
         .filter(f => f.valueId === 630)[0]
-        .options.map(d => ({ id: d.opId, name: d.display }))
+        .options.map(d => ({ id: d.opId, name: d.display })),
     )
 
     let checkDiagnosisValue = data.filter(d => d.refValueId === 630)
@@ -123,7 +123,7 @@ const Diagnosis = ({ patient }) => {
         form
           .find(f => f.valueId === 630)
           .options.filter(o => opIdArr.includes(o.opId))
-          .map(c => ({ id: c.opId, name: c.display }))
+          .map(c => ({ id: c.opId, name: c.display })),
       )
     }
 
@@ -243,7 +243,7 @@ const Diagnosis = ({ patient }) => {
                   let value = ''
                   form.options.forEach(op => {
                     const test = data.find(
-                      data => data.contentOption === op.opId
+                      data => data.contentOption === op.opId,
                     )
                     if (test) value = test.contentOption
                   })
@@ -271,19 +271,14 @@ const Diagnosis = ({ patient }) => {
                     </Box>
                   )
                 } else if (form.type === 'A') {
-                  let value = ''
-
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
+                  const currentValue = dataFormSend[form.valueId]?.value || ''
 
                   return (
                     <Box key={i} sx={{ m: inputMargin }}>
                       <CommentField
                         minWidth={670}
                         form={form}
-                        value={value}
+                        value={currentValue}
                         row={5}
                         handleChange={e => handleChange(e, form)}
                         placeholder={
@@ -299,7 +294,7 @@ const Diagnosis = ({ patient }) => {
                     let value = ''
 
                     const test = data.find(
-                      data => data.refValueId === form.valueId
+                      data => data.refValueId === form.valueId,
                     )
                     if (test && test.content) value = test.content
 

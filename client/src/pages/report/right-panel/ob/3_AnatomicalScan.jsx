@@ -240,7 +240,7 @@ const AnatomicalScan = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateId
+          templateId,
         )
 
         REPORT_ID[TEMPLATES.anatomicalScan.name][patient.currentFetus] = id
@@ -293,11 +293,11 @@ const AnatomicalScan = ({ patient }) => {
     let [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.anatomicalScan.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     form = form.filter(
-      f => ![190, 191, 192, 193, 196, 197, 209].includes(f.valueId)
+      f => ![190, 191, 192, 193, 196, 197, 209].includes(f.valueId),
     )
 
     const abnName = form
@@ -323,7 +323,7 @@ const AnatomicalScan = ({ patient }) => {
     form,
     value,
     templateId,
-    isDelete = false
+    isDelete = false,
   ) {
     // console.log(form)
     // console.log(value)
@@ -384,13 +384,13 @@ const AnatomicalScan = ({ patient }) => {
             params: {
               reportId: getRiD(
                 TEMPLATES.obMeasurement.name,
-                patient.currentFetus
+                patient.currentFetus,
               ),
             },
           })
 
           let findNF_NT = res.data.data.filter(d =>
-            ['Nuchal Fold', 'NT'].includes(d.contentValueName)
+            ['Nuchal Fold', 'NT'].includes(d.contentValueName),
           )
 
           if (findNF_NT.length > 0) {
@@ -431,8 +431,8 @@ const AnatomicalScan = ({ patient }) => {
               value === notVisibleOpId[0]
                 ? 'Not Visible'
                 : value === abnormalOrDetailsOpId[0]
-                ? 'Abnormal'
-                : 'Details',
+                  ? 'Abnormal'
+                  : 'Details',
           },
         }))
 
@@ -524,7 +524,7 @@ const AnatomicalScan = ({ patient }) => {
               valueId: d.valueId,
               value:
                 d.options.find(
-                  o => o.display === 'Normal' || o.display === '3 vessels'
+                  o => o.display === 'Normal' || o.display === '3 vessels',
                 )?.opId || 0,
             }
           }
@@ -607,7 +607,7 @@ const AnatomicalScan = ({ patient }) => {
                 if (form.type === 'S') {
                   form.options.forEach(op => {
                     const test = data.find(
-                      data => data.contentOption === op.opId
+                      data => data.contentOption === op.opId,
                     )
                     if (test) value = test.contentOption
                   })
@@ -623,7 +623,7 @@ const AnatomicalScan = ({ patient }) => {
                                   handleAbnormalDialog(
                                     form,
                                     showInfo[form.valueId].opId,
-                                    templateMap[form.name].id
+                                    templateMap[form.name].id,
                                   )
                                 }
                                 sx={{
@@ -649,10 +649,7 @@ const AnatomicalScan = ({ patient }) => {
                     </div>
                   )
                 } else {
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
+                  const currentValue = dataFormSend[form.valueId]?.value || ''
 
                   return (
                     <Fade key={i} in={!loading ? true : false} timeout={200}>
@@ -661,7 +658,7 @@ const AnatomicalScan = ({ patient }) => {
                           <CommentField
                             minWidth={673}
                             form={form}
-                            value={value}
+                            value={currentValue}
                             handleChange={e => handleChange(e, form)}
                           />
                         </Box>

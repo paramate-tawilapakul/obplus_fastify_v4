@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TextField from '@mui/material/TextField'
 import makeStyles from '@mui/styles/makeStyles'
 import { inputStyle } from './form-style'
@@ -41,6 +41,7 @@ const CommentField = ({
   isRedStyle = false,
   row = 3,
   placeholder = undefined,
+  needLocalState = false,
 }) => {
   // console.log('CommentField', form, value)
   const classes = useStyles()
@@ -49,8 +50,17 @@ const CommentField = ({
 
   const [data, setData] = useState(value?.replace(/<br>/g, '\n') || '')
 
+  useEffect(() => {
+    if (needLocalState) {
+      setData(value?.replace(/<br>/g, '\n') || '')
+    }
+  }, [value, needLocalState])
+
+  const displayValue = value?.replace(/<br>/g, '\n') || ''
+
   return (
     <TextField
+      value={needLocalState ? data : displayValue}
       autoComplete='off'
       sx={{
         ...inputStyle,
@@ -64,11 +74,9 @@ const CommentField = ({
       variant='outlined'
       multiline
       rows={row}
-      // defaultValue={value?.replace(/<br>/g, '\n')}
-      value={data}
       onChange={e => {
-        // console.log('setData', e.target.value)
-        setData(e.target.value)
+        if (needLocalState) setData(e.target.value)
+
         handleChange(e, form)
       }}
       placeholder={placeholder}

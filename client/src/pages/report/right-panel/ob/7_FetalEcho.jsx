@@ -301,7 +301,7 @@ const FetalEcho = ({ patient }) => {
       .find(
         d =>
           d.refValueId === form.valueId &&
-          d.contentOptionCheckBox.indexOf(name) > -1
+          d.contentOptionCheckBox.indexOf(name) > -1,
       )
       ?.contentOptionCheckBox?.split(', ')
       .filter(d => d.indexOf(name) > -1)
@@ -493,7 +493,7 @@ const FetalEcho = ({ patient }) => {
         .filter(
           d =>
             d.options?.length > 0 &&
-            d.options.find(option => abnName.includes(option.name))
+            d.options.find(option => abnName.includes(option.name)),
         )
         .map(option => option.options)
         .flat()
@@ -529,7 +529,7 @@ const FetalEcho = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateId
+          templateId,
         )
 
         REPORT_ID[TEMPLATES.fetalEcho.name][patient.currentFetus] = id
@@ -539,7 +539,7 @@ const FetalEcho = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateCardiacId
+          templateCardiacId,
         )
 
         REPORT_ID[TEMPLATES.cardiacFunction.name][patient.currentFetus] = id
@@ -555,7 +555,7 @@ const FetalEcho = ({ patient }) => {
         params: {
           reportId: getRiD(
             TEMPLATES.cardiacFunction.name,
-            patient.currentFetus
+            patient.currentFetus,
           ),
         },
       })
@@ -580,7 +580,7 @@ const FetalEcho = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.cardiacFunction.name, patient.currentFetus),
-      templateCardiacId
+      templateCardiacId,
     )
 
     // console.log(data)
@@ -594,7 +594,7 @@ const FetalEcho = ({ patient }) => {
     })
 
     setShortAxisContent(
-      tempArr.find(d => d.display === 'Short Axis')?.content?.split(',') || []
+      tempArr.find(d => d.display === 'Short Axis')?.content?.split(',') || [],
     )
 
     let saId = tempArr.find(d => d.display === 'Short Axis').valueId
@@ -614,7 +614,7 @@ const FetalEcho = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.fetalEcho.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     let hasIndication = false
@@ -631,7 +631,7 @@ const FetalEcho = ({ patient }) => {
       const objIndication = form
         .find(f => f.name === 'Reason/Indications')
         .options.find(
-          op => op.name === indicationName || op.id === indicationId
+          op => op.name === indicationName || op.id === indicationId,
         )
 
       setIndication(objIndication)
@@ -801,8 +801,8 @@ const FetalEcho = ({ patient }) => {
         d.name === 'Comments'
           ? replaceNewLineWithBr(value)
           : ['T', 'S'].includes(d.type)
-          ? value
-          : ''
+            ? value
+            : ''
 
       let prevCheckbox = []
       let cbox = dataFormSend[d.valueId]?.checkbox || ''
@@ -1152,7 +1152,7 @@ const FetalEcho = ({ patient }) => {
                         let controlled = false
                         form.options.forEach(op => {
                           const test = data.find(
-                            data => data.contentOption === op.opId
+                            data => data.contentOption === op.opId,
                           )
                           if (test) value = test.contentOption
                         })
@@ -1179,21 +1179,21 @@ const FetalEcho = ({ patient }) => {
                                   ...form,
                                   cname: 'RV',
                                 },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 {
                                   ...form,
                                   cname: 'LV',
                                 },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 {
                                   ...form,
                                   cname: 'Both ventricles',
                                 },
-                                data
+                                data,
                               )}
                             </div>
                           )
@@ -1212,21 +1212,21 @@ const FetalEcho = ({ patient }) => {
                                   ...form,
                                   cname: 'AVSD',
                                 },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 {
                                   ...form,
                                   cname: 'Perimembranous',
                                 },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 {
                                   ...form,
                                   cname: 'Muscular',
                                 },
-                                data
+                                data,
                               )}
                             </div>
                           )
@@ -1240,14 +1240,14 @@ const FetalEcho = ({ patient }) => {
                                   ...form,
                                   cname: 'Primum',
                                 },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 {
                                   ...form,
                                   cname: 'Secondum',
                                 },
-                                data
+                                data,
                               )}
                             </div>
                           )
@@ -1278,7 +1278,7 @@ const FetalEcho = ({ patient }) => {
                               data,
                               elRef[form.name],
                               componentOption,
-                              showFreetext
+                              showFreetext,
                             )}
                           </Box>
                         )
@@ -1298,14 +1298,14 @@ const FetalEcho = ({ patient }) => {
                         {dataForm
                           ?.filter(form =>
                             ['Tricuspid Valves', 'Mitral Valves'].includes(
-                              form.name
-                            )
+                              form.name,
+                            ),
                           )
                           .map((form, i) => {
                             let value = ''
                             form.options.forEach(op => {
                               const test = data.find(
-                                data => data.contentOption === op.opId
+                                data => data.contentOption === op.opId,
                               )
                               if (test) value = test.contentOption
                             })
@@ -1317,28 +1317,28 @@ const FetalEcho = ({ patient }) => {
                                     ...form,
                                     cname: 'Tenosis',
                                   },
-                                  data
+                                  data,
                                 )}
                                 {CheckBox(
                                   {
                                     ...form,
                                     cname: 'Regurgitation',
                                   },
-                                  data
+                                  data,
                                 )}
                                 {CheckBox(
                                   {
                                     ...form,
                                     cname: 'Atresia',
                                   },
-                                  data
+                                  data,
                                 )}
                                 {CheckBox(
                                   {
                                     ...form,
                                     cname: 'Dysplasia',
                                   },
-                                  data
+                                  data,
                                 )}
                               </div>
                             )
@@ -1357,7 +1357,7 @@ const FetalEcho = ({ patient }) => {
                                   form,
                                   data,
                                   elRef[form.name],
-                                  componentOption
+                                  componentOption,
                                 )}
                               </Box>
                             )
@@ -1386,7 +1386,7 @@ const FetalEcho = ({ patient }) => {
 
                         form.options.forEach(op => {
                           const test = data.find(
-                            data => data.contentOption === op.opId
+                            data => data.contentOption === op.opId,
                           )
                           if (test) {
                             value = test.contentOption
@@ -1405,21 +1405,21 @@ const FetalEcho = ({ patient }) => {
                                   ...form,
                                   cname: 'Stenosis',
                                 },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 {
                                   ...form,
                                   cname: 'Dysplasia',
                                 },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 {
                                   ...form,
                                   cname: 'Regurgitation',
                                 },
-                                data
+                                data,
                               )}
                             </div>
                           )
@@ -1429,11 +1429,11 @@ const FetalEcho = ({ patient }) => {
                             <div style={{ marginLeft: 10 }}>
                               {CheckBox(
                                 { ...form, cname: 'Coarctation' },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 { ...form, cname: 'Right-sided' },
-                                data
+                                data,
                               )}
                               {CheckBox({ ...form, cname: 'Double' }, data)}
                             </div>
@@ -1444,7 +1444,7 @@ const FetalEcho = ({ patient }) => {
                             <div style={{ marginLeft: 10 }}>
                               {CheckBox(
                                 { ...form, cname: 'Reverse flow in DA' },
-                                data
+                                data,
                               )}
                             </div>
                           )
@@ -1458,7 +1458,7 @@ const FetalEcho = ({ patient }) => {
                                   fname: 'Atrial Rate',
                                   unit: '/min',
                                 },
-                                data
+                                data,
                               )}
                               {OptionText(
                                 {
@@ -1466,13 +1466,13 @@ const FetalEcho = ({ patient }) => {
                                   fname: 'Ventricular Rate',
                                   unit: '/min',
                                 },
-                                data
+                                data,
                               )}
 
                               {CheckBox({ ...form, cname: 'PAC' }, data)}
                               {CheckBox(
                                 { ...form, cname: 'PAC with block' },
-                                data
+                                data,
                               )}
                               {CheckBox({ ...form, cname: 'PVC' }, data)}
                               {CheckBox({ ...form, cname: 'SVT' }, data)}
@@ -1481,27 +1481,27 @@ const FetalEcho = ({ patient }) => {
                                   ...form,
                                   cname: 'Ventricular fibrillation',
                                 },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 { ...form, cname: 'Atrial flutter' },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 { ...form, cname: 'Atrial fibrillation' },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 { ...form, cname: '1st degree AV block' },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 { ...form, cname: '2nd degree AV block' },
-                                data
+                                data,
                               )}
                               {CheckBox(
                                 { ...form, cname: '3rd degree AV block' },
-                                data
+                                data,
                               )}
                             </div>
                           )
@@ -1531,7 +1531,7 @@ const FetalEcho = ({ patient }) => {
                               form,
                               data,
                               elRef[form.name],
-                              componentOption
+                              componentOption,
                             )}
                           </Box>
                         )
@@ -1563,7 +1563,7 @@ const FetalEcho = ({ patient }) => {
                                 defaultChecked={
                                   dataCardiacForm
                                     .filter(
-                                      d => d.name === 'Longitudial Strain'
+                                      d => d.name === 'Longitudial Strain',
                                     )
                                     .map(d => d.content)
                                     .reduce((acc, cv) => acc + cv, '') !== ''
@@ -1585,7 +1585,7 @@ const FetalEcho = ({ patient }) => {
                           <div ref={longitudialStrainRef}>
                             {dataCardiacForm
                               .filter(
-                                data => data.name === 'Longitudial Strain'
+                                data => data.name === 'Longitudial Strain',
                               )
                               .map((form, i) => {
                                 return (
@@ -1606,7 +1606,7 @@ const FetalEcho = ({ patient }) => {
                                 defaultChecked={
                                   dataCardiacForm
                                     .filter(
-                                      d => d.name === 'Circumferential Strain'
+                                      d => d.name === 'Circumferential Strain',
                                     )
                                     .map(d => d.content)
                                     .reduce((acc, cv) => acc + cv, '') !== ''
@@ -1661,7 +1661,7 @@ const FetalEcho = ({ patient }) => {
                                   <Checkbox
                                     name={shortAxisValueId + '1'}
                                     defaultChecked={shortAxisContent.includes(
-                                      'Apical'
+                                      'Apical',
                                     )}
                                     sx={{ p: 0.5 }}
                                     inputProps={{
@@ -1687,7 +1687,7 @@ const FetalEcho = ({ patient }) => {
                                   <Checkbox
                                     name={shortAxisValueId + '2'}
                                     defaultChecked={shortAxisContent.includes(
-                                      'Mid'
+                                      'Mid',
                                     )}
                                     sx={{ p: 0.5 }}
                                     inputProps={{
@@ -1713,7 +1713,7 @@ const FetalEcho = ({ patient }) => {
                                   <Checkbox
                                     name={shortAxisValueId + '3'}
                                     defaultChecked={shortAxisContent.includes(
-                                      'Basal'
+                                      'Basal',
                                     )}
                                     sx={{ p: 0.5 }}
                                     inputProps={{
@@ -1741,7 +1741,7 @@ const FetalEcho = ({ patient }) => {
                               .filter(
                                 data =>
                                   data.name === 'Circumferential Strain' &&
-                                  data.display !== 'Short Axis'
+                                  data.display !== 'Short Axis',
                               )
                               .map((form, i) => {
                                 return (
@@ -1779,7 +1779,7 @@ const FetalEcho = ({ patient }) => {
                   if (form.options?.length > 0) {
                     form.options.forEach(op => {
                       const test = data.find(
-                        data => data.contentOption === op.opId
+                        data => data.contentOption === op.opId,
                       )
                       if (test) value = test.contentOption
                     })
@@ -1798,10 +1798,7 @@ const FetalEcho = ({ patient }) => {
                       </div>
                     )
                   } else {
-                    const test = data.find(
-                      data => data.refValueId === form.valueId
-                    )
-                    if (test && test.content) value = test.content
+                    const currentValue = dataFormSend[form.valueId]?.value || ''
 
                     return (
                       <div key={i}>
@@ -1810,7 +1807,7 @@ const FetalEcho = ({ patient }) => {
                             <CommentField
                               minWidth={675}
                               form={form}
-                              value={value}
+                              value={currentValue}
                               handleChange={e => handleChange(e, form)}
                             />
                           </Box>
@@ -1819,7 +1816,7 @@ const FetalEcho = ({ patient }) => {
                             {i === 0 && <Divider sx={{ mt: 1, mb: 3 }} />}
                             <InputTextField
                               form={form}
-                              value={value}
+                              value={currentValue}
                               handleChange={e => handleChange(e, form)}
                               width={675}
                             />

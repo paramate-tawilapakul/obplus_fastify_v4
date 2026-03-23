@@ -119,7 +119,7 @@ const FollicleScreen = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateId
+          templateId,
         )
 
         REPORT_ID[TEMPLATES.follicleScreen.name][patient.currentFetus] = id
@@ -148,7 +148,7 @@ const FollicleScreen = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.follicleScreen.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     let dateObj = defaultDate
@@ -191,8 +191,8 @@ const FollicleScreen = ({ patient }) => {
     let v = newValue
       ? moment(newValue).format('YYYYMMDD')
       : e
-      ? e.target.value
-      : ''
+        ? e.target.value
+        : ''
 
     setDataFormSend(prev => {
       const temp = {
@@ -531,7 +531,7 @@ const FollicleScreen = ({ patient }) => {
                       let value = ['', '', '', '']
 
                       const test = data.find(
-                        data => data.refValueId === form.valueId
+                        data => data.refValueId === form.valueId,
                       )
                       if (test && test.content) value = test.content.split('-')
 
@@ -585,11 +585,12 @@ const FollicleScreen = ({ patient }) => {
                     m={1.5}
                     minWidth={360}
                     form={dataForm?.find(f => f.valueId === 533)}
-                    value={data?.find(d => d.refValueId === 533)?.content || ''}
+                    // value={data?.find(d => d.refValueId === 533)?.content || ''}
+                    value={dataFormSend['533']?.value || ''}
                     handleChange={e => {
                       handleChange(
                         e,
-                        dataForm?.find(f => f.valueId === 533)
+                        dataForm?.find(f => f.valueId === 533),
                       )
                     }}
                   />
@@ -626,7 +627,7 @@ const FollicleScreen = ({ patient }) => {
                       let value = ['', '', '', '']
 
                       const test = data.find(
-                        data => data.refValueId === form.valueId
+                        data => data.refValueId === form.valueId,
                       )
                       if (test && test.content) value = test.content.split('-')
 
@@ -688,11 +689,12 @@ const FollicleScreen = ({ patient }) => {
                     m={1.5}
                     minWidth={360}
                     form={dataForm?.find(f => f.valueId === 534)}
-                    value={data?.find(d => d.refValueId === 534)?.content || ''}
+                    // value={data?.find(d => d.refValueId === 534)?.content || ''}
+                    value={dataFormSend['534']?.value || ''}
                     handleChange={e => {
                       handleChange(
                         e,
-                        dataForm?.find(f => f.valueId === 534)
+                        dataForm?.find(f => f.valueId === 534),
                       )
                     }}
                   />

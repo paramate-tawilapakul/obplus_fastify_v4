@@ -79,7 +79,7 @@ const Anc = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateId
+          templateId,
         )
 
         REPORT_ID[TEMPLATES.anc.name][patient.currentFetus] = id
@@ -108,7 +108,7 @@ const Anc = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.anc.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     let hasPlacentaLocation = false
@@ -223,7 +223,7 @@ const Anc = ({ patient }) => {
                     let value = ''
                     form.options.forEach(op => {
                       const test = data.find(
-                        data => data.contentOption === op.opId
+                        data => data.contentOption === op.opId,
                       )
                       if (test) value = test.contentOption
                     })
@@ -249,19 +249,21 @@ const Anc = ({ patient }) => {
                       </Box>
                     )
                   } else if (form.type === 'A') {
-                    let value = ''
+                    // let value = ''
 
-                    const test = data.find(
-                      data => data.refValueId === form.valueId
-                    )
-                    if (test && test.content) value = test.content
+                    // const test = data.find(
+                    //   data => data.refValueId === form.valueId
+                    // )
+                    // if (test && test.content) value = test.content
+
+                    const currentValue = dataFormSend[form.valueId]?.value || ''
 
                     return (
                       <Box key={i} sx={{ m: inputMargin }}>
                         <CommentField
                           minWidth={673}
                           form={form}
-                          value={value}
+                          value={currentValue}
                           handleChange={e => handleChange(e, form)}
                           row={5}
                         />

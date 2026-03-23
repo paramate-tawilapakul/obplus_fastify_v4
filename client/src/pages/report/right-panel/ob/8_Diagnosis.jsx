@@ -88,7 +88,7 @@ const Diagnosis = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateId
+          templateId,
         )
 
         REPORT_ID[TEMPLATES.obDiagnosis.name][patient.currentFetus] = id
@@ -117,13 +117,13 @@ const Diagnosis = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.obDiagnosis.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     setDiagnosisList(
       form
         .filter(f => f.valueId === 69)[0]
-        .options.map(d => ({ id: d.opId, name: d.display }))
+        .options.map(d => ({ id: d.opId, name: d.display })),
     )
 
     let checkDiagnosisValue = data.filter(d => d.refValueId === 69)
@@ -133,7 +133,7 @@ const Diagnosis = ({ patient }) => {
         form
           .find(f => f.valueId === 69)
           .options.filter(o => opIdArr.includes(o.opId))
-          .map(c => ({ id: c.opId, name: c.display }))
+          .map(c => ({ id: c.opId, name: c.display })),
       )
     }
 
@@ -362,10 +362,7 @@ const Diagnosis = ({ patient }) => {
                   </Box>
                 )
               } else if (form.type === 'A') {
-                let value = ''
-
-                const test = data.find(data => data.refValueId === form.valueId)
-                if (test && test.content) value = test.content
+                const currentValue = dataFormSend[form.valueId]?.value || ''
 
                 return (
                   <div key={i}>
@@ -373,12 +370,12 @@ const Diagnosis = ({ patient }) => {
                       <CommentField
                         minWidth={670}
                         form={form}
-                        value={value}
+                        value={currentValue}
                         row={2}
                         handleChange={e => handleChange(e, form)}
                         placeholder={
                           ['Diagnosis(Fetus)', 'Diagnosis(Mother)'].includes(
-                            form.name
+                            form.name,
                           )
                             ? 'Choose Diagnosis from select list or fill in here...'
                             : undefined
@@ -408,7 +405,7 @@ const Diagnosis = ({ patient }) => {
                   let value = ''
 
                   const test = data.find(
-                    data => data.refValueId === form.valueId
+                    data => data.refValueId === form.valueId,
                   )
                   if (test && test.content) value = test.content
 

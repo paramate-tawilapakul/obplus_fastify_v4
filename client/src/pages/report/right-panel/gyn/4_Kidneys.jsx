@@ -70,7 +70,7 @@ const Kidneys = ({ patient }) => {
         const id = await getReportId(
           patient.accession,
           patient.currentFetus,
-          templateId
+          templateId,
         )
 
         REPORT_ID[TEMPLATES.kidneys.name][patient.currentFetus] = id
@@ -99,7 +99,7 @@ const Kidneys = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.kidneys.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     setDataFormSend(formSend)
@@ -192,17 +192,14 @@ const Kidneys = ({ patient }) => {
                   </Box>
                 )
               } else if (form.type === 'A') {
-                let value = ''
-
-                const test = data.find(data => data.refValueId === form.valueId)
-                if (test && test.content) value = test.content
+                const currentValue = dataFormSend[form.valueId]?.value || ''
 
                 return (
                   <Box key={i} sx={{ m: inputMargin }}>
                     <CommentField
                       minWidth={673}
                       form={form}
-                      value={value}
+                      value={currentValue}
                       handleChange={e => handleChange(e, form)}
                       row={5}
                     />

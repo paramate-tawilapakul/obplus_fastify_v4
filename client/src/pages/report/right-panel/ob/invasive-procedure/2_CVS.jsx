@@ -123,7 +123,7 @@ function CVS({
                     value: manageFreeText(
                       e.target.value,
                       prev[form.valueId].value,
-                      'Other>'
+                      'Other>',
                     ),
                   },
                 }
@@ -237,7 +237,7 @@ function CVS({
       <Box sx={{ m: inputMargin, width: '100%' }}>
         <div>{form[9].name}</div>
         {option1.map(option =>
-          CheckBox({ ...form[9], cname: option.name }, option.width)
+          CheckBox({ ...form[9], cname: option.name }, option.width),
         )}
       </Box>
 
@@ -280,7 +280,7 @@ function CVS({
       <Box sx={{ m: inputMargin, width: '100%' }}>
         <div>{form[12].name}</div>
         {option2.map(option =>
-          CheckBox({ ...form[12], cname: option.name }, option.width)
+          CheckBox({ ...form[12], cname: option.name }, option.width),
         )}
       </Box>
       <Box sx={{ m: inputMargin, width: '92%' }}>
@@ -294,6 +294,7 @@ function CVS({
           handleChange={e => handleChange(e, form[13])}
           form={form[13]}
           //  handleChange={e => handleChange(e, form)}
+          needLocalState={true}
         />
       </Box>
     </>

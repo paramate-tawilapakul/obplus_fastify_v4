@@ -94,7 +94,7 @@ const Uterus = ({ patient }) => {
           const id = await getReportId(
             patient.accession,
             patient.currentFetus,
-            templateId
+            templateId,
           )
           // console.log('id', id)
           REPORT_ID[TEMPLATES.uterus.name][patient.currentFetus] = id
@@ -127,7 +127,7 @@ const Uterus = ({ patient }) => {
     const [formSend, form] = await initFormSend(
       data,
       getRiD(TEMPLATES.uterus.name, patient.currentFetus),
-      templateId
+      templateId,
     )
 
     const hasUterusFreetext =
@@ -139,7 +139,7 @@ const Uterus = ({ patient }) => {
       data.find(
         d =>
           d.contentValueName === 'Myometrium' &&
-          d.contentOptionDisplay === 'Abnormal'
+          d.contentOptionDisplay === 'Abnormal',
       ) || ''
 
     if (hasMyometriumAbnormal) ab = { ...ab, myometrium: true }
@@ -148,7 +148,7 @@ const Uterus = ({ patient }) => {
       data.find(
         d =>
           d.contentValueName === 'Cervix' &&
-          d.contentOptionDisplay === 'Abnormal'
+          d.contentOptionDisplay === 'Abnormal',
       ) || ''
     if (hasCervixAbnormal) ab = { ...ab, cervix: true }
 
@@ -169,10 +169,10 @@ const Uterus = ({ patient }) => {
       d.type === 'A'
         ? replaceNewLineWithBr(e.target.value)
         : ['S', 'T'].includes(d.type)
-        ? e.target.value
-        : e.target.checked
-        ? d.name
-        : ''
+          ? e.target.value
+          : e.target.checked
+            ? d.name
+            : ''
 
     if (d.valueId === 492) {
       // console.log(d.options)
@@ -246,7 +246,7 @@ const Uterus = ({ patient }) => {
         })
 
         setData(prev =>
-          prev.filter(p => ![495, 496, 497].includes(p.refValueId))
+          prev.filter(p => ![495, 496, 497].includes(p.refValueId)),
         )
       }
 
@@ -336,7 +336,7 @@ const Uterus = ({ patient }) => {
                   let value = ''
                   form.options.forEach(op => {
                     const test = data.find(
-                      data => data.contentOption === op.opId
+                      data => data.contentOption === op.opId,
                     )
                     if (test) value = test.contentOption
                   })
@@ -362,14 +362,14 @@ const Uterus = ({ patient }) => {
                           <InputTextField
                             value={
                               data.find(
-                                data => data.contentValueName === 'Freetext'
+                                data => data.contentValueName === 'Freetext',
                               )?.content || ''
                             }
                             handleChange={e =>
                               handleChange(
                                 e,
                                 dataForm.find(f => f.name === 'Freetext') ||
-                                  null
+                                  null,
                               )
                             }
                             form={
@@ -421,7 +421,7 @@ const Uterus = ({ patient }) => {
                                         defaultChecked={
                                           data
                                             .find(
-                                              data => data.refValueId === 495
+                                              data => data.refValueId === 495,
                                             )
                                             ?.content.split('-')[0] ===
                                           'Thickening'
@@ -432,8 +432,8 @@ const Uterus = ({ patient }) => {
                                           handleChange(
                                             e,
                                             dataForm.find(
-                                              f => f.valueId === 495
-                                            ) || null
+                                              f => f.valueId === 495,
+                                            ) || null,
                                           )
                                         }
                                       />
@@ -493,7 +493,7 @@ const Uterus = ({ patient }) => {
                                       <Checkbox
                                         defaultChecked={
                                           data.find(
-                                            data => data.refValueId === 496
+                                            data => data.refValueId === 496,
                                           )?.content === 'Myoma'
                                             ? true
                                             : false
@@ -502,8 +502,8 @@ const Uterus = ({ patient }) => {
                                           handleChange(
                                             e,
                                             dataForm.find(
-                                              f => f.valueId === 496
-                                            ) || null
+                                              f => f.valueId === 496,
+                                            ) || null,
                                           )
                                         }
                                       />
@@ -528,7 +528,7 @@ const Uterus = ({ patient }) => {
                                         defaultChecked={
                                           data
                                             .find(
-                                              data => data.refValueId === 497
+                                              data => data.refValueId === 497,
                                             )
                                             ?.content.split('-')[0] ===
                                           'Adenomyosis'
@@ -539,8 +539,8 @@ const Uterus = ({ patient }) => {
                                           handleChange(
                                             e,
                                             dataForm.find(
-                                              f => f.valueId === 497
-                                            ) || null
+                                              f => f.valueId === 497,
+                                            ) || null,
                                           )
                                         }
                                       />
@@ -583,12 +583,7 @@ const Uterus = ({ patient }) => {
                     </div>
                   )
                 } else if (form.type === 'A') {
-                  let value = ''
-
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
+                  const currentValue = dataFormSend[form.valueId]?.value || ''
 
                   return (
                     <Box key={i} sx={{ m: inputMargin }}>
@@ -596,7 +591,7 @@ const Uterus = ({ patient }) => {
                         <CommentField
                           minWidth={673}
                           form={form}
-                          value={value}
+                          value={currentValue}
                           handleChange={e => handleChange(e, form)}
                           isRedStyle={true}
                         />
@@ -616,7 +611,7 @@ const Uterus = ({ patient }) => {
                   let value = ''
                   form.options.forEach(op => {
                     const test = data.find(
-                      data => data.contentOption === op.opId
+                      data => data.contentOption === op.opId,
                     )
                     if (test) value = test.contentOption
                   })
@@ -632,19 +627,14 @@ const Uterus = ({ patient }) => {
                     </Box>
                   )
                 } else if (form.type === 'A') {
-                  let value = ''
-
-                  const test = data.find(
-                    data => data.refValueId === form.valueId
-                  )
-                  if (test && test.content) value = test.content
+                  const currentValue = dataFormSend[form.valueId]?.value || ''
 
                   return (
                     <Box key={i} sx={{ m: inputMargin }}>
                       <CommentField
                         minWidth={673}
                         form={form}
-                        value={value}
+                        value={currentValue}
                         handleChange={e => handleChange(e, form)}
                         row={5}
                       />

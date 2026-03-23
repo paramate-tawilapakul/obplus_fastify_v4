@@ -122,7 +122,7 @@ function Amniocentesis({
                     value: manageFreeText(
                       e.target.value,
                       prev[form.valueId].value,
-                      'Other>'
+                      'Other>',
                     ),
                   },
                 }
@@ -250,7 +250,7 @@ function Amniocentesis({
       <Box sx={{ m: inputMargin, width: '100%' }}>
         <div>{form[11].name}</div>
         {option1.map(option =>
-          CheckBox({ ...form[11], cname: option.name }, option.width)
+          CheckBox({ ...form[11], cname: option.name }, option.width),
         )}
       </Box>
       <Box sx={{ m: inputMargin, width: '92%' }}>
@@ -293,7 +293,7 @@ function Amniocentesis({
       <Box sx={{ m: inputMargin, width: '100%' }}>
         <div>{form[14].name}</div>
         {option2.map(option =>
-          CheckBox({ ...form[14], cname: option.name }, option.width)
+          CheckBox({ ...form[14], cname: option.name }, option.width),
         )}
       </Box>
       <Box sx={{ m: inputMargin, width: '92%' }}>
@@ -306,6 +306,7 @@ function Amniocentesis({
           handleChange={e => handleChange(e, form[15])}
           form={form[15]}
           //  handleChange={e => handleChange(e, form)}
+          needLocalState={true}
         />
       </Box>
     </>

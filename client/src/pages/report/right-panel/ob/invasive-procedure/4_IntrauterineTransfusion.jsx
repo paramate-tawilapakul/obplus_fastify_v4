@@ -126,12 +126,12 @@ function IntrauterineTransfusion({
       <Box sx={{ m: inputMargin, width: '100%' }}>
         <div>{form[0].name}</div>
         {option1.map(option =>
-          CheckBox({ ...form[0], cname: option.name }, option.width)
+          CheckBox({ ...form[0], cname: option.name }, option.width),
         )}
 
         <div>
           {option2.map(option =>
-            CheckBox({ ...form[0], cname: option.name }, option.width)
+            CheckBox({ ...form[0], cname: option.name }, option.width),
           )}
         </div>
       </Box>
@@ -220,7 +220,7 @@ function IntrauterineTransfusion({
       <Box sx={{ m: inputMargin, width: '100%' }}>
         <div>{form[10].name}</div>
         {option3.map(option =>
-          CheckBox({ ...form[10], cname: option.name }, option.width)
+          CheckBox({ ...form[10], cname: option.name }, option.width),
         )}
       </Box>
       <Box sx={{ m: inputMargin, width: '92%' }}>
@@ -281,7 +281,7 @@ function IntrauterineTransfusion({
       <Box sx={{ m: inputMargin, width: '100%' }}>
         <div>{form[19].name}</div>
         {option4.map(option =>
-          CheckBox({ ...form[19], cname: option.name }, option.width)
+          CheckBox({ ...form[19], cname: option.name }, option.width),
         )}
       </Box>
       <Box sx={{ m: inputMargin, width: '92%' }}>
@@ -295,6 +295,7 @@ function IntrauterineTransfusion({
           handleChange={e => handleChange(e, form[20])}
           form={form[20]}
           //  handleChange={e => handleChange(e, form)}
+          needLocalState={true}
         />
       </Box>
     </>
