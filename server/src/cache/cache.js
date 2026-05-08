@@ -1,21 +1,10 @@
-const { Cacheable } = require('cacheable')
+const NodeCache = require('node-cache')
 const db = require('../db/setup')
 const { objectArrayToCamel, handleErrorLog } = require('../utils/utils')
 
 const fileModule = 'cache >'
 
-/*
-ms: Milliseconds such as (1ms = 1)
-s: Seconds such as (1s = 1000)
-m: Minutes such as (1m = 60000)
-h or hr: Hours such as (1h = 3600000)
-d: Days such as (1d = 86400000)
-*/
-
-const ttl = 86400000 * 1 // 7 days
-// const ttl = 10000 // 10 sec
-
-const cacheable = new Cacheable()
+const cacheable = new NodeCache({ stdTTL: 86400 }) // 1 day in seconds
 
 const CacheKey = {
   MasterValue: 'MasterValue',
@@ -23,18 +12,16 @@ const CacheKey = {
   SystemProperties: 'SystemProperties',
 }
 
-let masterValue, masterOption, systemProperties
-
 exports.getMasterValueFromCache = async () => {
   try {
-    masterValue = await cacheable.get(CacheKey.MasterValue)
-    if (masterValue) {
-      //   console.log(`${CacheKey.MasterValue}, get from cache`)
-      return masterValue
+    const cached = cacheable.get(CacheKey.MasterValue)
+    if (cached) {
+      // console.log(`${CacheKey.MasterValue}, get from cache`)
+      return cached
     }
 
     // console.log(`${CacheKey.MasterValue}, get from db`)
-    masterValue = await db('OB_MASTER_VALUE')
+    const data = await db('OB_MASTER_VALUE')
       .select()
       .column([
         { valueId: 'VALUE_ID' },
@@ -50,9 +37,9 @@ exports.getMasterValueFromCache = async () => {
         { column: 'VALUE_ORDER', order: 'asc' },
       ])
 
-    await cacheable.set(CacheKey.MasterValue, masterValue, ttl)
+    cacheable.set(CacheKey.MasterValue, data)
 
-    return masterValue
+    return data
   } catch (error) {
     handleErrorLog(`${fileModule} getMasterValueFromCache(): ${error}`)
   }
@@ -60,14 +47,14 @@ exports.getMasterValueFromCache = async () => {
 
 exports.getMasterOptionFromCache = async () => {
   try {
-    masterOption = await cacheable.get(CacheKey.MasterOption)
-    if (masterOption) {
-      //   console.log(`${CacheKey.MasterOption}, get from cache`)
-      return masterOption
+    const cached = cacheable.get(CacheKey.MasterOption)
+    if (cached) {
+      // console.log(`${CacheKey.MasterOption}, get from cache`)
+      return cached
     }
 
     // console.log(`${CacheKey.MasterOption}, get from db`)
-    masterOption = await db('OB_MASTER_OPTIONS')
+    const data = await db('OB_MASTER_OPTIONS')
       .select()
       .column([
         { opId: 'OP_ID' },
@@ -87,9 +74,9 @@ exports.getMasterOptionFromCache = async () => {
         { column: 'OP_ORDER', order: 'asc' },
       ])
 
-    await cacheable.set(CacheKey.MasterOption, masterOption, ttl)
+    cacheable.set(CacheKey.MasterOption, data)
 
-    return masterOption
+    return data
   } catch (error) {
     handleErrorLog(`${fileModule} getMasterOptionFromCache(): ${error}`)
   }
@@ -97,15 +84,15 @@ exports.getMasterOptionFromCache = async () => {
 
 exports.getSystemPropertiesFromCache = async () => {
   try {
-    systemProperties = await cacheable.get(CacheKey.SystemProperties)
-    if (systemProperties) {
-      //   console.log(`${CacheKey.SystemProperties}, get from cache`)
-      return systemProperties
+    const cached = cacheable.get(CacheKey.SystemProperties)
+    if (cached) {
+      // console.log(`${CacheKey.SystemProperties}, get from cache`)
+      return cached
     }
 
     // console.log(`${CacheKey.SystemProperties}, get from db`)
     const data = await getSystemProperties()
-    await cacheable.set(CacheKey.SystemProperties, data, ttl)
+    cacheable.set(CacheKey.SystemProperties, data)
 
     return data
   } catch (error) {
@@ -116,17 +103,16 @@ exports.getSystemPropertiesFromCache = async () => {
 exports.updateSystemPropertiesCache = async () => {
   try {
     const data = await getSystemProperties()
-    await cacheable.set(CacheKey.SystemProperties, data, ttl)
+    cacheable.set(CacheKey.SystemProperties, data)
   } catch (error) {
     handleErrorLog(`${fileModule} updateSystemPropertiesCache(): ${error}`)
   }
 }
 
-let sysProps
 exports.getSyspropsValue = async key => {
   if (!key) return
 
-  sysProps = await this.getSystemPropertiesFromCache()
+  const sysProps = await exports.getSystemPropertiesFromCache()
   //   console.log('cacheable getSyspropsValue', key, sysProps[key])
   return sysProps[key]
 }
