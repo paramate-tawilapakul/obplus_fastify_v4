@@ -1099,9 +1099,6 @@ exports.getEfwByHN = async req => {
       .andWhere('REF_VALUE_ID', targetEfw)
       .orderBy('CONTENT_ID', 'asc')
 
-    console.log(fw)
-    console.log(newData)
-
     fw = fw.map(d => {
       let n = newData.find(e => e.reportId === d.reportId)
       let ga = n.edcGa ? n.edcGa?.split('w')[0] : n.usGa?.split('w')[0]
